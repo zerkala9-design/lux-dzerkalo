@@ -1,10 +1,10 @@
 ---
 title: "Дзеркальне панно"
 category: "panno"
-image: "../../assets/products/panno-1.jpg"
+image: "../../../assets/products/panno-1.jpg"
 gallery:
-  - "../../assets/products/panno-2.jpg"
-  - "../../assets/products/panno-3.jpg"
+  - "../../../assets/products/panno-2.jpg"
+  - "../../../assets/products/panno-3.jpg"
 summary: "Декоративне дзеркальне панно за індивідуальним дизайном — стильний акцент для вітальні чи передпокою."
 features:
   - "Індивідуальний дизайн композиції"

@@ -1,7 +1,7 @@
 ---
 title: "Дзеркало у спальню"
 category: "interier"
-image: "../../assets/products/spalnya-1.jpg"
+image: "../../../assets/products/spalnya-1.jpg"
 summary: "Дзеркала для спальні: настінні, у повний зріст, з підсвіткою та обрамленням."
 features:
   - "У повний зріст або настінні"

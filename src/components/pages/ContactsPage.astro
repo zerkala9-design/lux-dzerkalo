@@ -1,0 +1,71 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CallbackForm from '../CallbackForm.astro';
+import { site, siteText } from '../../data/site';
+import { getLangFromUrl, useTranslations, localizePath } from '../../i18n/ui';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const st = siteText(lang);
+const base = localizePath('/', lang);
+const mapQuery = encodeURIComponent('вулиця Вадима Гетьмана, 27, Київ');
+---
+
+<BaseLayout title={t('contacts.title')} description={`${st.addressFull}. ${site.phones.map((p) => p.display).join(', ')}. ${site.email}.`}>
+  <section class="page-head">
+    <div class="container">
+      <nav class="crumbs"><a href={base}>{t('nav.home')}</a> / <span>{t('contacts.title')}</span></nav>
+      <h1>{t('contacts.title')}</h1>
+      <p>{t('contacts.intro')}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container contacts">
+      <div class="contacts__info">
+        <div class="contact-block">
+          <h3>{t('contacts.phones')}</h3>
+          {site.phones.map((p) => (<a class="contact-line" href={`tel:${p.tel}`}>{p.display}</a>))}
+        </div>
+        <div class="contact-block">
+          <h3>{t('contacts.email')}</h3>
+          <a class="contact-line" href={`mailto:${site.email}`}>{site.email}</a>
+        </div>
+        <div class="contact-block">
+          <h3>{t('contacts.address')}</h3>
+          <p class="contact-line">{st.addressFull}</p>
+        </div>
+        <div class="contact-block">
+          <h3>{t('contacts.hours')}</h3>
+          <p class="contact-line">{st.workingHours}</p>
+        </div>
+        {site.social.viber && (<a href={site.social.viber} class="btn btn--ghost">{t('contacts.viber')}</a>)}
+      </div>
+
+      <div class="contacts__map">
+        <iframe
+          title="Lux Zerkalo"
+          src={`https://maps.google.com/maps?q=${mapQuery}&z=15&output=embed`}
+          width="100%" height="100%" style="border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </div>
+    </div>
+  </section>
+
+  <CallbackForm />
+</BaseLayout>
+
+<style>
+  .page-head { padding: clamp(40px, 6vw, 72px) 0; background: var(--bg-soft); }
+  .crumbs { font-size: 0.88rem; color: var(--muted); margin-bottom: 1rem; }
+  .crumbs a { color: var(--ink-soft); }
+  .page-head p { color: var(--ink-soft); max-width: 60ch; font-size: 1.08rem; }
+  .contacts { display: grid; grid-template-columns: 1fr 1.3fr; gap: 40px; align-items: stretch; }
+  .contact-block { margin-bottom: 1.6rem; }
+  .contact-block h3 { font-family: var(--font); text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.82rem; color: var(--muted); margin-bottom: 0.4rem; }
+  .contact-line { display: block; font-size: 1.2rem; font-weight: 600; color: var(--ink); margin: 0; }
+  a.contact-line:hover { color: var(--accent-dark); }
+  .contacts__map { min-height: 380px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); }
+  .contacts__map iframe { display: block; height: 100%; min-height: 380px; }
+  @media (max-width: 800px) { .contacts { grid-template-columns: 1fr; } }
+</style>

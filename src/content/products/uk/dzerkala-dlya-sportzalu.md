@@ -1,7 +1,7 @@
 ---
 title: "Дзеркала для спортзалів"
 category: "sportzal"
-image: "../../assets/products/sportzal-1.jpg"
+image: "../../../assets/products/sportzal-1.jpg"
 summary: "Великі дзеркальні полотна для спортзалів, фітнес-клубів і танцювальних студій. Безпечний монтаж."
 features:
   - "Великі суцільні полотна"

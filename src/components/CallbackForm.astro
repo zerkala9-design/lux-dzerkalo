@@ -1,44 +1,44 @@
 ---
 import { site } from '../data/site';
+import { getLangFromUrl, useTranslations } from '../i18n/ui';
 
 interface Props {
   title?: string;
   text?: string;
 }
-const {
-  title = 'Замовити прорахунок',
-  text = 'Залиште заявку — ми зателефонуємо, проконсультуємо та розрахуємо вартість безкоштовно.',
-} = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const { title = t('form.title'), text = t('form.text') } = Astro.props;
 ---
 
 <section class="section section--dark" id="zayavka">
   <div class="container cta">
     <div class="cta__text">
-      <span class="eyebrow">Безкоштовно</span>
+      <span class="eyebrow">{lang === 'ru' ? 'Бесплатно' : 'Безкоштовно'}</span>
       <h2>{title}</h2>
       <p>{text}</p>
       <ul class="cta__perks">
-        <li>Заміри та консультація</li>
-        <li>Розрахунок вартості</li>
-        <li>Виготовлення та монтаж «під ключ»</li>
+        <li>{t('form.perk1')}</li>
+        <li>{t('form.perk2')}</li>
+        <li>{t('form.perk3')}</li>
       </ul>
     </div>
 
-    <form class="cta__form" id="callback-form" data-email={site.email}>
+    <form class="cta__form" id="callback-form" data-email={site.email} data-subject={t('form.subject')}>
       <label>
-        <span>Ваше ім’я</span>
-        <input type="text" name="name" required placeholder="Ім’я" autocomplete="name" />
+        <span>{t('form.name')}</span>
+        <input type="text" name="name" required placeholder={t('form.namePh')} autocomplete="name" />
       </label>
       <label>
-        <span>Телефон</span>
+        <span>{t('form.phone')}</span>
         <input type="tel" name="phone" required placeholder="+380 __ ___ __ __" autocomplete="tel" />
       </label>
       <label>
-        <span>Коментар</span>
-        <textarea name="message" rows="3" placeholder="Опишіть, що вас цікавить (розміри, тип дзеркала)"></textarea>
+        <span>{t('form.comment')}</span>
+        <textarea name="message" rows="3" placeholder={t('form.commentPh')}></textarea>
       </label>
-      <button type="submit" class="btn btn--primary">Надіслати заявку</button>
-      <p class="cta__note">Натискаючи кнопку, ви погоджуєтесь на обробку даних.</p>
+      <button type="submit" class="btn btn--primary">{t('form.submit')}</button>
+      <p class="cta__note">{t('form.note')}</p>
     </form>
   </div>
 </section>
@@ -48,22 +48,15 @@ const {
   .cta__text p { color: #aeb6c0; font-size: 1.08rem; }
   .cta__perks { list-style: none; padding: 0; margin: 1.4rem 0 0; display: grid; gap: 0.6rem; }
   .cta__perks li { padding-left: 28px; position: relative; color: #d7dde4; }
-  .cta__perks li::before {
-    content: '✓'; position: absolute; left: 0; color: var(--accent); font-weight: 700;
-  }
-  .cta__form {
-    background: #fff; border-radius: var(--radius); padding: 28px; display: grid; gap: 14px;
-    box-shadow: var(--shadow-lg);
-  }
+  .cta__perks li::before { content: '✓'; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+  .cta__form { background: #fff; border-radius: var(--radius); padding: 28px; display: grid; gap: 14px; box-shadow: var(--shadow-lg); }
   .cta__form label { display: grid; gap: 6px; }
   .cta__form span { font-size: 0.85rem; font-weight: 600; color: var(--ink); }
   .cta__form input, .cta__form textarea {
     width: 100%; padding: 0.8em 1em; border: 1.5px solid var(--line);
     border-radius: var(--radius-sm); font: inherit; color: var(--ink); background: var(--bg-soft);
   }
-  .cta__form input:focus, .cta__form textarea:focus {
-    outline: none; border-color: var(--accent); background: #fff;
-  }
+  .cta__form input:focus, .cta__form textarea:focus { outline: none; border-color: var(--accent); background: #fff; }
   .cta__form .btn { width: 100%; justify-content: center; margin-top: 4px; }
   .cta__note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0; }
   @media (max-width: 800px) { .cta { grid-template-columns: 1fr; gap: 32px; } }
@@ -75,17 +68,14 @@ const {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const email = form.dataset.email || '';
+      const subjectPrefix = form.dataset.subject || 'Заявка';
       const data = new FormData(form);
       const name = String(data.get('name') || '');
       const phone = String(data.get('phone') || '');
       const message = String(data.get('message') || '');
-      const subject = encodeURIComponent(`Заявка з сайту від ${name}`);
-      const body = encodeURIComponent(
-        `Ім'я: ${name}\nТелефон: ${phone}\n\nКоментар:\n${message}`
-      );
+      const subject = encodeURIComponent(`${subjectPrefix} ${name}`);
+      const body = encodeURIComponent(`${name}\n${phone}\n\n${message}`);
       // Без бекенду: відкриваємо поштовий клієнт із заповненою заявкою.
-      // Щоб приймати заявки автоматично — підключіть сервіс форм
-      // (Web3Forms / Formspree) і змініть обробник на fetch(endpoint).
       window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
     });
   }

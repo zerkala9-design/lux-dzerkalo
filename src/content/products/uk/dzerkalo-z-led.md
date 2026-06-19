@@ -1,10 +1,10 @@
 ---
 title: "Дзеркало з LED-підсвіткою"
 category: "led"
-image: "../../assets/products/led-1.jpg"
+image: "../../../assets/products/led-1.jpg"
 gallery:
-  - "../../assets/products/led-2.jpg"
-  - "../../assets/products/led-3.jpg"
+  - "../../../assets/products/led-2.jpg"
+  - "../../../assets/products/led-3.jpg"
 summary: "Сучасне дзеркало з рівномірною LED-підсвіткою, сенсорним вмиканням і функцією антизапотівання."
 features:
   - "Рівномірне світло по периметру або фронтальне"

@@ -1,10 +1,10 @@
 ---
 title: "Дзеркальна плитка"
 category: "plitka"
-image: "../../assets/products/plitka-1.jpg"
+image: "../../../assets/products/plitka-1.jpg"
 gallery:
-  - "../../assets/products/plitka-2.jpg"
-  - "../../assets/products/plitka-3.jpg"
+  - "../../../assets/products/plitka-2.jpg"
+  - "../../../assets/products/plitka-3.jpg"
 summary: "Дзеркальна плитка для оздоблення стін, стель і колон. Візуально розширює простір."
 features:
   - "Квадратна, ромбоподібна, фігурна форма"

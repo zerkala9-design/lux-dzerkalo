@@ -1,7 +1,7 @@
 ---
 title: "Дзеркало на стелю"
 category: "interier"
-image: "../../assets/products/potolok-1.jpg"
+image: "../../../assets/products/potolok-1.jpg"
 summary: "Стельові дзеркала та дзеркальні стелі, що візуально піднімають і розширюють простір."
 features:
   - "Суцільні полотна або плитка"

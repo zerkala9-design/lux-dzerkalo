@@ -1,7 +1,7 @@
 ---
 title: "Дзеркало з фацетом"
 category: "facet"
-image: "../../assets/products/facet-1.jpg"
+image: "../../../assets/products/facet-1.jpg"
 summary: "Дзеркало зі шліфованою гранню (фацетом) — вишуканий акцент, що красиво заломлює світло."
 features:
   - "Фацет від 5 до 30 мм"

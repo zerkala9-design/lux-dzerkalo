@@ -1,56 +1,69 @@
 ---
-import { site, nav } from '../data/site';
+import { site, navItems } from '../data/site';
+import { getLangFromUrl, useTranslations, localizePath } from '../i18n/ui';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 const current = Astro.url.pathname;
 const isActive = (href: string) =>
-  href === '/' ? current === '/' : current.startsWith(href);
+  href === localizePath('/', lang) ? current === href || current === href.replace(/\/$/, '')
+    : current.startsWith(href);
 const primaryPhone = site.phones[0];
+
+// Перемикач мови: той самий шлях у протилежній мові
+const stripped = current.replace(/^\/ru(\/|$)/, '/');
+const altUk = stripped === '' ? '/' : stripped;
+const altRu = altUk === '/' ? '/ru/' : `/ru${altUk}`;
 ---
 
 <header class="site-header">
   <div class="container site-header__inner">
-    <a href="/" class="brand" aria-label={site.name}>
+    <a href={localizePath('/', lang)} class="brand" aria-label={site.name}>
       <span class="brand__mark">L<span>Z</span></span>
       <span class="brand__text">
         <strong>Lux Zerkalo</strong>
-        <small>дзеркала на замовлення</small>
+        <small>{t('header.brandSub')}</small>
       </span>
     </a>
 
     <input type="checkbox" id="nav-toggle" class="nav-toggle" hidden />
-    <label for="nav-toggle" class="burger" aria-label="Меню">
+    <label for="nav-toggle" class="burger" aria-label="Menu">
       <span></span><span></span><span></span>
     </label>
 
-    <nav class="site-nav" aria-label="Головне меню">
-      {nav.map((item) => (
-        <a href={item.href} class:list={['site-nav__link', { active: isActive(item.href) }]}>
-          {item.label}
-        </a>
-      ))}
+    <nav class="site-nav" aria-label="nav">
+      {navItems.map((item) => {
+        const href = localizePath(item.path, lang);
+        return (
+          <a href={href} class:list={['site-nav__link', { active: isActive(href) }]}>
+            {t(item.key)}
+          </a>
+        );
+      })}
     </nav>
 
-    <a href={`tel:${primaryPhone.tel}`} class="header-phone">
-      <span class="header-phone__icon" aria-hidden="true">☎</span>
-      {primaryPhone.display}
-    </a>
+    <div class="header-right">
+      <div class="lang-switch" aria-label="Language">
+        <a href={altUk} class:list={['lang-switch__opt', { active: lang === 'uk' }]} hreflang="uk-UA">UA</a>
+        <span>/</span>
+        <a href={altRu} class:list={['lang-switch__opt', { active: lang === 'ru' }]} hreflang="ru-RU">RU</a>
+      </div>
+      <a href={`tel:${primaryPhone.tel}`} class="header-phone">
+        <span class="header-phone__icon" aria-hidden="true">☎</span>
+        {primaryPhone.display}
+      </a>
+    </div>
   </div>
 </header>
 
 <style>
   .site-header {
-    position: sticky;
-    top: 0;
-    z-index: 50;
+    position: sticky; top: 0; z-index: 50;
     background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
   }
-  .site-header__inner {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    min-height: 74px;
-  }
+  .site-header__inner { display: flex; align-items: center; gap: 24px; min-height: 74px; }
   .brand { display: flex; align-items: center; gap: 12px; margin-right: auto; }
   .brand__mark {
     width: 46px; height: 46px; border-radius: 12px;
@@ -73,6 +86,12 @@ const primaryPhone = site.phones[0];
   .site-nav__link:hover { color: var(--accent-dark); }
   .site-nav__link.active { color: var(--accent-dark); }
   .site-nav__link.active::after { width: 100%; }
+
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .lang-switch { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 0.92rem; font-weight: 600; }
+  .lang-switch__opt { color: var(--muted); }
+  .lang-switch__opt:hover { color: var(--accent-dark); }
+  .lang-switch__opt.active { color: var(--ink); }
 
   .header-phone {
     display: inline-flex; align-items: center; gap: 8px;

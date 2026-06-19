@@ -1,7 +1,7 @@
 ---
 import type { GetStaticPaths } from 'astro';
-import { categories } from '../../data/categories';
-import CategoryPage from '../../components/pages/CategoryPage.astro';
+import { categories } from '../../../data/categories';
+import CategoryPage from '../../../components/pages/CategoryPage.astro';
 
 export const getStaticPaths = (() =>
   categories.map((c) => ({ params: { slug: c.slug }, props: { slug: c.slug } }))) satisfies GetStaticPaths;

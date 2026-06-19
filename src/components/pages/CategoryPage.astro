@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProductCard from '../ProductCard.astro';
+import CallbackForm from '../CallbackForm.astro';
+import { categories, getCategoryBySlug, catTitle, catDescription } from '../../data/categories';
+import { getLangFromUrl, useTranslations, localizePath } from '../../i18n/ui';
+import { getProductsByLang } from '../../lib/products';
+import { site } from '../../data/site';
+
+interface Props { slug: string; }
+const { slug } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const category = getCategoryBySlug(slug)!;
+
+const products = (await getProductsByLang(lang)).filter((p) => p.data.category === category.key);
+const base = localizePath('/', lang);
+
+const breadcrumbsLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: t('nav.home'), item: new URL(base, site.url).href },
+    { '@type': 'ListItem', position: 2, name: t('catalog.title'), item: new URL(localizePath('/katalog/', lang), site.url).href },
+    { '@type': 'ListItem', position: 3, name: catTitle(category, lang), item: new URL(localizePath(`/katalog/${category.slug}/`, lang), site.url).href },
+  ],
+};
+---
+
+<BaseLayout title={catTitle(category, lang)} description={catDescription(category, lang)} jsonLd={breadcrumbsLd}>
+  <section class="page-head">
+    <div class="container">
+      <nav class="crumbs">
+        <a href={base}>{t('nav.home')}</a> / <a href={localizePath('/katalog/', lang)}>{t('catalog.title')}</a> / <span>{catTitle(category, lang)}</span>
+      </nav>
+      <h1>{catTitle(category, lang)}</h1>
+      <p>{catDescription(category, lang)}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="chips">
+        {categories.map((c) => (
+          <a href={localizePath(`/katalog/${c.slug}/`, lang)} class:list={['chip', { active: c.slug === category.slug }]}>
+            {catTitle(c, lang)}
+          </a>
+        ))}
+      </div>
+
+      {products.length > 0 ? (
+        <div class="grid grid--3" style="margin-top: 2.5rem;">
+          {products.map((p) => <ProductCard product={p} />)}
+        </div>
+      ) : (
+        <p style="margin-top:2rem;"><a href="#zayavka">{t('catalog.empty')}</a></p>
+      )}
+    </div>
+  </section>
+
+  <CallbackForm />
+</BaseLayout>
+
+<style>
+  .page-head { padding: clamp(40px, 6vw, 72px) 0 0; background: var(--bg-soft); }
+  .page-head .container { padding-bottom: clamp(40px, 6vw, 72px); }
+  .crumbs { font-size: 0.88rem; color: var(--muted); margin-bottom: 1rem; }
+  .crumbs a { color: var(--ink-soft); }
+  .page-head p { color: var(--ink-soft); max-width: 65ch; font-size: 1.08rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip { padding: 0.5em 1.1em; border-radius: 999px; border: 1.5px solid var(--line); color: var(--ink); font-size: 0.92rem; font-weight: 500; background: #fff; }
+  .chip:hover { border-color: var(--accent); color: var(--accent-dark); }
+  .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+</style>

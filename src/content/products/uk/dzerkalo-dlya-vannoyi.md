@@ -1,10 +1,10 @@
 ---
 title: "Дзеркало для ванної кімнати"
 category: "vanna"
-image: "../../assets/products/vanna-1.jpg"
+image: "../../../assets/products/vanna-1.jpg"
 gallery:
-  - "../../assets/products/vanna-2.jpg"
-  - "../../assets/products/vanna-3.jpg"
+  - "../../../assets/products/vanna-2.jpg"
+  - "../../../assets/products/vanna-3.jpg"
 summary: "Вологостійке дзеркало для ванної з опціями підсвітки, антизапотівання та поличок. Виготовлення за вашими розмірами."
 features:
   - "Виготовлення за індивідуальними розмірами"

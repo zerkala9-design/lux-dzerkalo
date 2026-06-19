@@ -1,0 +1,150 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProductCard from '../ProductCard.astro';
+import CallbackForm from '../CallbackForm.astro';
+import { site } from '../../data/site';
+import { categories, catTitle, catShort } from '../../data/categories';
+import { getLangFromUrl, useTranslations, localizePath } from '../../i18n/ui';
+import { getProductsByLang } from '../../lib/products';
+import heroImg from '../../assets/hero.jpg';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const products = await getProductsByLang(lang);
+const featured = products.filter((p) => p.data.featured).slice(0, 4);
+
+const advantages = [
+  { icon: '📐', title: t('adv.1.title'), text: t('adv.1.text') },
+  { icon: '🛠️', title: t('adv.2.title'), text: t('adv.2.text') },
+  { icon: '⏱️', title: t('adv.3.title'), text: t('adv.3.text') },
+  { icon: '🛡️', title: t('adv.4.title'), text: t('adv.4.text') },
+];
+const steps = [
+  { n: '01', title: t('proc.1.title'), text: t('proc.1.text') },
+  { n: '02', title: t('proc.2.title'), text: t('proc.2.text') },
+  { n: '03', title: t('proc.3.title'), text: t('proc.3.text') },
+  { n: '04', title: t('proc.4.title'), text: t('proc.4.text') },
+];
+---
+
+<BaseLayout>
+  <section class="hero">
+    <div class="hero__bg">
+      <Image src={heroImg} alt={t('site.tagline')} widths={[768, 1280, 1920]} sizes="100vw" loading="eager" fetchpriority="high" />
+      <div class="hero__overlay"></div>
+    </div>
+    <div class="container hero__inner">
+      <span class="eyebrow hero__eyebrow">{t('hero.eyebrow')}</span>
+      <h1 set:html={t('hero.title')}></h1>
+      <p>{t('hero.subtitle')}</p>
+      <div class="hero__actions">
+        <a href="#zayavka" class="btn btn--primary">{t('hero.ctaQuote')}</a>
+        <a href={localizePath('/katalog/', lang)} class="btn btn--light">{t('hero.ctaCatalog')}</a>
+      </div>
+      <div class="hero__contacts">
+        {site.phones.map((p) => (<a href={`tel:${p.tel}`}>{p.display}</a>))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid--4">
+        {advantages.map((a) => (
+          <div class="adv">
+            <span class="adv__icon" aria-hidden="true">{a.icon}</span>
+            <h3>{a.title}</h3>
+            <p>{a.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--soft">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <span class="eyebrow">{t('cat.eyebrow')}</span>
+        <h2>{t('cat.heading')}</h2>
+        <p>{t('cat.sub')}</p>
+      </div>
+      <div class="grid grid--4 cat-grid">
+        {categories.map((c) => (
+          <a href={localizePath(`/katalog/${c.slug}/`, lang)} class="cat-tile">
+            <h3>{catTitle(c, lang)}</h3>
+            <p>{catShort(c, lang)}</p>
+            <span class="link-arrow">{t('common.more')}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <span class="eyebrow">{t('feat.eyebrow')}</span>
+        <h2>{t('feat.heading')}</h2>
+        <p>{t('feat.sub')}</p>
+      </div>
+      <div class="grid grid--4">
+        {featured.map((p) => <ProductCard product={p} />)}
+      </div>
+      <div style="text-align:center; margin-top: 2.5rem;">
+        <a href={localizePath('/katalog/', lang)} class="btn btn--ghost">{t('common.allCatalog')}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--soft">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <span class="eyebrow">{t('proc.eyebrow')}</span>
+        <h2>{t('proc.heading')}</h2>
+      </div>
+      <div class="grid grid--4">
+        {steps.map((s) => (
+          <div class="step">
+            <span class="step__n">{s.n}</span>
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CallbackForm />
+</BaseLayout>
+
+<style>
+  .hero { position: relative; color: #fff; isolation: isolate; }
+  .hero__bg { position: absolute; inset: 0; z-index: -1; }
+  .hero__bg img { width: 100%; height: 100%; object-fit: cover; }
+  .hero__overlay { position: absolute; inset: 0; background: linear-gradient(105deg, rgba(15,20,26,0.92) 0%, rgba(15,20,26,0.72) 45%, rgba(15,20,26,0.45) 100%); }
+  .hero__inner { padding: clamp(70px, 12vw, 150px) 20px; max-width: 760px; }
+  .hero__eyebrow { color: var(--accent); }
+  .hero h1 { color: #fff; }
+  .hero p { color: #d7dde4; font-size: 1.15rem; max-width: 56ch; }
+  .hero__actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 1.8rem; }
+  .hero__contacts { display: flex; gap: 24px; margin-top: 1.8rem; flex-wrap: wrap; }
+  .hero__contacts a { color: #fff; font-weight: 700; font-size: 1.15rem; font-family: var(--font); letter-spacing: 0.03em; }
+  .hero__contacts a:hover { color: var(--accent); }
+
+  .adv { text-align: left; }
+  .adv__icon { font-size: 2rem; display: block; margin-bottom: 0.6rem; }
+  .adv h3 { font-size: 1.15rem; }
+  .adv p { color: var(--ink-soft); font-size: 0.96rem; }
+
+  .cat-tile { display: flex; flex-direction: column; gap: 0.3rem; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 22px; color: var(--ink); transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; }
+  .cat-tile:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: transparent; }
+  .cat-tile h3 { font-size: 1.18rem; margin-bottom: 0.2rem; }
+  .cat-tile p { color: var(--ink-soft); font-size: 0.93rem; flex: 1; margin-bottom: 0.8rem; }
+
+  .step { position: relative; padding-top: 8px; }
+  .step__n { font-family: var(--serif); font-size: 2.6rem; font-weight: 700; color: var(--accent); opacity: 0.5; display: block; line-height: 1; }
+  .step h3 { margin-top: 0.6rem; font-size: 1.2rem; }
+  .step p { color: var(--ink-soft); font-size: 0.96rem; }
+</style>

@@ -3,7 +3,8 @@ import '../styles/global.css';
 import Seo from '../components/Seo.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { site } from '../data/site';
+import { site, siteText } from '../data/site';
+import { getLangFromUrl } from '../i18n/ui';
 
 interface Props {
   title?: string;
@@ -13,14 +14,16 @@ interface Props {
   noindex?: boolean;
 }
 
-const { title, description, image, jsonLd, noindex } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const st = siteText(lang);
+const { title, description = st.description, image, jsonLd, noindex } = Astro.props;
+const htmlLang = lang === 'ru' ? 'ru' : 'uk';
 
-// Базова мікророзмітка організації — на всіх сторінках
 const orgLd = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
   name: site.name,
-  description: site.description,
+  description: st.description,
   url: site.url,
   email: site.email,
   telephone: site.phones.map((p) => p.tel),
@@ -28,22 +31,18 @@ const orgLd = {
   address: {
     '@type': 'PostalAddress',
     streetAddress: site.address,
-    addressLocality: 'Київ',
+    addressLocality: lang === 'ru' ? 'Киев' : 'Київ',
     addressCountry: 'UA',
   },
-  geo: {
-    '@type': 'GeoCoordinates',
-    latitude: site.geo.lat,
-    longitude: site.geo.lng,
-  },
-  areaServed: 'Київ та область',
+  geo: { '@type': 'GeoCoordinates', latitude: site.geo.lat, longitude: site.geo.lng },
+  areaServed: lang === 'ru' ? 'Киев и область' : 'Київ та область',
 };
 
 const allLd = jsonLd ? [orgLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])] : orgLd;
 ---
 
 <!doctype html>
-<html lang="uk">
+<html lang={htmlLang}>
   <head>
     <Seo title={title} description={description} image={image} jsonLd={allLd} noindex={noindex} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -61,7 +60,7 @@ const allLd = jsonLd ? [orgLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])] :
     </main>
     <Footer />
 
-    <a class="float-call" href={`tel:${site.phones[0].tel}`} aria-label="Зателефонувати">
+    <a class="float-call" href={`tel:${site.phones[0].tel}`} aria-label="Call">
       <span aria-hidden="true">☎</span>
     </a>
 
@@ -71,8 +70,7 @@ const allLd = jsonLd ? [orgLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])] :
         width: 56px; height: 56px; border-radius: 50%;
         display: none; place-items: center;
         background: var(--accent); color: #fff; font-size: 1.4rem;
-        box-shadow: var(--shadow-lg);
-        animation: pulse 2.4s infinite;
+        box-shadow: var(--shadow-lg); animation: pulse 2.4s infinite;
       }
       @keyframes pulse {
         0% { box-shadow: 0 0 0 0 rgba(184, 146, 63, 0.5); }

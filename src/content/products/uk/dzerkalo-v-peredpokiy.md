@@ -1,7 +1,7 @@
 ---
 title: "Дзеркало в передпокій"
 category: "interier"
-image: "../../assets/products/prihozhaya-1.jpg"
+image: "../../../assets/products/prihozhaya-1.jpg"
 summary: "Дзеркала для передпокою у повний зріст та настінні — перше враження про ваш дім."
 features:
   - "У повний зріст"

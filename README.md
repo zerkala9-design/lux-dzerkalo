@@ -32,11 +32,22 @@ src/
 public/                  ← robots.txt, favicon, og-default.jpg
 ```
 
+## Двомовність (UA / RU)
+
+Сайт двомовний: українська — основна (адреси `/`, `/katalog/`…), російська — під префіксом `/ru/`.
+- Рядки інтерфейсу: `src/i18n/ui.ts` (uk + ru).
+- Категорії: `src/data/categories.ts` (поля `*_ru`).
+- Тексти про компанію: `src/data/site.ts` → `siteI18n`.
+- Товари: окремі файли в `src/content/products/uk/` та `src/content/products/ru/`
+  (однакова назва файлу = спільний slug і зв'язок між мовами через `hreflang`).
+
 ## Як додати новий товар
 
 1. Покладіть фото товару в `src/assets/products/` (напр. `nove-foto.jpg`).
-2. Створіть файл `src/content/products/nazva-tovaru.md`. Ім'я файлу стане адресою:
-   `/tovar/nazva-tovaru/`.
+2. Створіть **два** файли з однаковою назвою:
+   `src/content/products/uk/nazva-tovaru.md` та `src/content/products/ru/nazva-tovaru.md`.
+   Назва файлу стане адресою: `/tovar/nazva-tovaru/` (та `/ru/tovar/nazva-tovaru/`).
+   У шляху до зображення вкажіть `../../../assets/products/nove-foto.jpg`.
 3. Заповніть заголовок (frontmatter) і опис:
 
 ```markdown

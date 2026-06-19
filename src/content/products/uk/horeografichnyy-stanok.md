@@ -1,7 +1,7 @@
 ---
 title: "Хореографічний станок"
 category: "sportzal"
-image: "../../assets/products/sportzal-1.jpg"
+image: "../../../assets/products/sportzal-1.jpg"
 summary: "Балетні (хореографічні) станки для танцювальних студій — настінні та підлогові, одно- та дворівневі."
 features:
   - "Настінні та підлогові моделі"

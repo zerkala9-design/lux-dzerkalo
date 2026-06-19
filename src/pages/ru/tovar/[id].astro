@@ -1,13 +1,13 @@
 ---
 import type { GetStaticPaths } from 'astro';
-import CategoryProduct from '../../components/pages/ProductPage.astro';
-import { getProductsByLang, productSlug } from '../../lib/products';
+import ProductPage from '../../../components/pages/ProductPage.astro';
+import { getProductsByLang, productSlug } from '../../../lib/products';
 
 export const getStaticPaths = (async () => {
-  const products = await getProductsByLang('uk');
+  const products = await getProductsByLang('ru');
   return products.map((product) => ({ params: { id: productSlug(product) }, props: { product } }));
 }) satisfies GetStaticPaths;
 
 const { product } = Astro.props;
 ---
-<CategoryProduct product={product} />
+<ProductPage product={product} />

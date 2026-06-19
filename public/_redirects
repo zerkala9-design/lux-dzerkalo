@@ -1,0 +1,72 @@
+# 301-редиректи зі старого сайту (lux-zerkalo.com.ua) на новий.
+# Формат Netlify: <старий шлях>  <новий шлях>  <код>
+# Нефорсовані 301 застосовуються лише коли немає реального файлу — наші нові
+# сторінки (/ru/..., /katalog/...) працюють як завжди.
+
+# ---------- Старий індекс ----------
+/ru/glavnaja.html              /ru/                                 301
+/ua/golovna.html               /                                    301
+/index.html                    /                                    301
+
+# ---------- УКРАЇНСЬКІ сторінки ----------
+/ua/poslugi.html                       /poslugy/                            301
+/ua/kontakti_ua.html                   /kontakty/                           301
+/ua/zamoviti-zvorotniy-dzvinok.html    /kontakty/                           301
+/ua/zamoviti-rozrahunok-vartosti.html  /kontakty/                           301
+/ua/prays-list_ua.html                 /katalog/                            301
+/ua/gotovi-dzerkala.html               /katalog/                            301
+/ua/dzerkala-dlya-vannoyi-kimnati.html /katalog/dzerkala-dlya-vannoyi/      301
+/ua/dzerkala-dlya-sportzaliv.html      /katalog/dzerkala-dlya-sportzaliv/   301
+/ua/dzerkala-dlya-sportzaliv_main.html /katalog/dzerkala-dlya-sportzaliv/   301
+/ua/horeografichni-stanki.html         /tovar/horeografichnyy-stanok/       301
+/ua/dzerkalna-plitka.html              /katalog/dzerkalna-plitka/           301
+/ua/dzerkalna-plitka_main.html         /katalog/dzerkalna-plitka/           301
+/ua/dzerkalni-panno.html               /katalog/dzerkalni-panno/            301
+/ua/dzerkalne-panno-_montaj_.html      /katalog/dzerkalni-panno/            301
+/ua/dzerkalo-z-fatsetom.html           /katalog/dzerkala-z-fatsetom/        301
+/ua/dzerkala-v-inter_eri.html          /katalog/dzerkala-v-interyeri/       301
+/ua/dzerkala-dlya-vannoyi-kimnati_main.html /katalog/dzerkala-dlya-vannoyi/ 301
+# скло прибрано → у каталог
+/ua/sklo.html                          /katalog/                            301
+/ua/sklo/*                             /katalog/                            301
+# статті (буде розділ /statti/) — поки що в каталог
+/ua/statti/*                           /katalog/                            301
+# решта старих UA-сторінок
+/ua/*                                  /                                    301
+
+# ---------- РОСІЙСЬКІ сторінки ----------
+/ru/uslugi.html                        /ru/poslugy/                         301
+/ru/kontakti.html                      /ru/kontakty/                        301
+/ru/zakazat-obratniy-zvonok.html       /ru/kontakty/                        301
+/ru/zakazat-proschet-stoimosti.html    /ru/kontakty/                        301
+/ru/prajs-list.html                    /ru/katalog/                         301
+/ru/gotovie_zerkala.html               /ru/katalog/                         301
+/ru/zerkala_dlja_vannoj_komnati.html   /ru/katalog/dzerkala-dlya-vannoyi/   301
+/ru/zerkala-s-led-podsvetkoy.html      /ru/katalog/dzerkala-z-led-pidsvitkoyu/ 301
+/ru/zerkala_s_facetom.html             /ru/katalog/dzerkala-z-fatsetom/     301
+/ru/zerkalnaja_plitka_new.html         /ru/katalog/dzerkalna-plitka/        301
+/ru/primeri_rabot_panno.html           /ru/katalog/dzerkalni-panno/         301
+/ru/zerkalnoe_panno_(montaj).html      /ru/katalog/dzerkalni-panno/         301
+/ru/zerkala_dlja_sportzalov.html       /ru/katalog/dzerkala-dlya-sportzaliv/ 301
+/ru/horeograficheskie_stanki.html      /ru/tovar/horeografichnyy-stanok/    301
+/ru/zerkala_v_interere.html            /ru/katalog/dzerkala-v-interyeri/    301
+/ru/zerkala_v_gostinuy.html            /ru/katalog/dzerkala-v-interyeri/    301
+/ru/zerkala_v_spalny.html              /ru/katalog/dzerkala-v-interyeri/    301
+/ru/zerkala_v_prihojuy.html            /ru/katalog/dzerkala-v-interyeri/    301
+/ru/zerkala_na_potolok.html            /ru/katalog/dzerkala-v-interyeri/    301
+/ru/zerkala_dlja_detskoj_komnati.html  /ru/katalog/dzerkala-v-interyeri/    301
+/ru/zerkala_dlja_doma.html             /ru/katalog/dzerkala-v-interyeri/    301
+/ru/zerkalnij_fen-shuj.html            /ru/katalog/dzerkala-v-interyeri/    301
+# скло прибрано → у каталог
+/ru/izdelija_iz_stekla.html            /ru/katalog/                         301
+/ru/steklo/*                           /ru/katalog/                         301
+# фотогалерея
+/ru/fotogalereja.html                  /ru/halereya/                        301
+/ru/fotogalereja/*                     /ru/halereya/                        301
+# статті
+/ru/stati/*                            /ru/katalog/                         301
+# решта старих RU-сторінок
+/ru/*                                  /ru/                                 301
+
+# ---------- sitemap ----------
+/sitemap.xml                           /sitemap-index.xml                   301

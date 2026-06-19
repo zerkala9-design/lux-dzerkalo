@@ -1,7 +1,18 @@
 ---
-import { site, nav } from '../data/site';
-import { categories } from '../data/categories';
+import { site, navItems, siteText } from '../data/site';
+import { categories, catTitle } from '../data/categories';
+import { getLangFromUrl, useTranslations, localizePath } from '../i18n/ui';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const st = siteText(lang);
 const year = new Date().getFullYear();
+
+const socials = [
+  { name: 'Instagram', url: site.social.instagram },
+  { name: 'Facebook', url: site.social.facebook },
+  { name: 'Telegram', url: site.social.telegram },
+].filter((s) => s.url);
 ---
 
 <footer class="site-footer">
@@ -9,56 +20,58 @@ const year = new Date().getFullYear();
     <div>
       <div class="brand__text">
         <strong>Lux Zerkalo</strong>
-        <small>{site.tagline}</small>
+        <small>{t('site.tagline')}</small>
       </div>
-      <p class="footer-about">
-        Виготовлення та монтаж дзеркал на замовлення у Києві. Заміри, доставка,
-        професійна установка.
-      </p>
+      <p class="footer-about">{t('footer.about')}</p>
+      {socials.length > 0 && (
+        <div class="footer-social">
+          {socials.map((s) => (
+            <a href={s.url} target="_blank" rel="noopener" aria-label={s.name}>{s.name}</a>
+          ))}
+        </div>
+      )}
     </div>
 
     <div>
-      <h4>Каталог</h4>
+      <h4>{t('footer.catalog')}</h4>
       <ul>
         {categories.slice(0, 6).map((c) => (
-          <li><a href={`/katalog/${c.slug}/`}>{c.title}</a></li>
+          <li><a href={localizePath(`/katalog/${c.slug}/`, lang)}>{catTitle(c, lang)}</a></li>
         ))}
       </ul>
     </div>
 
     <div>
-      <h4>Меню</h4>
+      <h4>{t('footer.menu')}</h4>
       <ul>
-        {nav.map((item) => (
-          <li><a href={item.href}>{item.label}</a></li>
+        {navItems.map((item) => (
+          <li><a href={localizePath(item.path, lang)}>{t(item.key)}</a></li>
         ))}
       </ul>
     </div>
 
     <div>
-      <h4>Контакти</h4>
+      <h4>{t('footer.contacts')}</h4>
       <ul class="footer-contacts">
         {site.phones.map((p) => (
           <li><a href={`tel:${p.tel}`}>{p.display}</a></li>
         ))}
         <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
-        <li>{site.addressFull}</li>
-        <li>{site.workingHours}</li>
+        <li>{st.addressFull}</li>
+        <li>{st.workingHours}</li>
       </ul>
     </div>
   </div>
 
   <div class="container site-footer__bottom">
-    <span>© {year} {site.name}. Усі права захищено.</span>
-    <span>Київ · {site.address}</span>
+    <span>© {year} {site.name}. {t('footer.rights')}</span>
+    <span>{st.addressFull}</span>
   </div>
 </footer>
 
 <style>
   .site-footer { background: var(--bg-dark); color: #aeb6c0; padding-top: 64px; }
-  .site-footer__grid {
-    display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.2fr; gap: 40px; padding-bottom: 48px;
-  }
+  .site-footer__grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.2fr; gap: 40px; padding-bottom: 48px; }
   .site-footer h4 { color: #fff; font-family: var(--font); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; }
   .site-footer ul { list-style: none; padding: 0; margin: 0; }
   .site-footer li { margin-bottom: 0.6rem; font-size: 0.95rem; }
@@ -66,16 +79,14 @@ const year = new Date().getFullYear();
   .site-footer a:hover { color: var(--accent); }
   .brand__text strong { color: #fff; font-family: var(--serif); font-size: 1.4rem; display: block; }
   .brand__text small { color: var(--accent); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; }
-  .footer-about { margin-top: 1rem; font-size: 0.95rem; max-width: 30ch; }
+  .footer-about { margin-top: 1rem; font-size: 0.95rem; max-width: 32ch; }
+  .footer-social { display: flex; gap: 16px; margin-top: 1rem; }
+  .footer-social a { font-weight: 600; color: #fff; }
   .footer-contacts a { font-weight: 600; color: #fff; }
   .site-footer__bottom {
     display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
     padding: 22px 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.85rem; color: #79828d;
   }
-  @media (max-width: 800px) {
-    .site-footer__grid { grid-template-columns: 1fr 1fr; gap: 30px; }
-  }
-  @media (max-width: 480px) {
-    .site-footer__grid { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 800px) { .site-footer__grid { grid-template-columns: 1fr 1fr; gap: 30px; } }
+  @media (max-width: 480px) { .site-footer__grid { grid-template-columns: 1fr; } }
 </style>

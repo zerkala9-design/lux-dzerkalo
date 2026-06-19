@@ -1,26 +1,28 @@
 ---
 import { site } from '../data/site';
+import { getLangFromUrl } from '../i18n/ui';
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
-  /** JSON-LD structured data object (буде вставлено як <script type="application/ld+json">) */
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   noindex?: boolean;
 }
 
-const {
-  title,
-  description = site.description,
-  image = '/og-default.jpg',
-  jsonLd,
-  noindex = false,
-} = Astro.props;
+const { title, description = '', image = '/og-default.jpg', jsonLd, noindex = false } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
 
-const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
+const fullTitle = title ? `${title} — ${site.name}` : `${site.name}`;
 const canonical = new URL(Astro.url.pathname, site.url).href;
 const ogImage = new URL(image, site.url).href;
+
+// hreflang-альтернативи: той самий шлях у обох мовах
+const path = Astro.url.pathname;
+const ukPath = path.replace(/^\/ru(\/|$)/, '/');
+const ukHref = new URL(ukPath === '' ? '/' : ukPath, site.url).href;
+const ruHref = new URL(ukPath === '/' ? '/ru/' : `/ru${ukPath}`, site.url).href;
+const ogLocale = lang === 'ru' ? 'ru_RU' : 'uk_UA';
 ---
 
 <meta charset="utf-8" />
@@ -30,6 +32,10 @@ const ogImage = new URL(image, site.url).href;
 <link rel="canonical" href={canonical} />
 {noindex && <meta name="robots" content="noindex, nofollow" />}
 
+<link rel="alternate" hreflang="uk-UA" href={ukHref} />
+<link rel="alternate" hreflang="ru-RU" href={ruHref} />
+<link rel="alternate" hreflang="x-default" href={ukHref} />
+
 <!-- Open Graph -->
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content={site.name} />
@@ -37,7 +43,7 @@ const ogImage = new URL(image, site.url).href;
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonical} />
 <meta property="og:image" content={ogImage} />
-<meta property="og:locale" content="uk_UA" />
+<meta property="og:locale" content={ogLocale} />
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
