@@ -47,6 +47,7 @@ export const navItems: { key: UIKey; path: string }[] = [
   { key: 'nav.catalog', path: '/katalog/' },
   { key: 'nav.services', path: '/poslugy/' },
   { key: 'nav.gallery', path: '/halereya/' },
+  { key: 'nav.articles', path: '/statti/' },
   { key: 'nav.contacts', path: '/kontakty/' },
 ];
 

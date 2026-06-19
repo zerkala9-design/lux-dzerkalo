@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CallbackForm from '../CallbackForm.astro';
+import { getLangFromUrl, useTranslations, localizePath } from '../../i18n/ui';
+import { getArticlesByLang, articleSlug } from '../../lib/articles';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const articles = await getArticlesByLang(lang);
+const base = localizePath('/', lang);
+---
+
+<BaseLayout title={t('articles.title')} description={t('articles.intro')}>
+  <section class="page-head">
+    <div class="container">
+      <nav class="crumbs"><a href={base}>{t('nav.home')}</a> / <span>{t('articles.title')}</span></nav>
+      <h1>{t('articles.title')}</h1>
+      <p>{t('articles.intro')}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="art-grid">
+        {articles.map((a) => (
+          <a class="art-card" href={localizePath(`/statti/${articleSlug(a)}/`, lang)}>
+            <h2>{a.data.title}</h2>
+            <p>{a.data.summary}</p>
+            <span class="link-arrow">{t('articles.readMore')}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CallbackForm />
+</BaseLayout>
+
+<style>
+  .page-head { padding: clamp(40px, 6vw, 72px) 0; background: var(--bg-soft); }
+  .crumbs { font-size: 0.88rem; color: var(--muted); margin-bottom: 1rem; }
+  .crumbs a { color: var(--ink-soft); }
+  .page-head p { color: var(--ink-soft); max-width: 60ch; font-size: 1.08rem; }
+  .art-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
+  .art-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 26px 26px 24px; color: var(--ink); display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; }
+  .art-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: transparent; }
+  .art-card h2 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+  .art-card p { color: var(--ink-soft); font-size: 0.96rem; flex: 1; margin-bottom: 1rem; }
+  @media (max-width: 720px) { .art-grid { grid-template-columns: 1fr; } }
+</style>

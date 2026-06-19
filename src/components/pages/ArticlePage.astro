@@ -1,0 +1,86 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CallbackForm from '../CallbackForm.astro';
+import { site } from '../../data/site';
+import { getLangFromUrl, useTranslations, localizePath } from '../../i18n/ui';
+import { getArticlesByLang, articleSlug, type Article } from '../../lib/articles';
+
+interface Props { article: Article; }
+const { article } = Astro.props;
+const { data } = article;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const { Content } = await render(article);
+const base = localizePath('/', lang);
+
+const others = (await getArticlesByLang(lang)).filter((a) => a.id !== article.id).slice(0, 4);
+
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: data.title,
+  description: data.description,
+  inLanguage: lang === 'ru' ? 'ru-UA' : 'uk-UA',
+  author: { '@type': 'Organization', name: site.name },
+  publisher: { '@type': 'Organization', name: site.name },
+  mainEntityOfPage: new URL(localizePath(`/statti/${articleSlug(article)}/`, lang), site.url).href,
+};
+---
+
+<BaseLayout title={data.title} description={data.description} jsonLd={articleLd} alternates={false}>
+  <section class="page-head page-head--slim">
+    <div class="container">
+      <nav class="crumbs">
+        <a href={base}>{t('nav.home')}</a> / <a href={localizePath('/statti/', lang)}>{t('articles.title')}</a> / <span>{data.title}</span>
+      </nav>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container article-wrap">
+      <article class="article">
+        <h1>{data.title}</h1>
+        <div class="article__body">
+          <Content />
+        </div>
+        <a href={localizePath('/statti/', lang)} class="link-arrow back">← {t('articles.all')}</a>
+      </article>
+
+      {others.length > 0 && (
+        <aside class="article-aside">
+          <h3>{t('articles.title')}</h3>
+          <ul>
+            {others.map((a) => (
+              <li><a href={localizePath(`/statti/${articleSlug(a)}/`, lang)}>{a.data.title}</a></li>
+            ))}
+          </ul>
+        </aside>
+      )}
+    </div>
+  </section>
+
+  <CallbackForm />
+</BaseLayout>
+
+<style>
+  .page-head--slim { padding: clamp(24px, 4vw, 36px) 0; background: var(--bg-soft); }
+  .crumbs { font-size: 0.88rem; color: var(--muted); }
+  .crumbs a { color: var(--ink-soft); }
+  .article-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 48px; align-items: start; }
+  .article { max-width: 760px; }
+  .article h1 { margin-bottom: 1.2rem; }
+  .article__body { color: var(--ink-soft); font-size: 1.05rem; }
+  .article__body :global(h2) { font-family: var(--serif); color: var(--ink); margin-top: 1.8rem; font-size: 1.5rem; }
+  .article__body :global(h3) { color: var(--ink); margin-top: 1.4rem; font-size: 1.2rem; }
+  .article__body :global(p) { margin: 0 0 1rem; }
+  .article__body :global(ul) { margin: 0 0 1.2rem; padding-left: 1.2rem; }
+  .article__body :global(li) { margin-bottom: 0.4rem; }
+  .back { display: inline-block; margin-top: 1.5rem; font-weight: 600; }
+  .article-aside { position: sticky; top: 96px; background: var(--bg-soft); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 24px; }
+  .article-aside h3 { font-size: 1.1rem; }
+  .article-aside ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.7rem; }
+  .article-aside a { color: var(--ink); font-size: 0.95rem; font-weight: 500; }
+  .article-aside a:hover { color: var(--accent-dark); }
+  @media (max-width: 900px) { .article-wrap { grid-template-columns: 1fr; gap: 28px; } .article-aside { position: static; } }
+</style>

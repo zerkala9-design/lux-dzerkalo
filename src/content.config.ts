@@ -21,4 +21,16 @@ const products = defineCollection({
     }),
 });
 
-export const collections = { products };
+// Колекція статей (SEO-блог). Файли у src/content/articles/{uk,ru}/*.md
+const articles = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/articles' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().default(''),
+    summary: z.string().default(''),
+    date: z.string().optional(),
+    oldUrl: z.string().optional(),
+  }),
+});
+
+export const collections = { products, articles };

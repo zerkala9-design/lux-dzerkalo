@@ -1,7 +1,6 @@
 # 301-редиректи зі старого сайту (lux-zerkalo.com.ua) на новий.
 # Формат Netlify: <старий шлях>  <новий шлях>  <код>
-# Нефорсовані 301 застосовуються лише коли немає реального файлу — наші нові
-# сторінки (/ru/..., /katalog/...) працюють як завжди.
+# Нефорсовані 301 застосовуються лише коли немає реального файлу.
 
 # ---------- Старий індекс ----------
 /ru/glavnaja.html              /ru/                                 301
@@ -17,7 +16,6 @@
 /ua/gotovi-dzerkala.html               /katalog/                            301
 /ua/dzerkala-dlya-vannoyi-kimnati.html /katalog/dzerkala-dlya-vannoyi/      301
 /ua/dzerkala-dlya-sportzaliv.html      /katalog/dzerkala-dlya-sportzaliv/   301
-/ua/dzerkala-dlya-sportzaliv_main.html /katalog/dzerkala-dlya-sportzaliv/   301
 /ua/horeografichni-stanki.html         /tovar/horeografichnyy-stanok/       301
 /ua/dzerkalna-plitka.html              /katalog/dzerkalna-plitka/           301
 /ua/dzerkalna-plitka_main.html         /katalog/dzerkalna-plitka/           301
@@ -25,12 +23,20 @@
 /ua/dzerkalne-panno-_montaj_.html      /katalog/dzerkalni-panno/            301
 /ua/dzerkalo-z-fatsetom.html           /katalog/dzerkala-z-fatsetom/        301
 /ua/dzerkala-v-inter_eri.html          /katalog/dzerkala-v-interyeri/       301
-/ua/dzerkala-dlya-vannoyi-kimnati_main.html /katalog/dzerkala-dlya-vannoyi/ 301
-# скло прибрано → у каталог
 /ua/sklo.html                          /katalog/                            301
 /ua/sklo/*                             /katalog/                            301
-# статті (буде розділ /statti/) — поки що в каталог
-/ua/statti/*                           /katalog/                            301
+
+# ---------- УКРАЇНСЬКІ статті ----------
+/ua/statti/dzerkala-dlya-vann-kiyiv_ss.html   /statti/dzerkala-dlya-vann-kiyiv/   301
+/ua/statti/dzerkala-na-zamovlennya-v-kievi_ss.html   /statti/dzerkala-na-zamovlennya-v-kievi/   301
+/ua/statti/dzerkalna-plitka-v-inter_eri_ss.html   /statti/dzerkalna-plitka-v-inter_eri/   301
+/ua/statti/dzerkalne-panno-v-ukrayini---stilniy-ta-funktsionalniy-element_ss.html   /statti/dzerkalne-panno-v-ukrayini---stilniy-ta-funktsionalniy-element/   301
+/ua/statti/dzerkalo-u-vannu-kimnatu-kiyiv_ss.html   /statti/dzerkalo-u-vannu-kimnatu-kiyiv/   301
+/ua/statti/dzerkalo-u-vannu-kimnatu-kupiti-v-kievi_ss.html   /statti/dzerkalo-u-vannu-kimnatu-kupiti-v-kievi/   301
+/ua/statti/stilni-ta-praktichni-dzerkala-dlya-tantsyuvalnogo-zalu_ss.html   /statti/stilni-ta-praktichni-dzerkala-dlya-tantsyuvalnogo-zalu/   301
+/ua/statti/vanne-dzerkalo-kupiti-_kiyiv__ss.html   /statti/vanne-dzerkalo-kupiti-_kiyiv_/   301
+/ua/statti/zamoviti-dzerkalo-_kiyiv__ss.html   /statti/zamoviti-dzerkalo-_kiyiv_/   301
+/ua/statti/*                           /statti/                             301
 # решта старих UA-сторінок
 /ua/*                                  /                                    301
 
@@ -57,14 +63,80 @@
 /ru/zerkala_dlja_detskoj_komnati.html  /ru/katalog/dzerkala-v-interyeri/    301
 /ru/zerkala_dlja_doma.html             /ru/katalog/dzerkala-v-interyeri/    301
 /ru/zerkalnij_fen-shuj.html            /ru/katalog/dzerkala-v-interyeri/    301
-# скло прибрано → у каталог
 /ru/izdelija_iz_stekla.html            /ru/katalog/                         301
 /ru/steklo/*                           /ru/katalog/                         301
-# фотогалерея
 /ru/fotogalereja.html                  /ru/halereya/                        301
 /ru/fotogalereja/*                     /ru/halereya/                        301
-# статті
-/ru/stati/*                            /ru/katalog/                         301
+
+# ---------- РОСІЙСЬКІ статті ----------
+/ru/stati/2017/04/gde-kupit-zerkalnuyu-plitku_ss.html   /ru/statti/2017_04_gde-kupit-zerkalnuyu-plitku/   301
+/ru/stati/2017/04/kupit-zerkalnuyu-plitku-nedorogo_ss.html   /ru/statti/2017_04_kupit-zerkalnuyu-plitku-nedorogo/   301
+/ru/stati/2017/04/steklo-s-fatsetom_ss.html   /ru/statti/2017_04_steklo-s-fatsetom/   301
+/ru/stati/2017/04/zerkalnaya-potolochnaya-plitka-kupit_ss.html   /ru/statti/2017_04_zerkalnaya-potolochnaya-plitka-kupit/   301
+/ru/stati/2017/04/zerkalnye-plitki-na-stenu-kupit_ss.html   /ru/statti/2017_04_zerkalnye-plitki-na-stenu-kupit/   301
+/ru/stati/2017/09/vannoe-zerkalo-kupit-_kiev__ss.html   /ru/statti/2017_09_vannoe-zerkalo-kupit-_kiev_/   301
+/ru/stati/2017/09/zakazat-zerkalo-_kiev__ss.html   /ru/statti/2017_09_zakazat-zerkalo-_kiev_/   301
+/ru/stati/2017/09/zerkala-dlya-vann-kiev_ss.html   /ru/statti/2017_09_zerkala-dlya-vann-kiev/   301
+/ru/stati/2017/09/zerkalo-v-vannuyu-komnatu-kiev_ss.html   /ru/statti/2017_09_zerkalo-v-vannuyu-komnatu-kiev/   301
+/ru/stati/2017/09/zerkalo-v-vannuyu-komnatu-kupit-v-kieve_ss.html   /ru/statti/2017_09_zerkalo-v-vannuyu-komnatu-kupit-v-kieve/   301
+/ru/stati/2017/izgotovit-zerkalo-pod-zakaz_ss.html   /ru/statti/2017_izgotovit-zerkalo-pod-zakaz/   301
+/ru/stati/2017/izgotovlenie-zerkal-na-zakaz_ss.html   /ru/statti/2017_izgotovlenie-zerkal-na-zakaz/   301
+/ru/stati/2017/zerkalnaya-plitka-tsena-za-1-kv-metr_ss.html   /ru/statti/2017_zerkalnaya-plitka-tsena-za-1-kv-metr/   301
+/ru/stati/2017/zerkalo-dlya-vanny-pod-zakaz.html   /ru/statti/2017_zerkalo-dlya-vanny-pod-zakaz/   301
+/ru/stati/2017/zerkalo-plitka-kupit_ss.html   /ru/statti/2017_zerkalo-plitka-kupit/   301
+/ru/stati/2023/stilnye-i-praktichnye-zerkala-dlya-tantsevalnogo-zala_ss.html   /ru/statti/2023_stilnye-i-praktichnye-zerkala-dlya-tantsevalnogo-zala/   301
+/ru/stati/2023/zerkala-pod-zakaz-v-kieve_ss.html   /ru/statti/2023_zerkala-pod-zakaz-v-kieve/   301
+/ru/stati/2023/zerkalnaya-plitka-v-interere_ss.html   /ru/statti/2023_zerkalnaya-plitka-v-interere/   301
+/ru/stati/2023/zerkalnoe-panno-v-ukraine---stilniy-i-funktsionalniy-element_ss.html   /ru/statti/2023_zerkalnoe-panno-v-ukraine---stilniy-i-funktsionalniy-element/   301
+/ru/stati/fartuk-s-fotopechatyu-na-kuhnyu_ss.html   /ru/statti/fartuk-s-fotopechatyu-na-kuhnyu/   301
+/ru/stati/izgotovlenie-zerkalnoy-plitki_ss.html   /ru/statti/izgotovlenie-zerkalnoy-plitki/   301
+/ru/stati/izgotovlenie_zerkal.html   /ru/statti/izgotovlenie_zerkal/   301
+/ru/stati/kupit_zerkala_dlja_tancevalnogo_zala_ss.html   /ru/statti/kupit_zerkala_dlja_tancevalnogo_zala/   301
+/ru/stati/nestandartnie_zerkala.html   /ru/statti/nestandartnie_zerkala/   301
+/ru/stati/obrabotka-stekla-_polirovka-stekla_-shlifovka-stekla__ss.html   /ru/statti/obrabotka-stekla-_polirovka-stekla_-shlifovka-stekla_/   301
+/ru/stati/obychnye-zerkala.html   /ru/statti/obychnye-zerkala/   301
+/ru/stati/porezka-stekla_ss.html   /ru/statti/porezka-stekla/   301
+/ru/stati/proizvodstvo-zerkalnoy-plitki_ss.html   /ru/statti/proizvodstvo-zerkalnoy-plitki/   301
+/ru/stati/prozrachnie_okonnie_stekla_ss.html   /ru/statti/prozrachnie_okonnie_stekla/   301
+/ru/stati/stekla_v_kieve_ss.html   /ru/statti/stekla_v_kieve/   301
+/ru/stati/stekljannie_fartuki.html   /ru/statti/stekljannie_fartuki/   301
+/ru/stati/steklo-4-mm_ss.html   /ru/statti/steklo-4-mm/   301
+/ru/stati/steklo-lakobel_ss.html   /ru/statti/steklo-lakobel/   301
+/ru/stati/uzorchatoe-steklo_ss.html   /ru/statti/uzorchatoe-steklo/   301
+/ru/stati/zerkala-dekorativnye.html   /ru/statti/zerkala-dekorativnye/   301
+/ru/stati/zerkala-dlya-sportzala-kupit_ss.html   /ru/statti/zerkala-dlya-sportzala-kupit/   301
+/ru/stati/zerkala-dlya-sportzala-v-kieve_ss.html   /ru/statti/zerkala-dlya-sportzala-v-kieve/   301
+/ru/stati/zerkala-dlya-sportzala_ss.html   /ru/statti/zerkala-dlya-sportzala/   301
+/ru/stati/zerkala-dlya-sportzalov.html   /ru/statti/zerkala-dlya-sportzalov/   301
+/ru/stati/zerkala-dlya-tantsev-i-dlya-sporta_ss.html   /ru/statti/zerkala-dlya-tantsev-i-dlya-sporta/   301
+/ru/stati/zerkala-s-fatsetom-_zerkalnoe-panno_-zerkalnaya-plitka__ss.html   /ru/statti/zerkala-s-fatsetom-_zerkalnoe-panno_-zerkalnaya-plitka_/   301
+/ru/stati/zerkala-v-fitnes-zal_-tsena_ss.html   /ru/statti/zerkala-v-fitnes-zal_-tsena/   301
+/ru/stati/zerkala_na_zakaz_ss.html   /ru/statti/zerkala_na_zakaz/   301
+/ru/stati/zerkala_pod_zakaz_ss.html   /ru/statti/zerkala_pod_zakaz/   301
+/ru/stati/zerkala_s_facetom1.html   /ru/statti/zerkala_s_facetom1/   301
+/ru/stati/zerkalnaja_plitka.html   /ru/statti/zerkalnaja_plitka/   301
+/ru/stati/zerkalnaja_plitka_s_facetom_ss.html   /ru/statti/zerkalnaja_plitka_s_facetom/   301
+/ru/stati/zerkalnaya-plitka-dlya-vannoy.html   /ru/statti/zerkalnaya-plitka-dlya-vannoy/   301
+/ru/stati/zerkalnaya-plitka-na-potolok_ss.html   /ru/statti/zerkalnaya-plitka-na-potolok/   301
+/ru/stati/zerkalnaya-plitka-na-stenu_ss.html   /ru/statti/zerkalnaya-plitka-na-stenu/   301
+/ru/stati/zerkalnaya-plitka-romb_ss.html   /ru/statti/zerkalnaya-plitka-romb/   301
+/ru/stati/zerkalnaya-plitka-s-fatsetom-kupit_ss.html   /ru/statti/zerkalnaya-plitka-s-fatsetom-kupit/   301
+/ru/stati/zerkalnaya-plitka-s-fatsetom-tsena_ss.html   /ru/statti/zerkalnaya-plitka-s-fatsetom-tsena/   301
+/ru/stati/zerkalnaya-plitka-tsena_ss.html   /ru/statti/zerkalnaya-plitka-tsena/   301
+/ru/stati/zerkalnaya-plitka-v-interere_ss.html   /ru/statti/zerkalnaya-plitka-v-interere/   301
+/ru/stati/zerkalnaya-plitka-v-spalne_ss.html   /ru/statti/zerkalnaya-plitka-v-spalne/   301
+/ru/stati/zerkalnaya-plitka-v-vannuyu_ss.html   /ru/statti/zerkalnaya-plitka-v-vannuyu/   301
+/ru/stati/zerkalnaya-plitka_ss.html   /ru/statti/zerkalnaya-plitka/   301
+/ru/stati/zerkalnaya-potolochnaya-plitka_ss.html   /ru/statti/zerkalnaya-potolochnaya-plitka/   301
+/ru/stati/zerkalnye-paneli-kupit_ss.html   /ru/statti/zerkalnye-paneli-kupit/   301
+/ru/stati/zerkalnye-paneli-tsena_ss.html   /ru/statti/zerkalnye-paneli-tsena/   301
+/ru/stati/zerkalo-dlya-biznesa.html   /ru/statti/zerkalo-dlya-biznesa/   301
+/ru/stati/zerkalo-v-fitnes-zal_ss.html   /ru/statti/zerkalo-v-fitnes-zal/   301
+/ru/stati/zerkalo-v-vannuyu.html   /ru/statti/zerkalo-v-vannuyu/   301
+/ru/stati/zerkalo_kupit.html   /ru/statti/zerkalo_kupit/   301
+/ru/stati/zerkalo_na_zakaz_kiev_ss.html   /ru/statti/zerkalo_na_zakaz_kiev/   301
+/ru/stati/zerkalo_s_facetom.html   /ru/statti/zerkalo_s_facetom/   301
+/ru/stati/*                            /ru/statti/                          301
 # решта старих RU-сторінок
 /ru/*                                  /ru/                                 301
 
