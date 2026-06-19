@@ -14,7 +14,7 @@ export const site = {
   ],
   social: {
     // Додайте посилання на профілі — і вони з'являться у шапці, футері та контактах.
-    instagram: '',
+    instagram: 'https://www.instagram.com/dzerkala_kyiv/',
     facebook: '',
     telegram: '',
     viber: 'viber://chat?number=+380971772577',

@@ -39,6 +39,14 @@ const mapQuery = encodeURIComponent('вулиця Вадима Гетьмана,
           <h3>{t('contacts.hours')}</h3>
           <p class="contact-line">{st.workingHours}</p>
         </div>
+        <div class="contact-block">
+          <h3>{t('footer.social')}</h3>
+          <div class="contact-socials">
+            {site.social.instagram && (<a href={site.social.instagram} target="_blank" rel="noopener">Instagram</a>)}
+            {site.social.facebook && (<a href={site.social.facebook} target="_blank" rel="noopener">Facebook</a>)}
+            {site.social.telegram && (<a href={site.social.telegram} target="_blank" rel="noopener">Telegram</a>)}
+          </div>
+        </div>
         {site.social.viber && (<a href={site.social.viber} class="btn btn--ghost">{t('contacts.viber')}</a>)}
       </div>
 
@@ -65,6 +73,9 @@ const mapQuery = encodeURIComponent('вулиця Вадима Гетьмана,
   .contact-block h3 { font-family: var(--font); text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.82rem; color: var(--muted); margin-bottom: 0.4rem; }
   .contact-line { display: block; font-size: 1.2rem; font-weight: 600; color: var(--ink); margin: 0; }
   a.contact-line:hover { color: var(--accent-dark); }
+  .contact-socials { display: flex; gap: 18px; flex-wrap: wrap; }
+  .contact-socials a { font-size: 1.05rem; font-weight: 600; color: var(--ink); }
+  .contact-socials a:hover { color: var(--accent-dark); }
   .contacts__map { min-height: 380px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); }
   .contacts__map iframe { display: block; height: 100%; min-height: 380px; }
   @media (max-width: 800px) { .contacts { grid-template-columns: 1fr; } }
