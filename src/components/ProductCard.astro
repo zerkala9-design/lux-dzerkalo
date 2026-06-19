@@ -1,0 +1,33 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  product: CollectionEntry<'products'>;
+}
+const { product } = Astro.props;
+const { data, id } = product;
+---
+
+<article class="card">
+  <a class="card__media" href={`/tovar/${id}/`} aria-label={data.title}>
+    <Image src={data.image} alt={data.title} width={520} height={390} />
+  </a>
+  <div class="card__body">
+    <h3><a href={`/tovar/${id}/`}>{data.title}</a></h3>
+    <p>{data.summary}</p>
+    <div class="card__foot">
+      {data.priceFrom ? (
+        <span class="price">від {data.priceFrom.toLocaleString('uk-UA')} <span>{data.priceUnit}</span></span>
+      ) : (
+        <span class="price"><span>ціна за запитом</span></span>
+      )}
+      <a class="link-arrow" href={`/tovar/${id}/`}>Детальніше</a>
+    </div>
+  </div>
+</article>
+
+<style>
+  .card__body h3 a { color: var(--ink); }
+  .card__body h3 a:hover { color: var(--accent-dark); }
+</style>

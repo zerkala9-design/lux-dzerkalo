@@ -1,0 +1,85 @@
+---
+import '../styles/global.css';
+import Seo from '../components/Seo.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  noindex?: boolean;
+}
+
+const { title, description, image, jsonLd, noindex } = Astro.props;
+
+// Базова мікророзмітка організації — на всіх сторінках
+const orgLd = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: site.name,
+  description: site.description,
+  url: site.url,
+  email: site.email,
+  telephone: site.phones.map((p) => p.tel),
+  image: new URL('/og-default.jpg', site.url).href,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address,
+    addressLocality: 'Київ',
+    addressCountry: 'UA',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: site.geo.lat,
+    longitude: site.geo.lng,
+  },
+  areaServed: 'Київ та область',
+};
+
+const allLd = jsonLd ? [orgLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])] : orgLd;
+---
+
+<!doctype html>
+<html lang="uk">
+  <head>
+    <Seo title={title} description={description} image={image} jsonLd={allLd} noindex={noindex} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+
+    <a class="float-call" href={`tel:${site.phones[0].tel}`} aria-label="Зателефонувати">
+      <span aria-hidden="true">☎</span>
+    </a>
+
+    <style>
+      .float-call {
+        position: fixed; right: 18px; bottom: 18px; z-index: 60;
+        width: 56px; height: 56px; border-radius: 50%;
+        display: none; place-items: center;
+        background: var(--accent); color: #fff; font-size: 1.4rem;
+        box-shadow: var(--shadow-lg);
+        animation: pulse 2.4s infinite;
+      }
+      @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(184, 146, 63, 0.5); }
+        70% { box-shadow: 0 0 0 14px rgba(184, 146, 63, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(184, 146, 63, 0); }
+      }
+      @media (max-width: 900px) { .float-call { display: grid; } }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,113 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CallbackForm from '../components/CallbackForm.astro';
+
+// Підтягуємо всі зображення з папки галереї
+const modules = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/gallery/*.{jpg,jpeg,png,webp}',
+  { eager: true }
+);
+const images = Object.entries(modules)
+  .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+  .map(([, m]) => m.default);
+---
+
+<BaseLayout
+  title="Галерея робіт"
+  description="Приклади наших робіт: дзеркала в інтер’єрі, дзеркальні панно, дзеркала для ванної та спортзалів, виконані Lux Zerkalo у Києві."
+>
+  <section class="page-head">
+    <div class="container">
+      <nav class="crumbs"><a href="/">Головна</a> / <span>Галерея</span></nav>
+      <h1>Галерея робіт</h1>
+      <p>Реальні приклади дзеркал та дзеркальних композицій, виготовлених і встановлених нашою командою.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="gallery">
+        {images.map((img, i) => (
+          <button class="gallery__item" data-index={i} aria-label={`Відкрити фото ${i + 1}`}>
+            <Image src={img} alt={`Робота Lux Zerkalo — приклад ${i + 1}`} width={500} height={375} loading={i < 6 ? 'eager' : 'lazy'} />
+          </button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CallbackForm title="Сподобались роботи?" text="Замовте безкоштовний прорахунок — створимо дзеркало й для вашого інтер’єру." />
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lightbox__close" aria-label="Закрити">×</button>
+    <button class="lightbox__nav lightbox__prev" aria-label="Попереднє">‹</button>
+    <img class="lightbox__img" id="lightbox-img" alt="" />
+    <button class="lightbox__nav lightbox__next" aria-label="Наступне">›</button>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-head { padding: clamp(40px, 6vw, 72px) 0; background: var(--bg-soft); }
+  .crumbs { font-size: 0.88rem; color: var(--muted); margin-bottom: 1rem; }
+  .crumbs a { color: var(--ink-soft); }
+  .page-head p { color: var(--ink-soft); max-width: 60ch; font-size: 1.08rem; }
+
+  .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .gallery__item {
+    padding: 0; border: none; cursor: pointer; border-radius: var(--radius-sm);
+    overflow: hidden; aspect-ratio: 4 / 3; background: var(--bg-soft);
+  }
+  .gallery__item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+  .gallery__item:hover img { transform: scale(1.06); }
+  @media (max-width: 800px) { .gallery { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .gallery { grid-template-columns: 1fr; } }
+
+  .lightbox {
+    position: fixed; inset: 0; z-index: 100; background: rgba(10, 13, 17, 0.92);
+    display: grid; place-items: center; padding: 30px;
+  }
+  .lightbox[hidden] { display: none; }
+  .lightbox__img { max-width: 90vw; max-height: 85vh; border-radius: 8px; box-shadow: var(--shadow-lg); }
+  .lightbox__close, .lightbox__nav {
+    position: absolute; background: rgba(255,255,255,0.12); color: #fff; border: none;
+    width: 52px; height: 52px; border-radius: 50%; font-size: 2rem; cursor: pointer; line-height: 1;
+  }
+  .lightbox__close:hover, .lightbox__nav:hover { background: var(--accent); }
+  .lightbox__close { top: 24px; right: 24px; }
+  .lightbox__prev { left: 24px; top: 50%; transform: translateY(-50%); }
+  .lightbox__next { right: 24px; top: 50%; transform: translateY(-50%); }
+</style>
+
+<script>
+  const items = Array.from(document.querySelectorAll<HTMLButtonElement>('.gallery__item'));
+  const srcs = items.map((it) => {
+    const img = it.querySelector('img');
+    return img?.currentSrc || img?.src || '';
+  });
+  const lb = document.getElementById('lightbox')!;
+  const lbImg = document.getElementById('lightbox-img') as HTMLImageElement;
+  let idx = 0;
+
+  function open(i: number) {
+    idx = i;
+    lbImg.src = srcs[idx];
+    lb.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  function close() { lb.hidden = true; document.body.style.overflow = ''; }
+  function show(delta: number) { idx = (idx + delta + srcs.length) % srcs.length; lbImg.src = srcs[idx]; }
+
+  items.forEach((it, i) => it.addEventListener('click', () => open(i)));
+  lb.querySelector('.lightbox__close')!.addEventListener('click', close);
+  lb.querySelector('.lightbox__prev')!.addEventListener('click', (e) => { e.stopPropagation(); show(-1); });
+  lb.querySelector('.lightbox__next')!.addEventListener('click', (e) => { e.stopPropagation(); show(1); });
+  lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
+  document.addEventListener('keydown', (e) => {
+    if (lb.hidden) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') show(-1);
+    if (e.key === 'ArrowRight') show(1);
+  });
+</script>

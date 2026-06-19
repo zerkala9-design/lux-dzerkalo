@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CallbackForm from '../components/CallbackForm.astro';
+
+const services = [
+  { title: 'Виготовлення дзеркал', text: 'Дзеркала будь-якої форми та розміру за вашими ескізами: прямокутні, овальні, фігурні, з вирізами.' },
+  { title: 'Обробка кромки та фацет', text: 'Шліфування, поліровка кромки та фацет від 5 до 30 мм. Свердління отворів під кріплення й фурнітуру.' },
+  { title: 'LED-підсвітка', text: 'Інтеграція світлодіодної підсвітки, сенсорних вмикачів, антизапотівання та регулювання яскравості.' },
+  { title: 'Заміри', text: 'Виїзд майстра на об’єкт, точні заміри та консультація щодо оптимального рішення.' },
+  { title: 'Монтаж дзеркал', text: 'Професійна установка дзеркал, плитки та панно на стіни й стелі. Безпечне кріплення великих полотен.' },
+  { title: 'Демонтаж', text: 'Акуратний демонтаж старих дзеркал і дзеркальних конструкцій без пошкодження стін.' },
+  { title: 'Хореографічні станки', text: 'Виготовлення та монтаж балетних станків — настінних і підлогових, одно- та дворівневих.' },
+  { title: 'Вироби зі скла', text: 'Скляні фартухи (скіналі), полиці, стільниці, перегородки із загартованого скла 4–10 мм.' },
+];
+
+const faq = [
+  { q: 'Скільки коштує дзеркало на замовлення?', a: 'Вартість залежить від розміру, товщини, типу обробки кромки та додаткових опцій (підсвітка, антизапотівання). Точну ціну називаємо після замірів — прорахунок безкоштовний.' },
+  { q: 'Скільки часу займає виготовлення?', a: 'Стандартні замовлення виготовляємо за 2–5 робочих днів. Складні панно та великі проєкти — за індивідуальним графіком.' },
+  { q: 'Чи виконуєте монтаж?', a: 'Так, ми робимо повний цикл «під ключ»: заміри, виготовлення, доставку та професійний монтаж власною бригадою.' },
+  { q: 'У яких районах Києва ви працюєте?', a: 'Працюємо по всьому Києву та області. Виїзд на заміри узгоджуємо за телефоном.' },
+];
+
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+---
+
+<BaseLayout
+  title="Послуги: виготовлення та монтаж дзеркал"
+  description="Послуги Lux Zerkalo у Києві: виготовлення дзеркал, обробка кромки та фацет, LED-підсвітка, заміри, монтаж і демонтаж, хореографічні станки, вироби зі скла."
+  jsonLd={faqLd}
+>
+  <section class="page-head">
+    <div class="container">
+      <nav class="crumbs"><a href="/">Головна</a> / <span>Послуги</span></nav>
+      <h1>Послуги</h1>
+      <p>Повний цикл робіт з дзеркалом та склом — від замірів до монтажу «під ключ».</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid--3">
+        {services.map((s) => (
+          <div class="svc">
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--soft">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <span class="eyebrow">Питання та відповіді</span>
+        <h2>Часті запитання</h2>
+      </div>
+      <div class="faq">
+        {faq.map((f) => (
+          <details class="faq__item">
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CallbackForm />
+</BaseLayout>
+
+<style>
+  .page-head { padding: clamp(40px, 6vw, 72px) 0; background: var(--bg-soft); }
+  .crumbs { font-size: 0.88rem; color: var(--muted); margin-bottom: 1rem; }
+  .crumbs a { color: var(--ink-soft); }
+  .page-head p { color: var(--ink-soft); max-width: 60ch; font-size: 1.08rem; }
+
+  .svc { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 26px 24px; }
+  .svc h3 { font-size: 1.2rem; }
+  .svc p { color: var(--ink-soft); font-size: 0.97rem; margin: 0; }
+
+  .faq { max-width: 800px; margin-inline: auto; display: grid; gap: 12px; }
+  .faq__item { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 4px 22px; }
+  .faq__item summary { cursor: pointer; font-weight: 600; padding: 16px 0; list-style: none; font-size: 1.05rem; }
+  .faq__item summary::-webkit-details-marker { display: none; }
+  .faq__item summary::after { content: '+'; float: right; color: var(--accent); font-size: 1.4rem; line-height: 1; }
+  .faq__item[open] summary::after { content: '−'; }
+  .faq__item p { color: var(--ink-soft); padding-bottom: 18px; margin: 0; }
+</style>

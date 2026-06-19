@@ -1,0 +1,81 @@
+---
+import { getCollection } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import CallbackForm from '../../components/CallbackForm.astro';
+import { categories, getCategoryBySlug } from '../../data/categories';
+
+export const getStaticPaths = (async () => {
+  return categories.map((c) => ({ params: { slug: c.slug } }));
+}) satisfies GetStaticPaths;
+
+const { slug } = Astro.params;
+const category = getCategoryBySlug(slug!)!;
+
+const products = (await getCollection('products'))
+  .filter((p) => p.data.category === category.key)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const breadcrumbsLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Головна', item: 'https://lux-zerkalo.com.ua/' },
+    { '@type': 'ListItem', position: 2, name: 'Каталог', item: 'https://lux-zerkalo.com.ua/katalog/' },
+    { '@type': 'ListItem', position: 3, name: category.title, item: `https://lux-zerkalo.com.ua/katalog/${category.slug}/` },
+  ],
+};
+---
+
+<BaseLayout title={category.title} description={category.description} jsonLd={breadcrumbsLd}>
+  <section class="page-head">
+    <div class="container">
+      <nav class="crumbs">
+        <a href="/">Головна</a> / <a href="/katalog/">Каталог</a> / <span>{category.title}</span>
+      </nav>
+      <h1>{category.title}</h1>
+      <p>{category.description}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="chips">
+        {categories.map((c) => (
+          <a href={`/katalog/${c.slug}/`} class:list={['chip', { active: c.slug === category.slug }]}>
+            {c.title}
+          </a>
+        ))}
+      </div>
+
+      {products.length > 0 ? (
+        <div class="grid grid--3" style="margin-top: 2.5rem;">
+          {products.map((p) => <ProductCard product={p} />)}
+        </div>
+      ) : (
+        <p style="margin-top:2rem;">
+          Товари цієї категорії виготовляємо індивідуально — <a href="#zayavka">залиште заявку</a>,
+          і ми підготуємо пропозицію.
+        </p>
+      )}
+    </div>
+  </section>
+
+  <CallbackForm />
+</BaseLayout>
+
+<style>
+  .page-head { padding: clamp(40px, 6vw, 72px) 0 0; background: var(--bg-soft); }
+  .page-head .container { padding-bottom: clamp(40px, 6vw, 72px); }
+  .crumbs { font-size: 0.88rem; color: var(--muted); margin-bottom: 1rem; }
+  .crumbs a { color: var(--ink-soft); }
+  .page-head p { color: var(--ink-soft); max-width: 65ch; font-size: 1.08rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip {
+    padding: 0.5em 1.1em; border-radius: 999px; border: 1.5px solid var(--line);
+    color: var(--ink); font-size: 0.92rem; font-weight: 500; background: #fff;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--accent-dark); }
+  .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+</style>
