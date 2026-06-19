@@ -5,6 +5,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { site, siteText } from '../data/site';
 import { getLangFromUrl } from '../i18n/ui';
+import Analytics from '../components/Analytics.astro';
 
 interface Props {
   title?: string;
@@ -46,6 +47,9 @@ const allLd = jsonLd ? [orgLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])] :
 <html lang={htmlLang}>
   <head>
     <Seo title={title} description={description} image={image} jsonLd={allLd} noindex={noindex} alternates={alternates} />
+    {site.analytics.googleSiteVerification && (
+      <meta name="google-site-verification" content={site.analytics.googleSiteVerification} />
+    )}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -53,6 +57,7 @@ const allLd = jsonLd ? [orgLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])] :
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
+    <Analytics />
   </head>
   <body>
     <Header />

@@ -23,6 +23,11 @@ export const site = {
     lat: 50.4399,
     lng: 30.4408,
   },
+  analytics: {
+    // Вставте ID — і аналітика увімкнеться автоматично.
+    ga4: '',                    // напр. 'G-XXXXXXXXXX' (Google Analytics 4)
+    googleSiteVerification: '', // код підтвердження Google Search Console (meta-тег)
+  },
 };
 
 // Локалізовані рядки про компанію
