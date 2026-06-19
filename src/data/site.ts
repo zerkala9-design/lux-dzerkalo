@@ -17,7 +17,7 @@ export const site = {
     { display: '097 177 25 77', tel: '+380971772577' },
     { display: '099 528 36 37', tel: '+380995283637' },
   ],
-  workingHours: 'Пн–Сб: 9:00 – 19:00',
+  workingHours: 'Пн–Сб: 10:00 – 18:00',
   social: {
     // За потреби додайте посилання на соцмережі
     instagram: '',
