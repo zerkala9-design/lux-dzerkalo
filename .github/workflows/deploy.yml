@@ -1,0 +1,43 @@
+name: Build & Deploy to hosting (FTP)
+
+# Збирає сайт і заливає на хостинг (adm.tools / ukraine.com.ua) по FTP.
+# Потрібні секрети репозиторію (Settings → Secrets and variables → Actions):
+#   FTP_SERVER     — адреса FTP-сервера (напр. 185.104.45.94 або ftp.lux-zerkalo.com.ua)
+#   FTP_USERNAME   — логін FTP-користувача
+#   FTP_PASSWORD   — пароль FTP-користувача
+#   FTP_SERVER_DIR — (необов'язково) шлях до кореня сайту, напр. "/lux-zerkalo.com.ua/www/"
+#                    якщо не задано — заливається в домашню теку FTP ("./")
+
+on:
+  push:
+    branches: [main, claude/brave-clarke-vm26lr]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          local-dir: ./dist/
+          server-dir: ${{ secrets.FTP_SERVER_DIR || './' }}
+          dangerous-clean-slate: false

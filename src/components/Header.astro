@@ -22,7 +22,6 @@ const altRu = altUk === '/' ? '/ru/' : `/ru${altUk}`;
       <span class="brand__mark"><span class="brand__mono">L<span>D</span></span></span>
       <span class="brand__text">
         <strong><span class="brand__lux">Lux</span> Dzerkalo</strong>
-        <small>{t('header.brandSub')}</small>
       </span>
     </a>
 
@@ -109,7 +108,7 @@ const altRu = altUk === '/' ? '/ru/' : `/ru${altUk}`;
   }
   .brand__mono span { color: var(--accent); }
   .brand__text { display: flex; flex-direction: column; line-height: 1.05; }
-  .brand__text strong { font-family: var(--serif); font-size: 1.32rem; font-weight: 600; color: var(--ink); letter-spacing: 0.3px; }
+  .brand__text strong { font-family: var(--serif); font-size: 1.32rem; font-weight: 600; color: var(--ink); letter-spacing: 0.3px; white-space: nowrap; }
   .brand__lux { color: var(--accent-dark); }
   .brand__text small { color: var(--muted); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.22em; margin-top: 3px; }
 
