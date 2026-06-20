@@ -19,7 +19,7 @@ const socials = [
   <div class="container site-footer__grid">
     <div>
       <div class="brand__text">
-        <strong>Lux Dzerkalo</strong>
+        <strong><span class="brand__lux">Lux</span> Dzerkalo</strong>
         <small>{t('site.tagline')}</small>
       </div>
       <p class="footer-about">{t('footer.about')}</p>
@@ -78,6 +78,7 @@ const socials = [
   .site-footer a { color: #aeb6c0; }
   .site-footer a:hover { color: var(--accent); }
   .brand__text strong { color: #fff; font-family: var(--serif); font-size: 1.4rem; display: block; }
+  .brand__text strong .brand__lux { color: var(--accent); }
   .brand__text small { color: var(--accent); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; }
   .footer-about { margin-top: 1rem; font-size: 0.95rem; max-width: 32ch; }
   .footer-social { display: flex; gap: 16px; margin-top: 1rem; }

@@ -19,9 +19,9 @@ const altRu = altUk === '/' ? '/ru/' : `/ru${altUk}`;
 <header class="site-header">
   <div class="container site-header__inner">
     <a href={localizePath('/', lang)} class="brand" aria-label={site.name}>
-      <span class="brand__mark">L<span>D</span></span>
+      <span class="brand__mark"><span class="brand__mono">L<span>D</span></span></span>
       <span class="brand__text">
-        <strong>Lux Dzerkalo</strong>
+        <strong><span class="brand__lux">Lux</span> Dzerkalo</strong>
         <small>{t('header.brandSub')}</small>
       </span>
     </a>
@@ -80,18 +80,38 @@ const altRu = altUk === '/' ? '/ru/' : `/ru${altUk}`;
     border-bottom: 1px solid var(--line);
   }
   .site-header__inner { display: flex; align-items: center; gap: 24px; min-height: 74px; }
-  .brand { display: flex; align-items: center; gap: 12px; margin-right: auto; }
+  .brand { display: flex; align-items: center; gap: 14px; margin-right: auto; }
   .brand__mark {
-    width: 46px; height: 46px; border-radius: 12px;
+    position: relative;
+    width: 50px; height: 50px; border-radius: 13px;
     display: inline-flex; align-items: center; justify-content: center;
-    background: linear-gradient(135deg, #1a1f26, #2c333d);
-    color: #fff; font-family: var(--serif); font-weight: 700; font-size: 1.3rem;
-    line-height: 1; letter-spacing: 0.5px;
+    background: linear-gradient(150deg, #222a34 0%, #11161c 100%);
+    box-shadow: 0 4px 14px rgba(17, 22, 28, 0.28);
+    overflow: hidden;
+    flex-shrink: 0;
   }
-  .brand__mark span { color: var(--accent); }
-  .brand__text { display: flex; flex-direction: column; line-height: 1.1; }
-  .brand__text strong { font-family: var(--serif); font-size: 1.2rem; color: var(--ink); }
-  .brand__text small { color: var(--muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; }
+  /* тонка золота рамка — як у дзеркала */
+  .brand__mark::before {
+    content: ''; position: absolute; inset: 4px;
+    border: 1px solid rgba(184, 146, 63, 0.55);
+    border-radius: 8px; pointer-events: none;
+  }
+  /* делікатний полиск зверху */
+  .brand__mark::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0));
+    pointer-events: none;
+  }
+  .brand__mono {
+    position: relative; z-index: 1;
+    font-family: var(--serif); font-weight: 700; font-size: 1.32rem;
+    line-height: 1; letter-spacing: 1px; color: #f3ede0;
+  }
+  .brand__mono span { color: var(--accent); }
+  .brand__text { display: flex; flex-direction: column; line-height: 1.05; }
+  .brand__text strong { font-family: var(--serif); font-size: 1.32rem; font-weight: 600; color: var(--ink); letter-spacing: 0.3px; }
+  .brand__lux { color: var(--accent-dark); }
+  .brand__text small { color: var(--muted); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.22em; margin-top: 3px; }
 
   .site-nav { display: flex; align-items: center; gap: 28px; }
   .site-nav__link { color: var(--ink); font-weight: 500; font-size: 0.98rem; position: relative; }
