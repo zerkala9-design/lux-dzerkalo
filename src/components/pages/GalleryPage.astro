@@ -31,7 +31,7 @@ const images = Object.entries(modules)
       <div class="gallery">
         {images.map((img, i) => (
           <button class="gallery__item" data-index={i} aria-label={`${t('gallery.title')} ${i + 1}`}>
-            <Image src={img} alt={`Lux Zerkalo — ${i + 1}`} width={500} height={375} loading={i < 6 ? 'eager' : 'lazy'} />
+            <Image src={img} alt={`Lux Dzerkalo — ${i + 1}`} width={760} height={570} loading={i < 6 ? 'eager' : 'lazy'} />
           </button>
         ))}
       </div>
@@ -53,8 +53,8 @@ const images = Object.entries(modules)
   .crumbs { font-size: 0.88rem; color: var(--muted); margin-bottom: 1rem; }
   .crumbs a { color: var(--ink-soft); }
   .page-head p { color: var(--ink-soft); max-width: 60ch; font-size: 1.08rem; }
-  .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .gallery__item { padding: 0; border: none; cursor: pointer; border-radius: var(--radius-sm); overflow: hidden; aspect-ratio: 4 / 3; background: var(--bg-soft); }
+  .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .gallery__item { padding: 0; border: none; cursor: pointer; border-radius: 0; overflow: hidden; aspect-ratio: 4 / 3; background: var(--bg-soft); }
   .gallery__item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
   .gallery__item:hover img { transform: scale(1.06); }
   @media (max-width: 800px) { .gallery { grid-template-columns: repeat(2, 1fr); } }

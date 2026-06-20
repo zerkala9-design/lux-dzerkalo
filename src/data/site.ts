@@ -2,8 +2,8 @@
 import type { Lang, UIKey } from '../i18n/ui';
 
 export const site = {
-  name: 'Lux Zerkalo',
-  legalName: 'Lux Zerkalo',
+  name: 'Lux Dzerkalo',
+  legalName: 'Lux Dzerkalo',
   url: 'https://lux-zerkalo.com.ua',
   email: 'info-plitka@ukr.net',
   address: 'вул. Вадима Гетьмана, 27',
