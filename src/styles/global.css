@@ -58,7 +58,7 @@ img { max-width: 100%; display: block; }
   padding-inline: 20px;
 }
 
-.section { padding: clamp(48px, 7vw, 96px) 0; }
+.section { padding: clamp(32px, 4vw, 60px) 0; }
 .section--soft { background: var(--bg-soft); }
 .section--dark { background: var(--bg-dark); color: #d7dde4; }
 .section--dark h1, .section--dark h2, .section--dark h3 { color: #fff; }
