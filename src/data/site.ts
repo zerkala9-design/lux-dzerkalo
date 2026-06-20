@@ -5,7 +5,7 @@ export const site = {
   name: 'Lux Zerkalo',
   legalName: 'Lux Zerkalo',
   url: 'https://lux-zerkalo.com.ua',
-  email: 'zerkala-@ukr.net',
+  email: 'info-plitka@ukr.net',
   address: 'вул. Вадима Гетьмана, 27',
   // Телефони у форматі для відображення та для tel:
   phones: [
@@ -15,7 +15,7 @@ export const site = {
   social: {
     // Додайте посилання на профілі — і вони з'являться у шапці, футері та контактах.
     instagram: 'https://www.instagram.com/dzerkala_kyiv/',
-    facebook: '',
+    facebook: 'https://www.facebook.com/people/%D0%94%D0%B7%D0%B5%D1%80%D0%BA%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0-%D0%BF%D0%BB%D0%B8%D1%82%D0%BA%D0%B0-%D0%9A%D0%B8%D1%97%D0%B2/100070678067112/',
     telegram: '',
     viber: 'viber://chat?number=+380971772577',
   },
