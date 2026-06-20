@@ -9,6 +9,7 @@ DirectoryIndex index.html
   RewriteEngine On
   # виняток для перевірки Let's Encrypt (ACME) — не редиректити на https
   RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
   RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/ [NC]
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
   # без www
