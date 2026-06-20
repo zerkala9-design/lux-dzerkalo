@@ -1,0 +1,171 @@
+# ===== Lux Zerkalo — Apache (.htaccess) =====
+# Згенеровано автоматично. Кладеться в корінь сайту (public_html).
+
+Options -Indexes
+DirectoryIndex index.html
+
+# --- Примусовий HTTPS ---
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+  # без www
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+</IfModule>
+
+# --- Заголовки безпеки ---
+<IfModule mod_headers.c>
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+  Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; frame-src https://maps.google.com https://www.google.com https://maps.googleapis.com; connect-src 'self' https://www.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; form-action 'self' mailto:; base-uri 'self'; object-src 'none'"
+</IfModule>
+
+# --- Кешування статики ---
+<IfModule mod_headers.c>
+  <FilesMatch "\.(webp|avif|jpg|jpeg|png|gif|svg|css|js|woff2)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>
+
+# --- Стиснення ---
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json application/xml image/svg+xml
+</IfModule>
+
+# ===== 301-редиректи зі старого сайту =====
+<IfModule mod_alias.c>
+  RedirectMatch 301 "^/ru/glavnaja\.html$" "/ru/"
+  RedirectMatch 301 "^/ua/golovna\.html$" "/"
+  RedirectMatch 301 "^/index\.html$" "/"
+  RedirectMatch 301 "^/ua/poslugi\.html$" "/poslugy/"
+  RedirectMatch 301 "^/ua/kontakti_ua\.html$" "/kontakty/"
+  RedirectMatch 301 "^/ua/zamoviti-zvorotniy-dzvinok\.html$" "/kontakty/"
+  RedirectMatch 301 "^/ua/zamoviti-rozrahunok-vartosti\.html$" "/kontakty/"
+  RedirectMatch 301 "^/ua/prays-list_ua\.html$" "/katalog/"
+  RedirectMatch 301 "^/ua/gotovi-dzerkala\.html$" "/katalog/"
+  RedirectMatch 301 "^/ua/dzerkala-dlya-vannoyi-kimnati\.html$" "/katalog/dzerkala-dlya-vannoyi/"
+  RedirectMatch 301 "^/ua/dzerkala-dlya-sportzaliv\.html$" "/katalog/dzerkala-dlya-sportzaliv/"
+  RedirectMatch 301 "^/ua/horeografichni-stanki\.html$" "/katalog/dzerkala-dlya-sportzaliv/"
+  RedirectMatch 301 "^/ua/dzerkalna-plitka\.html$" "/katalog/dzerkalna-plitka/"
+  RedirectMatch 301 "^/ua/dzerkalna-plitka_main\.html$" "/katalog/dzerkalna-plitka/"
+  RedirectMatch 301 "^/ua/dzerkalni-panno\.html$" "/katalog/dzerkalni-panno/"
+  RedirectMatch 301 "^/ua/dzerkalne-panno-_montaj_\.html$" "/katalog/dzerkalni-panno/"
+  RedirectMatch 301 "^/ua/dzerkalo-z-fatsetom\.html$" "/katalog/dzerkala-z-fatsetom/"
+  RedirectMatch 301 "^/ua/dzerkala-v-inter_eri\.html$" "/katalog/dzerkala-v-interyeri/"
+  RedirectMatch 301 "^/ua/sklo\.html$" "/katalog/"
+  RedirectMatch 301 "^/ua/sklo/" "/katalog/"
+  RedirectMatch 301 "^/ua/statti/dzerkala-dlya-vann-kiyiv_ss\.html$" "/statti/dzerkala-dlya-vann-kiyiv/"
+  RedirectMatch 301 "^/ua/statti/dzerkala-na-zamovlennya-v-kievi_ss\.html$" "/statti/dzerkala-na-zamovlennya-v-kievi/"
+  RedirectMatch 301 "^/ua/statti/dzerkalna-plitka-v-inter_eri_ss\.html$" "/statti/dzerkalna-plitka-v-inter_eri/"
+  RedirectMatch 301 "^/ua/statti/dzerkalne-panno-v-ukrayini---stilniy-ta-funktsionalniy-element_ss\.html$" "/statti/dzerkalne-panno-v-ukrayini---stilniy-ta-funktsionalniy-element/"
+  RedirectMatch 301 "^/ua/statti/dzerkalo-u-vannu-kimnatu-kiyiv_ss\.html$" "/statti/dzerkalo-u-vannu-kimnatu-kiyiv/"
+  RedirectMatch 301 "^/ua/statti/dzerkalo-u-vannu-kimnatu-kupiti-v-kievi_ss\.html$" "/statti/dzerkalo-u-vannu-kimnatu-kupiti-v-kievi/"
+  RedirectMatch 301 "^/ua/statti/stilni-ta-praktichni-dzerkala-dlya-tantsyuvalnogo-zalu_ss\.html$" "/statti/stilni-ta-praktichni-dzerkala-dlya-tantsyuvalnogo-zalu/"
+  RedirectMatch 301 "^/ua/statti/vanne-dzerkalo-kupiti-_kiyiv__ss\.html$" "/statti/vanne-dzerkalo-kupiti-_kiyiv_/"
+  RedirectMatch 301 "^/ua/statti/zamoviti-dzerkalo-_kiyiv__ss\.html$" "/statti/zamoviti-dzerkalo-_kiyiv_/"
+  RedirectMatch 301 "^/ua/statti/" "/statti/"
+  RedirectMatch 301 "^/ua/" "/"
+  RedirectMatch 301 "^/ru/uslugi\.html$" "/ru/poslugy/"
+  RedirectMatch 301 "^/ru/kontakti\.html$" "/ru/kontakty/"
+  RedirectMatch 301 "^/ru/zakazat-obratniy-zvonok\.html$" "/ru/kontakty/"
+  RedirectMatch 301 "^/ru/zakazat-proschet-stoimosti\.html$" "/ru/kontakty/"
+  RedirectMatch 301 "^/ru/prajs-list\.html$" "/ru/katalog/"
+  RedirectMatch 301 "^/ru/gotovie_zerkala\.html$" "/ru/katalog/"
+  RedirectMatch 301 "^/ru/zerkala_dlja_vannoj_komnati\.html$" "/ru/katalog/dzerkala-dlya-vannoyi/"
+  RedirectMatch 301 "^/ru/zerkala-s-led-podsvetkoy\.html$" "/ru/katalog/dzerkala-z-led-pidsvitkoyu/"
+  RedirectMatch 301 "^/ru/zerkala_s_facetom\.html$" "/ru/katalog/dzerkala-z-fatsetom/"
+  RedirectMatch 301 "^/ru/zerkalnaja_plitka_new\.html$" "/ru/katalog/dzerkalna-plitka/"
+  RedirectMatch 301 "^/ru/primeri_rabot_panno\.html$" "/ru/katalog/dzerkalni-panno/"
+  RedirectMatch 301 "^/ru/zerkalnoe_panno_\(montaj\)\.html$" "/ru/katalog/dzerkalni-panno/"
+  RedirectMatch 301 "^/ru/zerkala_dlja_sportzalov\.html$" "/ru/katalog/dzerkala-dlya-sportzaliv/"
+  RedirectMatch 301 "^/ru/horeograficheskie_stanki\.html$" "/ru/katalog/dzerkala-dlya-sportzaliv/"
+  RedirectMatch 301 "^/ru/zerkala_v_interere\.html$" "/ru/katalog/dzerkala-v-interyeri/"
+  RedirectMatch 301 "^/ru/zerkala_v_gostinuy\.html$" "/ru/katalog/dzerkala-v-interyeri/"
+  RedirectMatch 301 "^/ru/zerkala_v_spalny\.html$" "/ru/katalog/dzerkala-v-interyeri/"
+  RedirectMatch 301 "^/ru/zerkala_v_prihojuy\.html$" "/ru/katalog/dzerkala-v-interyeri/"
+  RedirectMatch 301 "^/ru/zerkala_na_potolok\.html$" "/ru/katalog/dzerkala-v-interyeri/"
+  RedirectMatch 301 "^/ru/zerkala_dlja_detskoj_komnati\.html$" "/ru/katalog/dzerkala-v-interyeri/"
+  RedirectMatch 301 "^/ru/zerkala_dlja_doma\.html$" "/ru/katalog/dzerkala-v-interyeri/"
+  RedirectMatch 301 "^/ru/zerkalnij_fen-shuj\.html$" "/ru/katalog/dzerkala-v-interyeri/"
+  RedirectMatch 301 "^/ru/izdelija_iz_stekla\.html$" "/ru/katalog/"
+  RedirectMatch 301 "^/ru/steklo/" "/ru/katalog/"
+  RedirectMatch 301 "^/ru/fotogalereja\.html$" "/ru/halereya/"
+  RedirectMatch 301 "^/ru/fotogalereja/" "/ru/halereya/"
+  RedirectMatch 301 "^/ru/stati/2017/04/gde-kupit-zerkalnuyu-plitku_ss\.html$" "/ru/statti/2017_04_gde-kupit-zerkalnuyu-plitku/"
+  RedirectMatch 301 "^/ru/stati/2017/04/kupit-zerkalnuyu-plitku-nedorogo_ss\.html$" "/ru/statti/2017_04_kupit-zerkalnuyu-plitku-nedorogo/"
+  RedirectMatch 301 "^/ru/stati/2017/04/steklo-s-fatsetom_ss\.html$" "/ru/statti/2017_04_steklo-s-fatsetom/"
+  RedirectMatch 301 "^/ru/stati/2017/04/zerkalnaya-potolochnaya-plitka-kupit_ss\.html$" "/ru/statti/2017_04_zerkalnaya-potolochnaya-plitka-kupit/"
+  RedirectMatch 301 "^/ru/stati/2017/04/zerkalnye-plitki-na-stenu-kupit_ss\.html$" "/ru/statti/2017_04_zerkalnye-plitki-na-stenu-kupit/"
+  RedirectMatch 301 "^/ru/stati/2017/09/vannoe-zerkalo-kupit-_kiev__ss\.html$" "/ru/statti/2017_09_vannoe-zerkalo-kupit-_kiev_/"
+  RedirectMatch 301 "^/ru/stati/2017/09/zakazat-zerkalo-_kiev__ss\.html$" "/ru/statti/2017_09_zakazat-zerkalo-_kiev_/"
+  RedirectMatch 301 "^/ru/stati/2017/09/zerkala-dlya-vann-kiev_ss\.html$" "/ru/statti/2017_09_zerkala-dlya-vann-kiev/"
+  RedirectMatch 301 "^/ru/stati/2017/09/zerkalo-v-vannuyu-komnatu-kiev_ss\.html$" "/ru/statti/2017_09_zerkalo-v-vannuyu-komnatu-kiev/"
+  RedirectMatch 301 "^/ru/stati/2017/09/zerkalo-v-vannuyu-komnatu-kupit-v-kieve_ss\.html$" "/ru/statti/2017_09_zerkalo-v-vannuyu-komnatu-kupit-v-kieve/"
+  RedirectMatch 301 "^/ru/stati/2017/izgotovit-zerkalo-pod-zakaz_ss\.html$" "/ru/statti/2017_izgotovit-zerkalo-pod-zakaz/"
+  RedirectMatch 301 "^/ru/stati/2017/izgotovlenie-zerkal-na-zakaz_ss\.html$" "/ru/statti/2017_izgotovlenie-zerkal-na-zakaz/"
+  RedirectMatch 301 "^/ru/stati/2017/zerkalnaya-plitka-tsena-za-1-kv-metr_ss\.html$" "/ru/statti/2017_zerkalnaya-plitka-tsena-za-1-kv-metr/"
+  RedirectMatch 301 "^/ru/stati/2017/zerkalo-dlya-vanny-pod-zakaz\.html$" "/ru/statti/2017_zerkalo-dlya-vanny-pod-zakaz/"
+  RedirectMatch 301 "^/ru/stati/2017/zerkalo-plitka-kupit_ss\.html$" "/ru/statti/2017_zerkalo-plitka-kupit/"
+  RedirectMatch 301 "^/ru/stati/2023/stilnye-i-praktichnye-zerkala-dlya-tantsevalnogo-zala_ss\.html$" "/ru/statti/2023_stilnye-i-praktichnye-zerkala-dlya-tantsevalnogo-zala/"
+  RedirectMatch 301 "^/ru/stati/2023/zerkala-pod-zakaz-v-kieve_ss\.html$" "/ru/statti/2023_zerkala-pod-zakaz-v-kieve/"
+  RedirectMatch 301 "^/ru/stati/2023/zerkalnaya-plitka-v-interere_ss\.html$" "/ru/statti/2023_zerkalnaya-plitka-v-interere/"
+  RedirectMatch 301 "^/ru/stati/2023/zerkalnoe-panno-v-ukraine---stilniy-i-funktsionalniy-element_ss\.html$" "/ru/statti/2023_zerkalnoe-panno-v-ukraine---stilniy-i-funktsionalniy-element/"
+  RedirectMatch 301 "^/ru/stati/fartuk-s-fotopechatyu-na-kuhnyu_ss\.html$" "/ru/statti/fartuk-s-fotopechatyu-na-kuhnyu/"
+  RedirectMatch 301 "^/ru/stati/izgotovlenie-zerkalnoy-plitki_ss\.html$" "/ru/statti/izgotovlenie-zerkalnoy-plitki/"
+  RedirectMatch 301 "^/ru/stati/izgotovlenie_zerkal\.html$" "/ru/statti/izgotovlenie_zerkal/"
+  RedirectMatch 301 "^/ru/stati/kupit_zerkala_dlja_tancevalnogo_zala_ss\.html$" "/ru/statti/kupit_zerkala_dlja_tancevalnogo_zala/"
+  RedirectMatch 301 "^/ru/stati/nestandartnie_zerkala\.html$" "/ru/statti/nestandartnie_zerkala/"
+  RedirectMatch 301 "^/ru/stati/obrabotka-stekla-_polirovka-stekla_-shlifovka-stekla__ss\.html$" "/ru/statti/obrabotka-stekla-_polirovka-stekla_-shlifovka-stekla_/"
+  RedirectMatch 301 "^/ru/stati/obychnye-zerkala\.html$" "/ru/statti/obychnye-zerkala/"
+  RedirectMatch 301 "^/ru/stati/porezka-stekla_ss\.html$" "/ru/statti/porezka-stekla/"
+  RedirectMatch 301 "^/ru/stati/proizvodstvo-zerkalnoy-plitki_ss\.html$" "/ru/statti/proizvodstvo-zerkalnoy-plitki/"
+  RedirectMatch 301 "^/ru/stati/prozrachnie_okonnie_stekla_ss\.html$" "/ru/statti/prozrachnie_okonnie_stekla/"
+  RedirectMatch 301 "^/ru/stati/stekla_v_kieve_ss\.html$" "/ru/statti/stekla_v_kieve/"
+  RedirectMatch 301 "^/ru/stati/stekljannie_fartuki\.html$" "/ru/statti/stekljannie_fartuki/"
+  RedirectMatch 301 "^/ru/stati/steklo-4-mm_ss\.html$" "/ru/statti/steklo-4-mm/"
+  RedirectMatch 301 "^/ru/stati/steklo-lakobel_ss\.html$" "/ru/statti/steklo-lakobel/"
+  RedirectMatch 301 "^/ru/stati/uzorchatoe-steklo_ss\.html$" "/ru/statti/uzorchatoe-steklo/"
+  RedirectMatch 301 "^/ru/stati/zerkala-dekorativnye\.html$" "/ru/statti/zerkala-dekorativnye/"
+  RedirectMatch 301 "^/ru/stati/zerkala-dlya-sportzala-kupit_ss\.html$" "/ru/statti/zerkala-dlya-sportzala-kupit/"
+  RedirectMatch 301 "^/ru/stati/zerkala-dlya-sportzala-v-kieve_ss\.html$" "/ru/statti/zerkala-dlya-sportzala-v-kieve/"
+  RedirectMatch 301 "^/ru/stati/zerkala-dlya-sportzala_ss\.html$" "/ru/statti/zerkala-dlya-sportzala/"
+  RedirectMatch 301 "^/ru/stati/zerkala-dlya-sportzalov\.html$" "/ru/statti/zerkala-dlya-sportzalov/"
+  RedirectMatch 301 "^/ru/stati/zerkala-dlya-tantsev-i-dlya-sporta_ss\.html$" "/ru/statti/zerkala-dlya-tantsev-i-dlya-sporta/"
+  RedirectMatch 301 "^/ru/stati/zerkala-s-fatsetom-_zerkalnoe-panno_-zerkalnaya-plitka__ss\.html$" "/ru/statti/zerkala-s-fatsetom-_zerkalnoe-panno_-zerkalnaya-plitka_/"
+  RedirectMatch 301 "^/ru/stati/zerkala-v-fitnes-zal_-tsena_ss\.html$" "/ru/statti/zerkala-v-fitnes-zal_-tsena/"
+  RedirectMatch 301 "^/ru/stati/zerkala_na_zakaz_ss\.html$" "/ru/statti/zerkala_na_zakaz/"
+  RedirectMatch 301 "^/ru/stati/zerkala_pod_zakaz_ss\.html$" "/ru/statti/zerkala_pod_zakaz/"
+  RedirectMatch 301 "^/ru/stati/zerkala_s_facetom1\.html$" "/ru/statti/zerkala_s_facetom1/"
+  RedirectMatch 301 "^/ru/stati/zerkalnaja_plitka\.html$" "/ru/statti/zerkalnaja_plitka/"
+  RedirectMatch 301 "^/ru/stati/zerkalnaja_plitka_s_facetom_ss\.html$" "/ru/statti/zerkalnaja_plitka_s_facetom/"
+  RedirectMatch 301 "^/ru/stati/zerkalnaya-plitka-dlya-vannoy\.html$" "/ru/statti/zerkalnaya-plitka-dlya-vannoy/"
+  RedirectMatch 301 "^/ru/stati/zerkalnaya-plitka-na-potolok_ss\.html$" "/ru/statti/zerkalnaya-plitka-na-potolok/"
+  RedirectMatch 301 "^/ru/stati/zerkalnaya-plitka-na-stenu_ss\.html$" "/ru/statti/zerkalnaya-plitka-na-stenu/"
+  RedirectMatch 301 "^/ru/stati/zerkalnaya-plitka-romb_ss\.html$" "/ru/statti/zerkalnaya-plitka-romb/"
+  RedirectMatch 301 "^/ru/stati/zerkalnaya-plitka-s-fatsetom-kupit_ss\.html$" "/ru/statti/zerkalnaya-plitka-s-fatsetom-kupit/"
+  RedirectMatch 301 "^/ru/stati/zerkalnaya-plitka-s-fatsetom-tsena_ss\.html$" "/ru/statti/zerkalnaya-plitka-s-fatsetom-tsena/"
+  RedirectMatch 301 "^/ru/stati/zerkalnaya-plitka-tsena_ss\.html$" "/ru/statti/zerkalnaya-plitka-tsena/"
+  RedirectMatch 301 "^/ru/stati/zerkalnaya-plitka-v-interere_ss\.html$" "/ru/statti/zerkalnaya-plitka-v-interere/"
+  RedirectMatch 301 "^/ru/stati/zerkalnaya-plitka-v-spalne_ss\.html$" "/ru/statti/zerkalnaya-plitka-v-spalne/"
+  RedirectMatch 301 "^/ru/stati/zerkalnaya-plitka-v-vannuyu_ss\.html$" "/ru/statti/zerkalnaya-plitka-v-vannuyu/"
+  RedirectMatch 301 "^/ru/stati/zerkalnaya-plitka_ss\.html$" "/ru/statti/zerkalnaya-plitka/"
+  RedirectMatch 301 "^/ru/stati/zerkalnaya-potolochnaya-plitka_ss\.html$" "/ru/statti/zerkalnaya-potolochnaya-plitka/"
+  RedirectMatch 301 "^/ru/stati/zerkalnye-paneli-kupit_ss\.html$" "/ru/statti/zerkalnye-paneli-kupit/"
+  RedirectMatch 301 "^/ru/stati/zerkalnye-paneli-tsena_ss\.html$" "/ru/statti/zerkalnye-paneli-tsena/"
+  RedirectMatch 301 "^/ru/stati/zerkalo-dlya-biznesa\.html$" "/ru/statti/zerkalo-dlya-biznesa/"
+  RedirectMatch 301 "^/ru/stati/zerkalo-v-fitnes-zal_ss\.html$" "/ru/statti/zerkalo-v-fitnes-zal/"
+  RedirectMatch 301 "^/ru/stati/zerkalo-v-vannuyu\.html$" "/ru/statti/zerkalo-v-vannuyu/"
+  RedirectMatch 301 "^/ru/stati/zerkalo_kupit\.html$" "/ru/statti/zerkalo_kupit/"
+  RedirectMatch 301 "^/ru/stati/zerkalo_na_zakaz_kiev_ss\.html$" "/ru/statti/zerkalo_na_zakaz_kiev/"
+  RedirectMatch 301 "^/ru/stati/zerkalo_s_facetom\.html$" "/ru/statti/zerkalo_s_facetom/"
+  RedirectMatch 301 "^/ru/stati/" "/ru/statti/"
+  RedirectMatch 301 "^/ru/" "/ru/"
+  RedirectMatch 301 "^/sitemap\.xml$" "/sitemap-index.xml"
+</IfModule>
+
+# --- Сторінка 404 ---
+ErrorDocument 404 /404.html
