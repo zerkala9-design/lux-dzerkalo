@@ -25,7 +25,7 @@ export const site = {
   },
   analytics: {
     // Вставте ID — і аналітика увімкнеться автоматично.
-    ga4: '',                    // напр. 'G-XXXXXXXXXX' (Google Analytics 4)
+    ga4: 'G-R01V9DK2RZ',        // напр. 'G-XXXXXXXXXX' (Google Analytics 4)
     googleSiteVerification: '', // код підтвердження Google Search Console (meta-тег)
   },
 };
