@@ -8,6 +8,12 @@ const t = useTranslations(lang);
 const st = siteText(lang);
 const year = new Date().getFullYear();
 
+// Перемикач мови: той самий шлях у протилежній мові
+const current = Astro.url.pathname;
+const stripped = current.replace(/^\/ru(\/|$)/, '/');
+const altUk = stripped === '' ? '/' : stripped;
+const altRu = altUk === '/' ? '/ru/' : `/ru${altUk}`;
+
 const socials = [
   { name: 'Instagram', url: site.social.instagram },
   { name: 'Facebook', url: site.social.facebook },
@@ -65,6 +71,11 @@ const socials = [
 
   <div class="container site-footer__bottom">
     <span>© {year} {site.name}. {t('footer.rights')}</span>
+    <div class="footer-lang" aria-label="Language">
+      <a href={altUk} class:list={['footer-lang__opt', { active: lang === 'uk' }]} hreflang="uk-UA">UA</a>
+      <span class="footer-lang__sep">/</span>
+      <a href={altRu} class:list={['footer-lang__opt', { active: lang === 'ru' }]} hreflang="ru-RU">RU</a>
+    </div>
     <span>{st.addressFull}</span>
   </div>
 </footer>
@@ -85,9 +96,14 @@ const socials = [
   .footer-social a { font-weight: 600; color: #fff; }
   .footer-contacts a { font-weight: 600; color: #fff; }
   .site-footer__bottom {
-    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
     padding: 22px 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.85rem; color: #79828d;
   }
+  .footer-lang { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.95rem; }
+  .footer-lang__opt { color: #aeb6c0; padding: 2px 4px; }
+  .footer-lang__opt:hover { color: var(--accent); }
+  .footer-lang__opt.active { color: var(--accent); }
+  .footer-lang__sep { color: #4a525c; }
   @media (max-width: 800px) { .site-footer__grid { grid-template-columns: 1fr 1fr; gap: 30px; } }
   @media (max-width: 480px) { .site-footer__grid { grid-template-columns: 1fr; } }
 </style>

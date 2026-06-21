@@ -9,11 +9,6 @@ const isActive = (href: string) =>
   href === localizePath('/', lang) ? current === href || current === href.replace(/\/$/, '')
     : current.startsWith(href);
 const primaryPhone = site.phones[0];
-
-// Перемикач мови: той самий шлях у протилежній мові
-const stripped = current.replace(/^\/ru(\/|$)/, '/');
-const altUk = stripped === '' ? '/' : stripped;
-const altRu = altUk === '/' ? '/ru/' : `/ru${altUk}`;
 ---
 
 <header class="site-header">
@@ -39,11 +34,6 @@ const altRu = altUk === '/' ? '/ru/' : `/ru${altUk}`;
           </a>
         );
       })}
-      <div class="lang-switch lang-switch--menu" aria-label="Language">
-        <a href={altUk} class:list={['lang-switch__opt', { active: lang === 'uk' }]} hreflang="uk-UA">UA</a>
-        <span>/</span>
-        <a href={altRu} class:list={['lang-switch__opt', { active: lang === 'ru' }]} hreflang="ru-RU">RU</a>
-      </div>
     </nav>
 
     <div class="header-right">
@@ -68,11 +58,6 @@ const altRu = altUk === '/' ? '/ru/' : `/ru${altUk}`;
           </svg>
         </a>
       )}
-      <div class="lang-switch" aria-label="Language">
-        <a href={altUk} class:list={['lang-switch__opt', { active: lang === 'uk' }]} hreflang="uk-UA">UA</a>
-        <span>/</span>
-        <a href={altRu} class:list={['lang-switch__opt', { active: lang === 'ru' }]} hreflang="ru-RU">RU</a>
-      </div>
       <a href={`tel:${primaryPhone.tel}`} class="header-phone">
         <span class="header-phone__icon" aria-hidden="true">☎</span>
         {primaryPhone.display}
@@ -135,10 +120,6 @@ const altRu = altUk === '/' ? '/ru/' : `/ru${altUk}`;
   .header-right { display: flex; align-items: center; gap: 16px; }
   .header-ig { color: var(--ink-soft); display: inline-flex; }
   .header-ig:hover { color: var(--accent-dark); }
-  .lang-switch { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 0.92rem; font-weight: 600; }
-  .lang-switch__opt { color: var(--muted); }
-  .lang-switch__opt:hover { color: var(--accent-dark); }
-  .lang-switch__opt.active { color: var(--ink); }
 
   .header-phone {
     display: inline-flex; align-items: center; gap: 8px;
@@ -148,9 +129,8 @@ const altRu = altUk === '/' ? '/ru/' : `/ru${altUk}`;
   .header-phone:hover { border-color: var(--accent); color: var(--accent-dark); }
   .header-phone__icon { color: var(--accent); }
 
-  /* Іконка дзвінка (тільки моб.) та перемикач мови в меню — на десктопі сховані */
+  /* Іконка дзвінка — тільки моб. версія */
   .header-phone-mobile { display: none; color: var(--ink); }
-  .lang-switch--menu { display: none; }
 
   .burger { display: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 8px; }
   .burger span { width: 24px; height: 2px; background: var(--ink); border-radius: 2px; transition: 0.25s; }
@@ -158,8 +138,6 @@ const altRu = altUk === '/' ? '/ru/' : `/ru${altUk}`;
   @media (max-width: 900px) {
     .burger { display: flex; order: 3; }
     .header-phone { display: none; }
-    /* перемикач мови прибираємо зі шапки — він тепер у самому низу меню */
-    .header-right > .lang-switch { display: none; }
     /* іконка телефону для швидкого дзвінка */
     .header-phone-mobile {
       display: inline-flex; align-items: center; justify-content: center;
@@ -174,12 +152,6 @@ const altRu = altUk === '/' ? '/ru/' : `/ru${altUk}`;
     }
     .site-nav__link { padding: 16px 20px; border-top: 1px solid var(--line); }
     .site-nav__link::after { display: none; }
-    /* перемикач мови — останній пункт меню, по центру */
-    .lang-switch--menu {
-      display: flex; justify-content: center; gap: 10px;
-      padding: 18px 20px; border-top: 1px solid var(--line);
-      font-size: 1rem;
-    }
     .nav-toggle:checked ~ .site-nav { max-height: 70vh; }
     .nav-toggle:checked ~ .burger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
     .nav-toggle:checked ~ .burger span:nth-child(2) { opacity: 0; }
