@@ -21,9 +21,6 @@ const primaryPhone = site.phones[0];
     </a>
 
     <input type="checkbox" id="nav-toggle" class="nav-toggle" hidden />
-    <label for="nav-toggle" class="burger" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </label>
 
     <nav class="site-nav" aria-label="nav">
       {navItems.map((item) => {
@@ -37,11 +34,6 @@ const primaryPhone = site.phones[0];
     </nav>
 
     <div class="header-right">
-      <a href={`tel:${primaryPhone.tel}`} class="header-phone-mobile" aria-label="Зателефонувати">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
-          <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"></path>
-        </svg>
-      </a>
       {site.social.facebook && (
         <a href={site.social.facebook} class="header-ig" target="_blank" rel="noopener" aria-label="Facebook">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true">
@@ -62,6 +54,9 @@ const primaryPhone = site.phones[0];
         <span class="header-phone__icon" aria-hidden="true">☎</span>
         {primaryPhone.display}
       </a>
+      <label for="nav-toggle" class="burger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </label>
     </div>
   </div>
 </header>
@@ -129,21 +124,13 @@ const primaryPhone = site.phones[0];
   .header-phone:hover { border-color: var(--accent); color: var(--accent-dark); }
   .header-phone__icon { color: var(--accent); }
 
-  /* Іконка дзвінка — тільки моб. версія */
-  .header-phone-mobile { display: none; color: var(--ink); }
-
-  .burger { display: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 8px; }
+  /* Бургер живе в групі з іконками соцмереж */
+  .burger { display: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 4px; }
   .burger span { width: 24px; height: 2px; background: var(--ink); border-radius: 2px; transition: 0.25s; }
 
   @media (max-width: 900px) {
-    .burger { display: flex; order: 3; }
+    .burger { display: flex; }
     .header-phone { display: none; }
-    /* іконка телефону для швидкого дзвінка */
-    .header-phone-mobile {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 42px; height: 42px; border-radius: 999px;
-      border: 1.5px solid var(--line); color: var(--accent-dark);
-    }
     .site-nav {
       position: absolute; top: 74px; left: 0; right: 0;
       flex-direction: column; align-items: stretch; gap: 0;
@@ -153,8 +140,8 @@ const primaryPhone = site.phones[0];
     .site-nav__link { padding: 16px 20px; border-top: 1px solid var(--line); }
     .site-nav__link::after { display: none; }
     .nav-toggle:checked ~ .site-nav { max-height: 70vh; }
-    .nav-toggle:checked ~ .burger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    .nav-toggle:checked ~ .burger span:nth-child(2) { opacity: 0; }
-    .nav-toggle:checked ~ .burger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .nav-toggle:checked ~ .header-right .burger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-toggle:checked ~ .header-right .burger span:nth-child(2) { opacity: 0; }
+    .nav-toggle:checked ~ .header-right .burger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
   }
 </style>
