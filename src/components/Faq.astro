@@ -1,0 +1,72 @@
+---
+import type { FaqItem } from '../data/faq';
+
+interface Props {
+  items: FaqItem[];
+  heading?: string;
+  soft?: boolean;
+}
+const { items, heading, soft = false } = Astro.props;
+
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: items.map((it) => ({
+    '@type': 'Question',
+    name: it.q,
+    acceptedAnswer: { '@type': 'Answer', text: it.a },
+  })),
+};
+---
+
+{items.length > 0 && (
+  <section class:list={['section', 'faq', { 'section--soft': soft }]}>
+    <div class="container container--narrow">
+      {heading && (
+        <div class="section-head section-head--center">
+          <h2>{heading}</h2>
+        </div>
+      )}
+      <div class="faq__list">
+        {items.map((it) => (
+          <details class="faq__item">
+            <summary>
+              <span>{it.q}</span>
+              <span class="faq__mark" aria-hidden="true"></span>
+            </summary>
+            <div class="faq__answer"><p>{it.a}</p></div>
+          </details>
+        ))}
+      </div>
+    </div>
+    <script type="application/ld+json" set:html={JSON.stringify(faqLd)} />
+  </section>
+)}
+
+<style>
+  .container--narrow { max-width: 820px; }
+  .faq__list { display: flex; flex-direction: column; gap: 12px; }
+  .faq__item {
+    border: 1px solid var(--line); border-radius: var(--radius);
+    background: #fff; overflow: hidden;
+  }
+  .faq__item summary {
+    list-style: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 18px 22px; font-weight: 600; font-size: 1.05rem; color: var(--ink);
+  }
+  .faq__item summary::-webkit-details-marker { display: none; }
+  .faq__item summary:hover { color: var(--accent-dark); }
+  .faq__mark {
+    position: relative; flex-shrink: 0; width: 18px; height: 18px;
+  }
+  .faq__mark::before, .faq__mark::after {
+    content: ''; position: absolute; background: var(--accent); border-radius: 2px;
+    transition: transform 0.2s;
+  }
+  .faq__mark::before { top: 8px; left: 0; width: 18px; height: 2px; }
+  .faq__mark::after { left: 8px; top: 0; width: 2px; height: 18px; }
+  .faq__item[open] .faq__mark::after { transform: scaleY(0); }
+  .faq__answer { padding: 0 22px 20px; }
+  .faq__answer p { color: var(--ink-soft); font-size: 1rem; line-height: 1.65; margin: 0; max-width: 70ch; }
+</style>

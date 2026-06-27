@@ -3,10 +3,12 @@ import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProductCard from '../ProductCard.astro';
 import CallbackForm from '../CallbackForm.astro';
+import Faq from '../Faq.astro';
 import { site } from '../../data/site';
 import { categories, catTitle, catShort } from '../../data/categories';
 import { getLangFromUrl, useTranslations, localizePath } from '../../i18n/ui';
 import { getProductsByLang } from '../../lib/products';
+import { getHomeFaq } from '../../data/faq';
 import heroImg from '../../assets/hero.jpg';
 
 const lang = getLangFromUrl(Astro.url);
@@ -14,6 +16,7 @@ const t = useTranslations(lang);
 
 const products = await getProductsByLang(lang);
 const featured = products.filter((p) => p.data.featured).slice(0, 4);
+const faqItems = getHomeFaq(lang);
 
 const advantages = [
   { icon: '📐', title: t('adv.1.title'), text: t('adv.1.text') },
@@ -115,6 +118,8 @@ const steps = [
       </div>
     </div>
   </section>
+
+  <Faq items={faqItems} heading={t('faq.heading')} />
 
   <CallbackForm />
 </BaseLayout>
