@@ -38,6 +38,12 @@ const orgLd = {
   },
   geo: { '@type': 'GeoCoordinates', latitude: site.geo.lat, longitude: site.geo.lng },
   areaServed: lang === 'ru' ? 'Киев и область' : 'Київ та область',
+  sameAs: [
+    site.googleMaps,
+    site.social.instagram,
+    site.social.facebook,
+    site.social.telegram,
+  ].filter(Boolean),
 };
 
 const allLd = jsonLd ? [orgLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])] : orgLd;

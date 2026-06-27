@@ -19,6 +19,8 @@ export const site = {
     telegram: '',
     viber: 'viber://chat?number=+380971772577',
   },
+  // Профіль Google Business (Карти) — для мікророзмітки sameAs і кнопки на сайті
+  googleMaps: 'https://maps.app.goo.gl/XrrjbaHz5a4jw8dr5',
   geo: {
     lat: 50.4399,
     lng: 30.4408,
