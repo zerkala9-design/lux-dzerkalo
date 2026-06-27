@@ -8,7 +8,7 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const st = siteText(lang);
 const base = localizePath('/', lang);
-const mapQuery = encodeURIComponent('вулиця Вадима Гетьмана, 27, Київ');
+const mapQuery = encodeURIComponent('Люкс-Дзеркало, вулиця Вадима Гетьмана, 27, Київ');
 ---
 
 <BaseLayout title={t('contacts.title')} description={`${st.addressFull}. ${site.phones.map((p) => p.display).join(', ')}. ${site.email}.`}>
