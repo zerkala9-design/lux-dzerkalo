@@ -68,9 +68,9 @@ const primaryPhone = site.phones[0];
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
   }
-  /* Шапка ширша за контент — просторіше меню */
-  .site-header__inner { max-width: 1280px; display: flex; align-items: center; gap: 24px; min-height: 74px; }
-  .brand { display: flex; align-items: center; gap: 14px; margin-right: auto; }
+  /* Шапка на всю ширину, пункти рознесені рівномірно */
+  .site-header__inner { max-width: 1640px; display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 74px; }
+  .brand { display: flex; align-items: center; gap: 14px; }
   .brand__mark {
     position: relative;
     width: 50px; height: 50px; border-radius: 13px;
