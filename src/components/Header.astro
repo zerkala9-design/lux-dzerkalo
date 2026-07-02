@@ -68,7 +68,8 @@ const primaryPhone = site.phones[0];
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
   }
-  .site-header__inner { display: flex; align-items: center; gap: 24px; min-height: 74px; }
+  /* Шапка ширша за контент — просторіше меню */
+  .site-header__inner { max-width: 1280px; display: flex; align-items: center; gap: 24px; min-height: 74px; }
   .brand { display: flex; align-items: center; gap: 14px; margin-right: auto; }
   .brand__mark {
     position: relative;
