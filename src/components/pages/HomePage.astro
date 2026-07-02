@@ -18,6 +18,11 @@ const products = await getProductsByLang(lang);
 const featured = products.filter((p) => p.data.featured).slice(0, 4);
 const faqItems = getHomeFaq(lang);
 
+// SEO-заголовок головної під головний запит (з містом і наміром)
+const homeTitle = lang === 'ru'
+  ? 'Зеркала на заказ в Киеве — производитель'
+  : 'Дзеркала на замовлення в Києві — виробник';
+
 const advantages = [
   { icon: '📐', title: t('adv.1.title'), text: t('adv.1.text') },
   { icon: '🛠️', title: t('adv.2.title'), text: t('adv.2.text') },
@@ -32,7 +37,7 @@ const steps = [
 ];
 ---
 
-<BaseLayout>
+<BaseLayout title={homeTitle}>
   <section class="hero">
     <div class="hero__bg">
       <Image src={heroImg} alt={t('site.tagline')} widths={[768, 1280, 1920]} sizes="100vw" loading="eager" fetchpriority="high" />
