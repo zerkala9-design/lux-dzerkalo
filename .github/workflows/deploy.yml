@@ -31,7 +31,50 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      - name: Deploy via FTP
+      # FTP хостингу інколи обриває з'єднання (ECONNRESET / passive-mode ECONNREFUSED),
+      # тому робимо до 3 спроб заливки з паузами. Джоба падає лише якщо всі 3 невдалі.
+
+      - name: Deploy via FTPS (спроба 1)
+        id: deploy1
+        continue-on-error: true
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          security: loose
+          timeout: 120000
+          local-dir: ./dist/
+          server-dir: ${{ secrets.FTP_SERVER_DIR || './' }}
+          dangerous-clean-slate: false
+
+      - name: Пауза перед спробою 2
+        if: steps.deploy1.outcome == 'failure'
+        run: sleep 20
+
+      - name: Deploy via FTPS (спроба 2)
+        id: deploy2
+        if: steps.deploy1.outcome == 'failure'
+        continue-on-error: true
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          security: loose
+          timeout: 120000
+          local-dir: ./dist/
+          server-dir: ${{ secrets.FTP_SERVER_DIR || './' }}
+          dangerous-clean-slate: false
+
+      - name: Пауза перед спробою 3
+        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+        run: sleep 40
+
+      - name: Deploy via FTPS (спроба 3)
+        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
