@@ -37,14 +37,15 @@ const base = localizePath('/', lang);
 </BaseLayout>
 
 <style>
-  .page-head { padding: clamp(40px, 6vw, 72px) 0; background: var(--bg-soft); }
+  .page-head { padding: clamp(24px, 3vw, 40px) 0; background: var(--bg-soft); }
   .crumbs { font-size: 0.88rem; color: var(--muted); margin-bottom: 1rem; }
   .crumbs a { color: var(--ink-soft); }
   .page-head p { color: var(--ink-soft); max-width: 60ch; font-size: 1.08rem; }
-  .art-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
+  .art-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
   .art-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 26px 26px 24px; color: var(--ink); display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; }
   .art-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: transparent; }
   .art-card h2 { font-size: 1.25rem; margin-bottom: 0.5rem; }
   .art-card p { color: var(--ink-soft); font-size: 0.96rem; flex: 1; margin-bottom: 1rem; }
+  @media (max-width: 1000px) { .art-grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 720px) { .art-grid { grid-template-columns: 1fr; } }
 </style>
