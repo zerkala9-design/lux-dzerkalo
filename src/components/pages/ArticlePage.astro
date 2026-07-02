@@ -65,11 +65,11 @@ const articleLd = {
 
 <style>
   .page-head--slim { padding: clamp(24px, 4vw, 36px) 0; background: var(--bg-soft); }
-  .container--wide { max-width: 1300px; }
+  .container--wide { max-width: var(--maxw); }
   .crumbs { font-size: 0.88rem; color: var(--muted); }
   .crumbs a { color: var(--ink-soft); }
-  .article-wrap { max-width: 1300px; display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 48px; align-items: start; }
-  .article { max-width: 900px; }
+  .article-wrap { max-width: var(--maxw); display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 56px; align-items: start; }
+  .article { max-width: 940px; }
   .article h1 { margin-bottom: 1.2rem; }
   .article__body { color: var(--ink-soft); font-size: 1.05rem; }
   /* Адаптація фото у статтях: не більше за колонку й не завеликі по висоті */
