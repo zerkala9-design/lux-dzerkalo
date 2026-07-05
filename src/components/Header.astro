@@ -35,14 +35,14 @@ const primaryPhone = site.phones[0];
 
     <div class="header-right">
       {site.social.viber && (
-        <a href={site.social.viber} class="header-ig" aria-label="Viber">
+        <a href={site.social.viber} class="header-ig header-ig--viber" aria-label="Viber">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" aria-hidden="true">
             <path d="M12 2C6.75 2 2.5 5.32 2.5 10.6c0 3 1.4 5.66 3.6 7.35v3.2c0 .55.65.84 1.06.47l2.55-2.3c.73.17 1.5.28 2.29.28 5.25 0 9.5-3.32 9.5-8.6C21.5 5.32 17.25 2 12 2Zm4.13 12.03c-.31.73-1.37 1.37-2.1 1.5-.5.09-1.16.16-3.38-.79-2.85-1.22-4.66-4.2-4.8-4.4-.14-.19-1.15-1.6-1.15-3.05 0-1.45.72-2.16 1.02-2.46.25-.26.55-.37.73-.37.06 0 .12 0 .17.01.14.01.29.01.42.31.16.36.5 1.24.55 1.33.05.09.08.2.02.32-.06.13-.09.2-.18.32l-.27.32c-.09.09-.18.19-.08.37.1.18.46.75 1 1.21.68.6 1.26.79 1.44.88.18.09.29.08.4-.05.11-.13.46-.53.58-.72.12-.18.24-.15.4-.09.17.06 1.05.5 1.23.58.18.09.3.13.35.21.05.08.05.5-.26 1.24Z"></path>
           </svg>
         </a>
       )}
       {site.social.instagram && (
-        <a href={site.social.instagram} class="header-ig" target="_blank" rel="noopener" aria-label="Instagram">
+        <a href={site.social.instagram} class="header-ig header-ig--ig" target="_blank" rel="noopener" aria-label="Instagram">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
             <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
@@ -115,15 +115,19 @@ const primaryPhone = site.phones[0];
   .site-nav__link.active::after { width: 100%; }
 
   .header-right { display: flex; align-items: center; gap: 14px; }
-  /* Соцмережі — круглі бейджі */
+  /* Соцмережі — бейджі у фірмових кольорах */
   .header-ig {
     display: inline-flex; align-items: center; justify-content: center;
-    width: 44px; height: 44px; border-radius: 50%;
-    background: #11161c; color: #fff;
-    transition: background 0.2s, transform 0.15s;
+    width: 44px; height: 44px; border-radius: 13px;
+    color: #fff;
+    transition: transform 0.15s, filter 0.2s, box-shadow 0.2s;
   }
-  .header-ig svg { width: 22px; height: 22px; }
-  .header-ig:hover { background: var(--accent); color: #fff; transform: translateY(-1px); }
+  .header-ig svg { width: 24px; height: 24px; }
+  .header-ig:hover { transform: translateY(-2px); filter: brightness(1.08); box-shadow: var(--shadow); }
+  .header-ig--viber { background: #7360f2; }
+  .header-ig--ig {
+    background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%);
+  }
 
   .header-phone {
     display: inline-flex; align-items: center; gap: 8px;
