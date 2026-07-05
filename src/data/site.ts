@@ -17,7 +17,7 @@ export const site = {
     instagram: 'https://www.instagram.com/dzerkala_kyiv/',
     facebook: 'https://www.facebook.com/people/%D0%94%D0%B7%D0%B5%D1%80%D0%BA%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0-%D0%BF%D0%BB%D0%B8%D1%82%D0%BA%D0%B0-%D0%9A%D0%B8%D1%97%D0%B2/100070678067112/',
     telegram: '',
-    viber: 'viber://chat?number=+380971772577',
+    viber: 'viber://chat?number=+380995283637',
   },
   // Профіль Google Business (Карти) — для мікророзмітки sameAs і кнопки на сайті
   googleMaps: 'https://maps.app.goo.gl/XrrjbaHz5a4jw8dr5',
