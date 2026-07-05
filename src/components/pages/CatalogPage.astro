@@ -13,6 +13,14 @@ const products = await getProductsByLang(lang);
 
 const base = localizePath('/', lang);
 const catalogUrl = new URL(localizePath('/katalog/', lang), site.url).href;
+
+// SEO під запит «магазин дзеркал Київ / магазин зеркал Киев»
+const metaTitle = lang === 'ru'
+  ? 'Каталог зеркал — магазин зеркал в Киеве'
+  : 'Каталог дзеркал — магазин дзеркал у Києві';
+const metaDesc = lang === 'ru'
+  ? 'Магазин зеркал в Киеве от производителя: зеркала для ванной, с LED-подсветкой, с фацетом, зеркальная плитка, панно и зеркала для спортзалов. Изготовление на заказ по вашим размерам, доставка по Украине.'
+  : 'Магазин дзеркал у Києві від виробника: дзеркала для ванної, з LED-підсвіткою, з фацетом, дзеркальна плитка, панно та дзеркала для спортзалів. Виготовлення на замовлення за вашими розмірами, доставка по Україні.';
 const breadcrumbsLd = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -23,7 +31,7 @@ const breadcrumbsLd = {
 };
 ---
 
-<BaseLayout title={t('catalog.title')} description={t('catalog.intro')} jsonLd={breadcrumbsLd}>
+<BaseLayout title={metaTitle} description={metaDesc} jsonLd={breadcrumbsLd}>
   <section class="page-head">
     <div class="container">
       <nav class="crumbs"><a href={base}>{t('nav.home')}</a> / <span>{t('catalog.title')}</span></nav>
