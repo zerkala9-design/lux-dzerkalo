@@ -114,9 +114,16 @@ const primaryPhone = site.phones[0];
   .site-nav__link.active { color: var(--accent-dark); }
   .site-nav__link.active::after { width: 100%; }
 
-  .header-right { display: flex; align-items: center; gap: 16px; }
-  .header-ig { color: var(--ink-soft); display: inline-flex; }
-  .header-ig:hover { color: var(--accent-dark); }
+  .header-right { display: flex; align-items: center; gap: 14px; }
+  /* Соцмережі — круглі бейджі */
+  .header-ig {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: #11161c; color: #fff;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .header-ig svg { width: 22px; height: 22px; }
+  .header-ig:hover { background: var(--accent); color: #fff; transform: translateY(-1px); }
 
   .header-phone {
     display: inline-flex; align-items: center; gap: 8px;
