@@ -33,7 +33,30 @@ const productLd = {
   category: category ? catTitle(category, lang) : undefined,
   brand: { '@type': 'Brand', name: site.name },
   ...(data.priceFrom
-    ? { offers: { '@type': 'Offer', price: data.priceFrom, priceCurrency: 'UAH', availability: 'https://schema.org/InStock', url: new URL(localizePath(`/tovar/${productSlug(product)}/`, lang), site.url).href } }
+    ? {
+        offers: {
+          '@type': 'Offer',
+          price: data.priceFrom,
+          priceCurrency: 'UAH',
+          availability: 'https://schema.org/InStock',
+          itemCondition: 'https://schema.org/NewCondition',
+          url: new URL(localizePath(`/tovar/${productSlug(product)}/`, lang), site.url).href,
+          shippingDetails: {
+            '@type': 'OfferShippingDetails',
+            shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'UA' },
+            deliveryTime: {
+              '@type': 'ShippingDeliveryTime',
+              handlingTime: { '@type': 'QuantitativeValue', minValue: 2, maxValue: 7, unitCode: 'DAY' },
+              transitTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 3, unitCode: 'DAY' },
+            },
+          },
+          hasMerchantReturnPolicy: {
+            '@type': 'MerchantReturnPolicy',
+            applicableCountry: 'UA',
+            returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted',
+          },
+        },
+      }
     : {}),
 };
 ---
