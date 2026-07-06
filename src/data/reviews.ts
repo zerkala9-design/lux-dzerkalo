@@ -30,4 +30,16 @@ export const reviews: Review[] = [
     text: 'Пришёл, заказал, забрал. Мне понравилось)',
     date: '2017-11-26',
   },
+  {
+    author: 'Liana Amorim',
+    rating: 5,
+    text: 'Все сподобалось',
+    date: '2026-03-09',
+  },
+  {
+    author: 'Luciana',
+    rating: 5,
+    text: 'Все сподобалось',
+    date: '2026-03-09',
+  },
 ];
