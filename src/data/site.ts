@@ -21,6 +21,12 @@ export const site = {
   },
   // Профіль Google Business (Карти) — для мікророзмітки sameAs і кнопки на сайті
   googleMaps: 'https://maps.app.goo.gl/XrrjbaHz5a4jw8dr5',
+  // Google Place ID (з ftid профілю) — для прямих посилань на відгуки
+  googlePlaceId: 'ChIJ1eUjX6DO1EARr9ZVv9f26OQ',
+  // Пряме посилання «залишити відгук» (одразу відкриває форму з зірочками)
+  googleReviewUrl: 'https://search.google.com/local/writereview?placeid=ChIJ1eUjX6DO1EARr9ZVv9f26OQ',
+  // Усі відгуки профілю (список)
+  googleReviewsUrl: 'https://search.google.com/local/reviews?placeid=ChIJ1eUjX6DO1EARr9ZVv9f26OQ',
   geo: {
     lat: 50.4399,
     lng: 30.4408,

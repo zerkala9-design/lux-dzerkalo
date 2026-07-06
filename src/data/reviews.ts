@@ -7,6 +7,7 @@ export interface Review {
   rating: number;   // 1..5
   text: string;     // текст відгуку
   date?: string;    // 'YYYY-MM-DD' (необов'язково)
+  url?: string;     // пряме посилання на відгук/профіль автора в Google (необов'язково)
 }
 
 // Загальний рейтинг із Google-профілю (оновлюйте за фактом)
