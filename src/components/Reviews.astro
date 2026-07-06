@@ -222,7 +222,8 @@ const cards = reviews.map((r) => ({
   }
   .review-card__more:hover { text-decoration: underline; }
 
-  .reviews__dots { display: none; justify-content: center; gap: 8px; margin-top: 20px; }
+  .reviews__dots { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
+  .reviews__dots[hidden] { display: none; }
   .reviews__dots button {
     width: 9px; height: 9px; border-radius: 50%; border: none; padding: 0; cursor: pointer;
     background: var(--line); transition: background 0.2s, transform 0.2s;
@@ -267,12 +268,15 @@ const cards = reviews.map((r) => ({
     });
     const dots = Array.from(dotsWrap.children) as HTMLElement[];
     const sync = () => {
+      // Ховаємо крапки, якщо гортати нема чого
+      dotsWrap.hidden = track.scrollWidth <= track.clientWidth + 4;
       const mid = track.scrollLeft + track.clientWidth / 2;
       let active = 0;
       cards.forEach((c, i) => { if (c.offsetLeft <= mid) active = i; });
       dots.forEach((d, i) => d.classList.toggle('is-active', i === active));
     };
     track.addEventListener('scroll', () => window.requestAnimationFrame(sync), { passive: true });
+    window.addEventListener('resize', () => window.requestAnimationFrame(sync));
     sync();
 
     // Стрілки ‹ › — гортання по одній картці (десктоп)
