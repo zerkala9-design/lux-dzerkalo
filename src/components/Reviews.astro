@@ -4,8 +4,13 @@ import { reviews, reviewStats } from '../data/reviews';
 import { getLangFromUrl } from '../i18n/ui';
 
 const lang = getLangFromUrl(Astro.url);
-const heading = lang === 'ru' ? 'Отзывы клиентов' : 'Відгуки клієнтів';
-const onGoogle = lang === 'ru' ? 'Смотреть отзывы в Google' : 'Дивитися відгуки в Google';
+const tr = {
+  brandTitle: lang === 'ru' ? 'Google Отзывы' : 'Google Відгуки',
+  leave: lang === 'ru' ? 'Оставьте отзыв о нас на Google' : 'Залиште відгук про нас на Google',
+  more: lang === 'ru' ? 'Читать далее' : 'Читати далі',
+  less: lang === 'ru' ? 'Свернуть' : 'Згорнути',
+  ratingLabel: lang === 'ru' ? 'На основе отзывов Google' : 'На основі відгуків Google',
+};
 
 const hasReviews = reviews.length > 0;
 
@@ -20,6 +25,7 @@ const reviewsLd = hasReviews
         '@type': 'AggregateRating',
         ratingValue: reviewStats.ratingValue,
         reviewCount: reviewStats.reviewCount,
+        bestRating: 5,
       },
       review: reviews.map((r) => ({
         '@type': 'Review',
@@ -31,54 +37,218 @@ const reviewsLd = hasReviews
     }
   : null;
 
-const stars = (n: number) => '★★★★★☆☆☆☆☆'.slice(5 - Math.round(n), 10 - Math.round(n));
+// Відносна дата: «X днів/тижнів/місяців/років тому»
+function relativeDate(iso?: string): string {
+  if (!iso) return '';
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return '';
+  const days = Math.max(0, Math.round((Date.now() - then) / 86400000));
+  const plural = (n: number, forms: [string, string, string]) => {
+    const mod10 = n % 10, mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return forms[0];
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return forms[1];
+    return forms[2];
+  };
+  if (lang === 'ru') {
+    if (days < 7) return days <= 1 ? 'неделю назад' : `${days} ${plural(days, ['день', 'дня', 'дней'])} назад`;
+    if (days < 30) { const w = Math.round(days / 7); return `${w} ${plural(w, ['неделю', 'недели', 'недель'])} назад`; }
+    if (days < 365) { const m = Math.round(days / 30); return `${m} ${plural(m, ['месяц', 'месяца', 'месяцев'])} назад`; }
+    const y = Math.round(days / 365); return `${y} ${plural(y, ['год', 'года', 'лет'])} назад`;
+  }
+  if (days < 7) return days <= 1 ? 'тиждень тому' : `${days} ${plural(days, ['день', 'дні', 'днів'])} тому`;
+  if (days < 30) { const w = Math.round(days / 7); return `${w} ${plural(w, ['тиждень', 'тижні', 'тижнів'])} тому`; }
+  if (days < 365) { const m = Math.round(days / 30); return `${m} ${plural(m, ['місяць', 'місяці', 'місяців'])} тому`; }
+  const y = Math.round(days / 365); return `${y} ${plural(y, ['рік', 'роки', 'років'])} тому`;
+}
+
+// Колір аватара за іменем (стабільний)
+const avatarColors = ['#1a73e8', '#d93025', '#188038', '#e37400', '#9334e6', '#12805c', '#c5221f'];
+function avatarColor(name: string): string {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  return avatarColors[h % avatarColors.length];
+}
+
+const cards = reviews.map((r) => ({
+  ...r,
+  initial: r.author.trim().charAt(0).toUpperCase() || '?',
+  color: avatarColor(r.author),
+  rel: relativeDate(r.date),
+}));
 ---
 
 {hasReviews && (
   <section class="section section--soft reviews">
     <div class="container">
-      <div class="section-head section-head--center">
-        <h2>{heading}</h2>
-        <div class="reviews__agg">
-          <span class="reviews__stars" aria-hidden="true">{stars(reviewStats.ratingValue)}</span>
-          <strong>{reviewStats.ratingValue.toFixed(1)}</strong>
-          <span class="reviews__count">/ 5 · {reviewStats.reviewCount}</span>
+      <div class="reviews__head">
+        <div class="reviews__brand">
+          <svg class="reviews__glogo" viewBox="0 0 48 48" aria-hidden="true" width="34" height="34">
+            <path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/>
+            <path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/>
+            <path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24s.85 6.91 2.34 9.88l7.35-5.7z"/>
+            <path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/>
+          </svg>
+          <div class="reviews__brandtxt">
+            <span class="reviews__brandname">{tr.brandTitle}</span>
+            <span class="reviews__brandsub">{tr.ratingLabel}</span>
+          </div>
         </div>
+
+        <div class="reviews__agg">
+          <span class="reviews__aggnum">{reviewStats.ratingValue.toFixed(1)}</span>
+          <span class="reviews__aggstars" style={`--pct:${(reviewStats.ratingValue / 5) * 100}%`} aria-hidden="true">★★★★★</span>
+          <span class="reviews__aggcount">{reviewStats.reviewCount}</span>
+        </div>
+
+        {site.googleMaps && (
+          <a href={site.googleMaps} target="_blank" rel="noopener nofollow" class="btn btn--primary reviews__leave">{tr.leave}</a>
+        )}
       </div>
 
-      <div class="reviews__grid">
-        {reviews.map((r) => (
-          <figure class="review-card">
-            <div class="review-card__stars" aria-label={`${r.rating}/5`}>{stars(r.rating)}</div>
-            <blockquote>{r.text}</blockquote>
-            <figcaption>— {r.author}</figcaption>
+      <div class="reviews__track" id="reviews-track">
+        {cards.map((r) => (
+          <figure class="review-card" data-review>
+            <div class="review-card__top">
+              <span class="review-card__avatar" style={`background:${r.color}`} aria-hidden="true">{r.initial}</span>
+              <div class="review-card__meta">
+                <span class="review-card__name">
+                  {r.author}
+                  <svg class="review-card__verified" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="#4285F4" d="M12 2l2.4 1.8 3 .1 1 2.8L21 8.7l-.6 2.9.6 2.9-2.6 1.9-1 2.8-3 .1L12 22l-2.4-1.8-3-.1-1-2.8L3 14.5l.6-2.9L3 8.7l2.6-1.9 1-2.8 3-.1L12 2z"/><path fill="#fff" d="M10.6 14.6l-2.3-2.3 1.1-1.1 1.2 1.2 3.3-3.3 1.1 1.1z"/></svg>
+                </span>
+                <span class="review-card__date">{r.rel}</span>
+              </div>
+              <svg class="review-card__glogo" viewBox="0 0 48 48" aria-hidden="true" width="20" height="20"><path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/><path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24s.85 6.91 2.34 9.88l7.35-5.7z"/><path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/></svg>
+            </div>
+            <div class="review-card__stars" style={`--pct:${(r.rating / 5) * 100}%`} aria-label={`${r.rating}/5`}>★★★★★</div>
+            <blockquote class="review-card__text" data-text>{r.text}</blockquote>
+            <button type="button" class="review-card__more" data-more hidden>{tr.more}</button>
           </figure>
         ))}
       </div>
 
-      {site.googleMaps && (
-        <div class="reviews__cta">
-          <a href={site.googleMaps} target="_blank" rel="noopener" class="btn btn--ghost">{onGoogle}</a>
-        </div>
-      )}
+      <div class="reviews__dots" id="reviews-dots" aria-hidden="true"></div>
     </div>
     <script type="application/ld+json" set:html={JSON.stringify(reviewsLd)} />
   </section>
 )}
 
 <style>
-  .reviews__agg { display: inline-flex; align-items: baseline; gap: 8px; margin-top: 0.4rem; font-family: var(--serif); }
-  .reviews__agg strong { font-size: 1.6rem; color: var(--ink); }
-  .reviews__count { color: var(--muted); font-size: 0.95rem; }
-  .reviews__stars { color: var(--accent); letter-spacing: 2px; font-size: 1.1rem; }
-  .reviews__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-  .review-card {
-    background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
-    padding: 24px 24px 20px; margin: 0; display: flex; flex-direction: column; gap: 10px;
+  .reviews__head {
+    display: flex; align-items: center; gap: 20px 28px; flex-wrap: wrap;
+    justify-content: space-between; margin-bottom: 26px;
   }
-  .review-card__stars { color: var(--accent); letter-spacing: 2px; }
-  .review-card blockquote { margin: 0; color: var(--ink-soft); font-size: 1rem; line-height: 1.6; flex: 1; }
-  .review-card figcaption { font-weight: 700; color: var(--ink); }
-  .reviews__cta { text-align: center; margin-top: 2rem; }
-  @media (max-width: 900px) { .reviews__grid { grid-template-columns: 1fr; } }
+  .reviews__brand { display: flex; align-items: center; gap: 12px; }
+  .reviews__brandtxt { display: flex; flex-direction: column; line-height: 1.25; }
+  .reviews__brandname { font-family: var(--serif); font-size: 1.25rem; font-weight: 700; color: var(--ink); }
+  .reviews__brandsub { font-size: 0.82rem; color: var(--muted); }
+
+  .reviews__agg { display: inline-flex; align-items: center; gap: 10px; }
+  .reviews__aggnum { font-family: var(--serif); font-size: 1.9rem; font-weight: 700; color: #e7711b; line-height: 1; }
+  .reviews__aggcount { color: var(--muted); font-size: 0.9rem; }
+  .reviews__aggcount::before { content: '('; }
+  .reviews__aggcount::after { content: ')'; }
+
+  /* Зіркові рейтинги з дробовим заповненням */
+  .reviews__aggstars, .review-card__stars {
+    --pct: 100%;
+    font-size: 1.15rem; letter-spacing: 2px; line-height: 1;
+    background: linear-gradient(90deg, #fbbc04 var(--pct), #dcdfe4 var(--pct));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+  }
+
+  .reviews__leave { white-space: nowrap; }
+
+  .reviews__track {
+    display: grid; grid-auto-flow: column; grid-auto-columns: minmax(300px, 1fr);
+    gap: 22px; overflow-x: auto; scroll-snap-type: x mandatory;
+    padding-bottom: 6px; scrollbar-width: none;
+  }
+  .reviews__track::-webkit-scrollbar { display: none; }
+
+  @media (min-width: 901px) {
+    /* На десктопі показуємо 3 у рядок, більше — гортаються */
+    .reviews__track { grid-auto-columns: calc((100% - 44px) / 3); }
+  }
+
+  .review-card {
+    scroll-snap-align: start;
+    background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 22px 22px 18px; margin: 0; display: flex; flex-direction: column; gap: 12px;
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15,20,26,0.06));
+  }
+  .review-card__top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; }
+  .review-card__avatar {
+    width: 44px; height: 44px; border-radius: 50%; color: #fff;
+    display: grid; place-items: center; font-weight: 700; font-size: 1.15rem;
+  }
+  .review-card__meta { display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
+  .review-card__name { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; color: var(--ink); font-size: 0.98rem; }
+  .review-card__verified { flex-shrink: 0; }
+  .review-card__date { color: var(--muted); font-size: 0.82rem; }
+  .review-card__glogo { align-self: flex-start; }
+
+  .review-card__text {
+    margin: 0; color: var(--ink-soft); font-size: 0.97rem; line-height: 1.6; flex: 1;
+    overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5;
+  }
+  .review-card.is-expanded .review-card__text { -webkit-line-clamp: unset; }
+  .review-card__more {
+    align-self: flex-start; background: none; border: none; padding: 0; cursor: pointer;
+    color: var(--accent-dark, #1a73e8); font-weight: 600; font-size: 0.9rem; font-family: inherit;
+  }
+  .review-card__more:hover { text-decoration: underline; }
+
+  .reviews__dots { display: none; justify-content: center; gap: 8px; margin-top: 20px; }
+  .reviews__dots button {
+    width: 9px; height: 9px; border-radius: 50%; border: none; padding: 0; cursor: pointer;
+    background: var(--line); transition: background 0.2s, transform 0.2s;
+  }
+  .reviews__dots button.is-active { background: var(--accent); transform: scale(1.25); }
+
+  @media (max-width: 900px) {
+    .reviews__head { justify-content: flex-start; }
+    .reviews__leave { width: 100%; text-align: center; }
+    .reviews__track { grid-auto-columns: 85%; }
+    .reviews__dots { display: flex; }
+  }
 </style>
+
+<script>
+  // «Читати далі» — показуємо кнопку лише коли текст реально обрізаний
+  document.querySelectorAll<HTMLElement>('[data-review]').forEach((card) => {
+    const text = card.querySelector<HTMLElement>('[data-text]');
+    const btn = card.querySelector<HTMLButtonElement>('[data-more]');
+    if (!text || !btn) return;
+    const moreLabel = btn.textContent || '';
+    const lessLabel = btn.getAttribute('data-less') || (document.documentElement.lang === 'ru' ? 'Свернуть' : 'Згорнути');
+    if (text.scrollHeight - text.clientHeight > 4) btn.hidden = false;
+    btn.addEventListener('click', () => {
+      const expanded = card.classList.toggle('is-expanded');
+      btn.textContent = expanded ? lessLabel : moreLabel;
+    });
+  });
+
+  // Пагінація-крапки для каруселі (мобільні)
+  const track = document.getElementById('reviews-track');
+  const dotsWrap = document.getElementById('reviews-dots');
+  if (track && dotsWrap) {
+    const cards = Array.from(track.children) as HTMLElement[];
+    cards.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.setAttribute('aria-label', String(i + 1));
+      dot.addEventListener('click', () => cards[i].scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' }));
+      dotsWrap.appendChild(dot);
+    });
+    const dots = Array.from(dotsWrap.children) as HTMLElement[];
+    const sync = () => {
+      const mid = track.scrollLeft + track.clientWidth / 2;
+      let active = 0;
+      cards.forEach((c, i) => { if (c.offsetLeft <= mid) active = i; });
+      dots.forEach((d, i) => d.classList.toggle('is-active', i === active));
+    };
+    track.addEventListener('scroll', () => window.requestAnimationFrame(sync), { passive: true });
+    sync();
+  }
+</script>
