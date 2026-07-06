@@ -1,0 +1,84 @@
+---
+import { site } from '../data/site';
+import { reviews, reviewStats } from '../data/reviews';
+import { getLangFromUrl } from '../i18n/ui';
+
+const lang = getLangFromUrl(Astro.url);
+const heading = lang === 'ru' ? 'Отзывы клиентов' : 'Відгуки клієнтів';
+const onGoogle = lang === 'ru' ? 'Смотреть отзывы в Google' : 'Дивитися відгуки в Google';
+
+const hasReviews = reviews.length > 0;
+
+// Мікророзмітка: рейтинг + відгуки на бізнесі
+const reviewsLd = hasReviews
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'LocalBusiness',
+      name: site.name,
+      url: site.url,
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: reviewStats.ratingValue,
+        reviewCount: reviewStats.reviewCount,
+      },
+      review: reviews.map((r) => ({
+        '@type': 'Review',
+        author: { '@type': 'Person', name: r.author },
+        reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5 },
+        reviewBody: r.text,
+        ...(r.date ? { datePublished: r.date } : {}),
+      })),
+    }
+  : null;
+
+const stars = (n: number) => '★★★★★☆☆☆☆☆'.slice(5 - Math.round(n), 10 - Math.round(n));
+---
+
+{hasReviews && (
+  <section class="section section--soft reviews">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <h2>{heading}</h2>
+        <div class="reviews__agg">
+          <span class="reviews__stars" aria-hidden="true">{stars(reviewStats.ratingValue)}</span>
+          <strong>{reviewStats.ratingValue.toFixed(1)}</strong>
+          <span class="reviews__count">/ 5 · {reviewStats.reviewCount}</span>
+        </div>
+      </div>
+
+      <div class="reviews__grid">
+        {reviews.map((r) => (
+          <figure class="review-card">
+            <div class="review-card__stars" aria-label={`${r.rating}/5`}>{stars(r.rating)}</div>
+            <blockquote>{r.text}</blockquote>
+            <figcaption>— {r.author}</figcaption>
+          </figure>
+        ))}
+      </div>
+
+      {site.googleMaps && (
+        <div class="reviews__cta">
+          <a href={site.googleMaps} target="_blank" rel="noopener" class="btn btn--ghost">{onGoogle}</a>
+        </div>
+      )}
+    </div>
+    <script type="application/ld+json" set:html={JSON.stringify(reviewsLd)} />
+  </section>
+)}
+
+<style>
+  .reviews__agg { display: inline-flex; align-items: baseline; gap: 8px; margin-top: 0.4rem; font-family: var(--serif); }
+  .reviews__agg strong { font-size: 1.6rem; color: var(--ink); }
+  .reviews__count { color: var(--muted); font-size: 0.95rem; }
+  .reviews__stars { color: var(--accent); letter-spacing: 2px; font-size: 1.1rem; }
+  .reviews__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .review-card {
+    background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 24px 24px 20px; margin: 0; display: flex; flex-direction: column; gap: 10px;
+  }
+  .review-card__stars { color: var(--accent); letter-spacing: 2px; }
+  .review-card blockquote { margin: 0; color: var(--ink-soft); font-size: 1rem; line-height: 1.6; flex: 1; }
+  .review-card figcaption { font-weight: 700; color: var(--ink); }
+  .reviews__cta { text-align: center; margin-top: 2rem; }
+  @media (max-width: 900px) { .reviews__grid { grid-template-columns: 1fr; } }
+</style>
