@@ -152,7 +152,7 @@ const cards = reviews.map((r) => ({
   .reviews__aggstars, .review-card__stars {
     --pct: 100%;
     font-size: 1.15rem; letter-spacing: 2px; line-height: 1;
-    background: linear-gradient(90deg, #fbbc04 var(--pct), #dcdfe4 var(--pct));
+    background: linear-gradient(90deg, #fbbc04 var(--pct), #c3c8d0 var(--pct));
     -webkit-background-clip: text; background-clip: text;
     -webkit-text-fill-color: transparent; color: transparent;
   }
@@ -161,14 +161,14 @@ const cards = reviews.map((r) => ({
 
   .reviews__track {
     display: grid; grid-auto-flow: column; grid-auto-columns: minmax(300px, 1fr);
-    gap: 22px; overflow-x: auto; scroll-snap-type: x mandatory;
+    justify-content: center; gap: 22px; overflow-x: auto; scroll-snap-type: x mandatory;
     padding-bottom: 6px; scrollbar-width: none;
   }
   .reviews__track::-webkit-scrollbar { display: none; }
 
   @media (min-width: 901px) {
-    /* На десктопі показуємо 3 у рядок, більше — гортаються */
-    .reviews__track { grid-auto-columns: calc((100% - 44px) / 3); }
+    /* На десктопі — до 3 карток у рядок, більше гортаються; менше — центруються */
+    .reviews__track { grid-auto-columns: minmax(320px, 420px); }
   }
 
   .review-card {
