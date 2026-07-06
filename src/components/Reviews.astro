@@ -188,9 +188,13 @@ const cards = reviews.map((r) => ({
   .reviews__track--center { justify-content: center; }
   .reviews__track::-webkit-scrollbar { display: none; }
 
+  /* Обмежуємо ширину блоку відгуків, щоб картки не були надто широкі
+     і щоб зайві картки завжди виходили за край (з'являлись стрілки/крапки) */
+  .reviews :global(.container) { max-width: 1200px; }
+
   @media (min-width: 901px) {
-    /* На десктопі — до 3 карток у рядок, більше гортаються; менше — центруються */
-    .reviews__track { grid-auto-columns: minmax(320px, 420px); }
+    /* Рівно 3 картки у видимій зоні; більше — гортаються стрілками/крапками */
+    .reviews__track { grid-auto-columns: calc((100% - 44px) / 3); }
   }
 
   .review-card {
