@@ -17,6 +17,29 @@ DirectoryIndex index.html
   RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
   RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
 
+  # --- Канонікалізація (чистка канібалізації): видалені дублі → головні сторінки.
+  #     Ставимо ВИЩЕ за "віддати реальний файл", щоб 301 спрацював навіть якщо
+  #     старий файл ще лишився на хостингу. ---
+  RewriteRule "^statti/zamoviti-dzerkalo-_kiyiv_/?$" "https://%{HTTP_HOST}/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
+  RewriteRule "^statti/stilni-ta-praktichni-dzerkala-dlya-tantsyuvalnogo-zalu/?$" "https://%{HTTP_HOST}/statti/dzerkala-dlya-tantsyuvalnoyi-studiyi/" [R=301,L]
+  RewriteRule "^ru/statti/2017_09_zakazat-zerkalo-_kiev_/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
+  RewriteRule "^ru/statti/2017_izgotovit-zerkalo-pod-zakaz/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
+  RewriteRule "^ru/statti/2017_izgotovlenie-zerkal-na-zakaz/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
+  RewriteRule "^ru/statti/2023_zerkala-pod-zakaz-v-kieve/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
+  RewriteRule "^ru/statti/izgotovlenie_zerkal/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
+  RewriteRule "^ru/statti/zerkala_na_zakaz/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
+  RewriteRule "^ru/statti/zerkala_pod_zakaz/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
+  RewriteRule "^ru/statti/zerkalo_na_zakaz_kiev/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
+  RewriteRule "^ru/statti/zerkala-dlya-sportzala/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-dlya-sportzalu-rozmiry-montazh/" [R=301,L]
+  RewriteRule "^ru/statti/zerkala-dlya-sportzalov/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-dlya-sportzalu-rozmiry-montazh/" [R=301,L]
+  RewriteRule "^ru/statti/zerkala-dlya-sportzala-kupit/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-dlya-sportzalu-rozmiry-montazh/" [R=301,L]
+  RewriteRule "^ru/statti/zerkala-dlya-sportzala-v-kieve/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-dlya-sportzalu-rozmiry-montazh/" [R=301,L]
+  RewriteRule "^ru/statti/zerkala-dlya-tantsev-i-dlya-sporta/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-dlya-tantsyuvalnoyi-studiyi/" [R=301,L]
+  RewriteRule "^ru/statti/kupit_zerkala_dlja_tancevalnogo_zala/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-dlya-tantsyuvalnoyi-studiyi/" [R=301,L]
+  RewriteRule "^ru/statti/2023_stilnye-i-praktichnye-zerkala-dlya-tantsevalnogo-zala/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-dlya-tantsyuvalnoyi-studiyi/" [R=301,L]
+  RewriteRule "^ru/statti/zerkala-v-fitnes-zal_-tsena/?$" "https://%{HTTP_HOST}/ru/statti/dzerkalna-stina-u-fitnes-klub/" [R=301,L]
+  RewriteRule "^ru/statti/zerkalo-v-fitnes-zal/?$" "https://%{HTTP_HOST}/ru/statti/dzerkalna-stina-u-fitnes-klub/" [R=301,L]
+
   # --- ВАЖЛИВО: якщо реальний файл або тека існують — віддати їх, не редиректити ---
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
@@ -147,29 +170,6 @@ DirectoryIndex index.html
   RewriteRule "^ru/stati/zerkalo_kupit\.html$" "https://%{HTTP_HOST}/ru/statti/zerkalo_kupit/" [R=301,L]
   RewriteRule "^ru/stati/zerkalo_na_zakaz_kiev_ss\.html$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
   RewriteRule "^ru/stati/zerkalo_s_facetom\.html$" "https://%{HTTP_HOST}/ru/statti/zerkalo_s_facetom/" [R=301,L]
-  # --- Канонікалізація (чистка канібалізації): дублі «на замовлення» → головні сторінки ---
-  RewriteRule "^statti/zamoviti-dzerkalo-_kiyiv_/?$" "https://%{HTTP_HOST}/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
-  RewriteRule "^statti/stilni-ta-praktichni-dzerkala-dlya-tantsyuvalnogo-zalu/?$" "https://%{HTTP_HOST}/statti/dzerkala-dlya-tantsyuvalnoyi-studiyi/" [R=301,L]
-  RewriteRule "^ru/statti/2017_09_zakazat-zerkalo-_kiev_/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
-  RewriteRule "^ru/statti/2017_izgotovit-zerkalo-pod-zakaz/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
-  RewriteRule "^ru/statti/2017_izgotovlenie-zerkal-na-zakaz/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
-  RewriteRule "^ru/statti/2023_zerkala-pod-zakaz-v-kieve/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
-  RewriteRule "^ru/statti/izgotovlenie_zerkal/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
-  RewriteRule "^ru/statti/zerkala_na_zakaz/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
-  RewriteRule "^ru/statti/zerkala_pod_zakaz/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
-  RewriteRule "^ru/statti/zerkalo_na_zakaz_kiev/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
-
-  # --- Канонікалізація кластера «зал/спортзал» (RU) ---
-  RewriteRule "^ru/statti/zerkala-dlya-sportzala/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-dlya-sportzalu-rozmiry-montazh/" [R=301,L]
-  RewriteRule "^ru/statti/zerkala-dlya-sportzalov/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-dlya-sportzalu-rozmiry-montazh/" [R=301,L]
-  RewriteRule "^ru/statti/zerkala-dlya-sportzala-kupit/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-dlya-sportzalu-rozmiry-montazh/" [R=301,L]
-  RewriteRule "^ru/statti/zerkala-dlya-sportzala-v-kieve/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-dlya-sportzalu-rozmiry-montazh/" [R=301,L]
-  RewriteRule "^ru/statti/zerkala-dlya-tantsev-i-dlya-sporta/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-dlya-tantsyuvalnoyi-studiyi/" [R=301,L]
-  RewriteRule "^ru/statti/kupit_zerkala_dlja_tancevalnogo_zala/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-dlya-tantsyuvalnoyi-studiyi/" [R=301,L]
-  RewriteRule "^ru/statti/2023_stilnye-i-praktichnye-zerkala-dlya-tantsevalnogo-zala/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-dlya-tantsyuvalnoyi-studiyi/" [R=301,L]
-  RewriteRule "^ru/statti/zerkala-v-fitnes-zal_-tsena/?$" "https://%{HTTP_HOST}/ru/statti/dzerkalna-stina-u-fitnes-klub/" [R=301,L]
-  RewriteRule "^ru/statti/zerkalo-v-fitnes-zal/?$" "https://%{HTTP_HOST}/ru/statti/dzerkalna-stina-u-fitnes-klub/" [R=301,L]
-
   RewriteRule "^ru/stati/" "https://%{HTTP_HOST}/ru/statti/" [R=301,L]
   RewriteRule "^ru/" "https://%{HTTP_HOST}/ru/" [R=301,L]
   RewriteRule "^sitemap\.xml$" "https://%{HTTP_HOST}/sitemap-index.xml" [R=301,L]
