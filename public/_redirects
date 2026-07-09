@@ -27,14 +27,14 @@
 /ua/sklo/*                             /katalog/                            301
 
 # ---------- УКРАЇНСЬКІ статті ----------
-/ua/statti/dzerkala-dlya-vann-kiyiv_ss.html   /statti/dzerkala-dlya-vann-kiyiv/   301
+/ua/statti/dzerkala-dlya-vann-kiyiv_ss.html   /statti/dzerkalo-u-vannu-kimnatu-kiyiv/   301
 /ua/statti/dzerkala-na-zamovlennya-v-kievi_ss.html   /statti/dzerkala-na-zamovlennya-v-kievi/   301
 /ua/statti/dzerkalna-plitka-v-inter_eri_ss.html   /statti/dzerkalna-plitka-v-inter_eri/   301
 /ua/statti/dzerkalne-panno-v-ukrayini---stilniy-ta-funktsionalniy-element_ss.html   /statti/dzerkalne-panno-v-ukrayini---stilniy-ta-funktsionalniy-element/   301
 /ua/statti/dzerkalo-u-vannu-kimnatu-kiyiv_ss.html   /statti/dzerkalo-u-vannu-kimnatu-kiyiv/   301
-/ua/statti/dzerkalo-u-vannu-kimnatu-kupiti-v-kievi_ss.html   /statti/dzerkalo-u-vannu-kimnatu-kupiti-v-kievi/   301
+/ua/statti/dzerkalo-u-vannu-kimnatu-kupiti-v-kievi_ss.html   /statti/dzerkalo-u-vannu-kimnatu-kiyiv/   301
 /ua/statti/stilni-ta-praktichni-dzerkala-dlya-tantsyuvalnogo-zalu_ss.html   /statti/dzerkala-dlya-tantsyuvalnoyi-studiyi/   301
-/ua/statti/vanne-dzerkalo-kupiti-_kiyiv__ss.html   /statti/vanne-dzerkalo-kupiti-_kiyiv_/   301
+/ua/statti/vanne-dzerkalo-kupiti-_kiyiv__ss.html   /statti/dzerkalo-u-vannu-kimnatu-kiyiv/   301
 /ua/statti/zamoviti-dzerkalo-_kiyiv__ss.html   /statti/dzerkala-na-zamovlennya-v-kievi/   301
 /ua/statti/*                           /statti/                             301
 # решта старих UA-сторінок
@@ -74,15 +74,15 @@
 /ru/stati/2017/04/steklo-s-fatsetom_ss.html   /ru/statti/2017_04_steklo-s-fatsetom/   301
 /ru/stati/2017/04/zerkalnaya-potolochnaya-plitka-kupit_ss.html   /ru/statti/2017_04_zerkalnaya-potolochnaya-plitka-kupit/   301
 /ru/stati/2017/04/zerkalnye-plitki-na-stenu-kupit_ss.html   /ru/statti/2017_04_zerkalnye-plitki-na-stenu-kupit/   301
-/ru/stati/2017/09/vannoe-zerkalo-kupit-_kiev__ss.html   /ru/statti/2017_09_vannoe-zerkalo-kupit-_kiev_/   301
+/ru/stati/2017/09/vannoe-zerkalo-kupit-_kiev__ss.html   /ru/statti/dzerkalo-u-vannu-kimnatu-kiyiv/   301
 /ru/stati/2017/09/zakazat-zerkalo-_kiev__ss.html   /ru/statti/dzerkala-na-zamovlennya-v-kievi/   301
-/ru/stati/2017/09/zerkala-dlya-vann-kiev_ss.html   /ru/statti/2017_09_zerkala-dlya-vann-kiev/   301
-/ru/stati/2017/09/zerkalo-v-vannuyu-komnatu-kiev_ss.html   /ru/statti/2017_09_zerkalo-v-vannuyu-komnatu-kiev/   301
-/ru/stati/2017/09/zerkalo-v-vannuyu-komnatu-kupit-v-kieve_ss.html   /ru/statti/2017_09_zerkalo-v-vannuyu-komnatu-kupit-v-kieve/   301
+/ru/stati/2017/09/zerkala-dlya-vann-kiev_ss.html   /ru/statti/dzerkalo-u-vannu-kimnatu-kiyiv/   301
+/ru/stati/2017/09/zerkalo-v-vannuyu-komnatu-kiev_ss.html   /ru/statti/dzerkalo-u-vannu-kimnatu-kiyiv/   301
+/ru/stati/2017/09/zerkalo-v-vannuyu-komnatu-kupit-v-kieve_ss.html   /ru/statti/dzerkalo-u-vannu-kimnatu-kiyiv/   301
 /ru/stati/2017/izgotovit-zerkalo-pod-zakaz_ss.html   /ru/statti/dzerkala-na-zamovlennya-v-kievi/   301
 /ru/stati/2017/izgotovlenie-zerkal-na-zakaz_ss.html   /ru/statti/dzerkala-na-zamovlennya-v-kievi/   301
 /ru/stati/2017/zerkalnaya-plitka-tsena-za-1-kv-metr_ss.html   /ru/statti/2017_zerkalnaya-plitka-tsena-za-1-kv-metr/   301
-/ru/stati/2017/zerkalo-dlya-vanny-pod-zakaz.html   /ru/statti/2017_zerkalo-dlya-vanny-pod-zakaz/   301
+/ru/stati/2017/zerkalo-dlya-vanny-pod-zakaz.html   /ru/statti/dzerkalo-u-vannu-kimnatu-kiyiv/   301
 /ru/stati/2017/zerkalo-plitka-kupit_ss.html   /ru/statti/2017_zerkalo-plitka-kupit/   301
 /ru/stati/2023/stilnye-i-praktichnye-zerkala-dlya-tantsevalnogo-zala_ss.html   /ru/statti/dzerkala-dlya-tantsyuvalnoyi-studiyi/   301
 /ru/stati/2023/zerkala-pod-zakaz-v-kieve_ss.html   /ru/statti/dzerkala-na-zamovlennya-v-kievi/   301
@@ -132,7 +132,7 @@
 /ru/stati/zerkalnye-paneli-tsena_ss.html   /ru/statti/zerkalnye-paneli-tsena/   301
 /ru/stati/zerkalo-dlya-biznesa.html   /ru/statti/zerkalo-dlya-biznesa/   301
 /ru/stati/zerkalo-v-fitnes-zal_ss.html   /ru/statti/dzerkalna-stina-u-fitnes-klub/   301
-/ru/stati/zerkalo-v-vannuyu.html   /ru/statti/zerkalo-v-vannuyu/   301
+/ru/stati/zerkalo-v-vannuyu.html   /ru/statti/dzerkalo-u-vannu-kimnatu-kiyiv/   301
 /ru/stati/zerkalo_kupit.html   /ru/statti/zerkalo_kupit/   301
 /ru/stati/zerkalo_na_zakaz_kiev_ss.html   /ru/statti/dzerkala-na-zamovlennya-v-kievi/   301
 /ru/stati/zerkalo_s_facetom.html   /ru/statti/zerkalo_s_facetom/   301
