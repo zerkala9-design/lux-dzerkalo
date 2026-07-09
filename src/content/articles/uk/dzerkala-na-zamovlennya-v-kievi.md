@@ -26,7 +26,7 @@ oldUrl: "/ua/statti/dzerkala-na-zamovlennya-v-kievi_ss.html"
 - **[Дзеркало у повний зріст](/statti/dzerkalo-v-povnyy-zrist-na-zamovlennya/)** — настінне чи підлогове.
 - **[Круглі та фігурні](/statti/krugle-dzerkalo-na-zamovlennya/)**, **[тоновані](/statti/tonovane-dzerkalo-grafit-bronza/)** та **[декоративні](/statti/zerkala-dekorativnye/)** дзеркала.
 - **[Дзеркала для спортзалу та студій](/katalog/dzerkala-dlya-sportzaliv/)** — великі полотна із захисною плівкою.
-- **[Дзеркала для барбершопу та салонів](/statti/dzerkala-v-barbershop/)** — під робочі місця, з LED-підсвіткою.
+- **Для бізнесу** — [барбершопу](/statti/dzerkala-v-barbershop/), [салону краси](/statti/dzerkala-dlya-salonu-krasy/) та [перукарні](/statti/dzerkala-dlya-perukarni/): під робочі місця, з LED-підсвіткою.
 
 ## Як проходить замовлення
 
