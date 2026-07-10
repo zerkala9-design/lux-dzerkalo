@@ -19,7 +19,8 @@ date: "2026-07-06"
 - **[йога](/statti/dzerkala-dlya-yohy/) та [стрейчінг](/statti/dzerkala-dlya-streychyngu/)** — рівне полотно від підлоги для контролю пози;
 - **[бокс і єдиноборства](/statti/dzerkala-dlya-boksu/)** — міцне скло з обов'язковою захисною плівкою;
 - **[пул денс](/statti/dzerkala-dlya-pul-dansu/)** — висока стіна до стелі з розкладкою навколо пілонів;
-- **школи, реабілітаційні та медичні центри** — дзеркала для ЛФК.
+- **[кросфіт](/statti/dzerkala-dlya-krosfitu/), [пілатес](/statti/dzerkala-dlya-pilatesu/), [гімнастика](/statti/dzerkala-dlya-himnastyky/)** — функціональні та студійні зали;
+- **[реабілітація та ЛФК](/statti/dzerkala-dlya-reabilitatsiyi/)** — медичні й реабілітаційні центри.
 
 ## Які розміри обрати
 
