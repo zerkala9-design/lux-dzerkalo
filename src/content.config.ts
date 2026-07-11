@@ -16,6 +16,11 @@ const products = defineCollection({
       features: z.array(z.string()).default([]),
       priceFrom: z.number().optional(),
       priceUnit: z.string().default('грн'),
+      // Точна ціна конкретного товару (як на Промі): показуємо без «від»
+      priceExact: z.boolean().default(false),
+      sku: z.string().optional(),
+      // Таблиця характеристик (розмір, товщина, обробка тощо)
+      specs: z.array(z.object({ label: z.string(), value: z.string() })).default([]),
       order: z.number().default(100),
       featured: z.boolean().default(false),
     }),

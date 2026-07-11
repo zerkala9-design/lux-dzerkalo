@@ -96,12 +96,28 @@ const productLd = {
 
         <div class="product__price">
           {data.priceFrom ? (
-            <><strong>{t('common.priceFrom')} {data.priceFrom.toLocaleString('uk-UA')} {data.priceUnit}</strong>
-            <span>{t('product.priceNote')}</span></>
+            data.priceExact ? (
+              <><strong>{data.priceFrom.toLocaleString('uk-UA')} {data.priceUnit}</strong>
+              <span class="product__instock">✔ {lang === 'ru' ? 'В наличии' : 'В наявності'}</span></>
+            ) : (
+              <><strong>{t('common.priceFrom')} {data.priceFrom.toLocaleString('uk-UA')} {data.priceUnit}</strong>
+              <span>{t('product.priceNote')}</span></>
+            )
           ) : (
             <strong>{t('common.priceRequest')}</strong>
           )}
         </div>
+
+        {data.specs.length > 0 && (
+          <table class="product__specs">
+            <caption>{lang === 'ru' ? 'Характеристики' : 'Характеристики'}</caption>
+            <tbody>
+              {data.specs.map((s) => (
+                <tr><th scope="row">{s.label}</th><td>{s.value}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        )}
 
         {data.features.length > 0 && (
           <ul class="product__features">
@@ -150,6 +166,12 @@ const productLd = {
   .product__price { display: flex; flex-direction: column; gap: 2px; margin: 1.2rem 0; padding: 1rem 1.2rem; background: var(--accent-soft); border-radius: var(--radius-sm); }
   .product__price strong { font-family: var(--serif); font-size: 1.5rem; color: var(--ink); }
   .product__price span { font-size: 0.85rem; color: var(--ink-soft); }
+  .product__instock { color: #188038 !important; font-weight: 600; }
+  .product__specs { width: 100%; border-collapse: collapse; margin: 0 0 1.4rem; font-size: 0.95rem; }
+  .product__specs caption { text-align: left; font-weight: 700; color: var(--ink); margin-bottom: 0.5rem; font-size: 1.05rem; }
+  .product__specs th, .product__specs td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .product__specs th { color: var(--ink-soft); font-weight: 500; width: 45%; }
+  .product__specs td { color: var(--ink); font-weight: 600; }
   .product__features { list-style: none; padding: 0; margin: 0 0 1.6rem; display: grid; gap: 0.55rem; }
   .product__features li { padding-left: 28px; position: relative; }
   .product__features li::before { content: '✓'; position: absolute; left: 0; color: var(--accent-dark); font-weight: 700; }
