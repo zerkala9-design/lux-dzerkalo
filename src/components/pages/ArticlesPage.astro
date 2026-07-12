@@ -2,11 +2,11 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CallbackForm from '../CallbackForm.astro';
 import { getLangFromUrl, useTranslations, localizePath } from '../../i18n/ui';
-import { getArticlesByLang, articleSlug } from '../../lib/articles';
+import { getArticlesByLang, articleSlug, isNoindexArticle } from '../../lib/articles';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-const articles = await getArticlesByLang(lang);
+const articles = (await getArticlesByLang(lang)).filter((a) => !isNoindexArticle(a));
 const base = localizePath('/', lang);
 ---
 

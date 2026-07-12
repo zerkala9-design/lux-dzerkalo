@@ -4,7 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import CallbackForm from '../CallbackForm.astro';
 import { site } from '../../data/site';
 import { getLangFromUrl, useTranslations, localizePath } from '../../i18n/ui';
-import { getArticlesByLang, articleSlug, type Article } from '../../lib/articles';
+import { getArticlesByLang, articleSlug, articleHasTwin, isNoindexArticle, type Article } from '../../lib/articles';
 
 interface Props { article: Article; }
 const { article } = Astro.props;
@@ -14,7 +14,14 @@ const t = useTranslations(lang);
 const { Content } = await render(article);
 const base = localizePath('/', lang);
 
-const others = (await getArticlesByLang(lang)).filter((a) => a.id !== article.id).slice(0, 4);
+// hreflang-альтернативи вмикаємо лише коли існує двійник із тим самим slug;
+// тонкі легасі-статті без двійника виводимо з індексу.
+const hasTwin = await articleHasTwin(article);
+const noindex = isNoindexArticle(article);
+
+const others = (await getArticlesByLang(lang))
+  .filter((a) => a.id !== article.id && !isNoindexArticle(a))
+  .slice(0, 4);
 
 const articleLd = {
   '@context': 'https://schema.org',
@@ -28,7 +35,7 @@ const articleLd = {
 };
 ---
 
-<BaseLayout title={data.title} description={data.description} jsonLd={articleLd} alternates={false}>
+<BaseLayout title={data.title} description={data.description} jsonLd={articleLd} alternates={hasTwin} noindex={noindex}>
   <section class="page-head page-head--slim">
     <div class="container container--wide">
       <nav class="crumbs">

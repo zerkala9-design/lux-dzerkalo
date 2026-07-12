@@ -36,6 +36,17 @@ const steps = [
   { n: '03', title: t('proc.3.title'), text: t('proc.3.text') },
   { n: '04', title: t('proc.4.title'), text: t('proc.4.text') },
 ];
+
+// Внутрішня перелінковка на ключові (money) статті — обидві мови мають цей slug.
+const topics = [
+  { slug: 'dzerkala-na-zamovlennya-v-kievi', uk: 'Дзеркала на замовлення в Києві', ru: 'Зеркала на заказ в Киеве' },
+  { slug: 'dzerkala-dlya-zaliv-i-studiy', uk: 'Дзеркала для залів і студій', ru: 'Зеркала для залов и студий' },
+  { slug: 'dzerkalo-u-vannu-kimnatu-kiyiv', uk: 'Дзеркало у ванну кімнату', ru: 'Зеркало в ванную комнату' },
+  { slug: 'dzerkalo-z-led-pidsvitkoyu-yak-vybraty', uk: 'Дзеркало з LED-підсвіткою: як вибрати', ru: 'Зеркало с LED-подсветкой: как выбрать' },
+  { slug: 'dzerkalo-z-fatsetom-shcho-tse', uk: 'Що таке дзеркало з фацетом', ru: 'Что такое зеркало с фацетом' },
+  { slug: 'dzerkalna-plitka-u-vannu-ta-na-stinu', uk: 'Дзеркальна плитка у ванну та на стіну', ru: 'Зеркальная плитка в ванную и на стену' },
+];
+const topicsHeading = lang === 'ru' ? 'Полезно знать' : 'Корисно знати';
 ---
 
 <BaseLayout title={homeTitle}>
@@ -125,6 +136,26 @@ const steps = [
     </div>
   </section>
 
+  <section class="section section--soft">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <span class="eyebrow">{topicsHeading}</span>
+        <h2>{t('articles.title')}</h2>
+      </div>
+      <div class="topic-links">
+        {topics.map((tp) => (
+          <a href={localizePath(`/statti/${tp.slug}/`, lang)} class="topic-link">
+            <span>{lang === 'ru' ? tp.ru : tp.uk}</span>
+            <span class="link-arrow">{t('common.more')}</span>
+          </a>
+        ))}
+      </div>
+      <div style="text-align:center; margin-top: 2rem;">
+        <a href={localizePath('/statti/', lang)} class="btn btn--ghost">{t('articles.all')}</a>
+      </div>
+    </div>
+  </section>
+
   <Reviews />
 
   <Faq items={faqItems} heading={t('faq.heading')} />
@@ -155,6 +186,12 @@ const steps = [
   .cat-tile:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: transparent; }
   .cat-tile h3 { font-size: 1.18rem; margin-bottom: 0.2rem; }
   .cat-tile p { color: var(--ink-soft); font-size: 0.93rem; flex: 1; margin-bottom: 0.8rem; }
+
+  .topic-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .topic-link { display: flex; flex-direction: column; gap: 0.6rem; justify-content: space-between; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px; color: var(--ink); font-weight: 600; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; }
+  .topic-link:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: transparent; }
+  @media (max-width: 1000px) { .topic-links { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 620px) { .topic-links { grid-template-columns: 1fr; } }
 
   .step { position: relative; padding-top: 8px; }
   .step__n { font-family: var(--serif); font-size: 2.6rem; font-weight: 700; color: var(--accent); opacity: 0.5; display: block; line-height: 1; }

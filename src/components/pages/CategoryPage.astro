@@ -19,6 +19,17 @@ const products = (await getProductsByLang(lang)).filter((p) => p.data.category =
 const base = localizePath('/', lang);
 const faqItems = getCategoryFaq(category.key, lang);
 
+// Перелінковка категорія → профільна (money) стаття. Усі slug існують в обох мовах.
+const pillarMap: Record<string, { slug: string; uk: string; ru: string }> = {
+  vanna: { slug: 'dzerkalo-u-vannu-kimnatu-kiyiv', uk: 'Дзеркало у ванну кімнату: як вибрати', ru: 'Зеркало в ванную комнату: как выбрать' },
+  led: { slug: 'dzerkalo-z-led-pidsvitkoyu-yak-vybraty', uk: 'Дзеркало з LED-підсвіткою: як вибрати', ru: 'Зеркало с LED-подсветкой: как выбрать' },
+  facet: { slug: 'dzerkalo-z-fatsetom-shcho-tse', uk: 'Що таке дзеркало з фацетом', ru: 'Что такое зеркало с фацетом' },
+  plitka: { slug: 'dzerkalna-plitka-u-vannu-ta-na-stinu', uk: 'Дзеркальна плитка у ванну та на стіну', ru: 'Зеркальная плитка в ванную и на стену' },
+  sportzal: { slug: 'dzerkala-dlya-zaliv-i-studiy', uk: 'Дзеркала для залів і студій: розміри та монтаж', ru: 'Зеркала для залов и студий: размеры и монтаж' },
+  interier: { slug: 'dzerkala-na-zamovlennya-v-kievi', uk: 'Дзеркала на замовлення в Києві', ru: 'Зеркала на заказ в Киеве' },
+};
+const pillar = pillarMap[category.key];
+
 // Заголовок із локальним наміром (під пошукові запити «… в Києві / в Киеве»)
 const metaTitle = lang === 'ru'
   ? `${catTitle(category, lang)} на заказ в Киеве`
@@ -66,6 +77,18 @@ const breadcrumbsLd = {
     </div>
   </section>
 
+  {pillar && (
+    <section class="section">
+      <div class="container">
+        <a href={localizePath(`/statti/${pillar.slug}/`, lang)} class="pillar-link">
+          <span class="eyebrow">{lang === 'ru' ? 'Читайте также' : 'Читайте також'}</span>
+          <strong>{lang === 'ru' ? pillar.ru : pillar.uk}</strong>
+          <span class="link-arrow">{t('articles.readMore')}</span>
+        </a>
+      </div>
+    </section>
+  )}
+
   <Faq items={faqItems} heading={t('faq.heading')} soft={true} />
 
   <CallbackForm />
@@ -81,4 +104,7 @@ const breadcrumbsLd = {
   .chip { padding: 0.5em 1.1em; border-radius: 999px; border: 1.5px solid var(--line); color: var(--ink); font-size: 0.92rem; font-weight: 500; background: #fff; }
   .chip:hover { border-color: var(--accent); color: var(--accent-dark); }
   .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .pillar-link { display: flex; flex-direction: column; gap: 0.5rem; background: var(--accent-soft); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 26px; color: var(--ink); }
+  .pillar-link strong { font-family: var(--serif); font-size: 1.3rem; }
+  .pillar-link:hover { border-color: var(--accent); }
 </style>

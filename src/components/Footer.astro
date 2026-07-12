@@ -2,6 +2,7 @@
 import { site, navItems, siteText } from '../data/site';
 import { categories, catTitle } from '../data/categories';
 import { getLangFromUrl, useTranslations, localizePath } from '../i18n/ui';
+import { getArticleSlugSets } from '../lib/articles';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -11,8 +12,18 @@ const year = new Date().getFullYear();
 // Перемикач мови: той самий шлях у протилежній мові
 const current = Astro.url.pathname;
 const stripped = current.replace(/^\/ru(\/|$)/, '/');
-const altUk = stripped === '' ? '/' : stripped;
-const altRu = altUk === '/' ? '/ru/' : `/ru${altUk}`;
+let altUk = stripped === '' ? '/' : stripped;
+let altRu = altUk === '/' ? '/ru/' : `/ru${altUk}`;
+
+// Не всі статті мають мовний двійник (частина легасі — лише RU).
+// Щоб перемикач мови не вів на 404, за відсутності двійника ведемо на список статей тієї мови.
+const artMatch = altUk.match(/^\/statti\/([^/]+)\/$/);
+if (artMatch) {
+  const slug = artMatch[1];
+  const { uk, ru } = await getArticleSlugSets();
+  if (!uk.has(slug)) altUk = '/statti/';
+  if (!ru.has(slug)) altRu = '/ru/statti/';
+}
 
 const socials = [
   { name: 'Instagram', url: site.social.instagram },
