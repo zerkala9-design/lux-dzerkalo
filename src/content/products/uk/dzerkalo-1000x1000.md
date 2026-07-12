@@ -1,7 +1,7 @@
 ---
 title: "Дзеркало 1000×1000 мм"
 category: "interier"
-image: "../../../assets/products/dzerkalo-rozmir.jpg"
+image: "../../../assets/products/dzerkalo-rozmir-b.jpg"
 summary: "Готове дзеркало 1000×1000 мм (100×100 см) зі скла 4 мм з полірованим краєм. Гарно виглядає у спальні, вітальні чи над консоллю. Ціна 1990 грн, виготовлення на замовлення в Києві."
 priceFrom: 1990
 priceUnit: "грн"

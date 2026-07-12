@@ -1,7 +1,7 @@
 ---
 title: "Зеркало 700×1000 мм"
 category: "interier"
-image: "../../../assets/products/dzerkalo-rozmir.jpg"
+image: "../../../assets/products/dzerkalo-rozmir-a.jpg"
 summary: "Готовое зеркало 700×1000 мм (70×100 см) из стекла 4 мм с полированным краем. Хорошо смотрится в спальне, гостиной или над консолью. Цена 1390 грн, изготовление на заказ в Киеве."
 priceFrom: 1390
 priceUnit: "грн"

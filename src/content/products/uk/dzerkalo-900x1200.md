@@ -1,7 +1,7 @@
 ---
 title: "Дзеркало 900×1200 мм"
 category: "interier"
-image: "../../../assets/products/dzerkalo-rozmir.jpg"
+image: "../../../assets/products/dzerkalo-rozmir-b.jpg"
 summary: "Готове дзеркало 900×1200 мм (90×120 см) зі скла 4 мм з полірованим краєм. Гарно виглядає у спальні, вітальні чи над консоллю. Ціна 2190 грн, виготовлення на замовлення в Києві."
 priceFrom: 2190
 priceUnit: "грн"

@@ -1,7 +1,7 @@
 ---
 title: "Зеркало 600×900 мм"
 category: "interier"
-image: "../../../assets/products/dzerkalo-rozmir.jpg"
+image: "../../../assets/products/dzerkalo-rozmir-a.jpg"
 summary: "Готовое зеркало 600×900 мм (60×90 см) из стекла 4 мм с полированным краем. Подходит для ванной, прихожей или над комодом. Цена 1290 грн, изготовление на заказ в Киеве."
 priceFrom: 1290
 priceUnit: "грн"

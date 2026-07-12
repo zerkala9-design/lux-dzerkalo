@@ -1,7 +1,7 @@
 ---
 title: "Зеркало 500×700 мм"
 category: "interier"
-image: "../../../assets/products/dzerkalo-rozmir.jpg"
+image: "../../../assets/products/dzerkalo-rozmir-a.jpg"
 summary: "Готовое зеркало 500×700 мм (50×70 см) из стекла 4 мм с полированным краем. Подходит для ванной, прихожей или над комодом. Цена 990 грн, изготовление на заказ в Киеве."
 priceFrom: 990
 priceUnit: "грн"
