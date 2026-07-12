@@ -9,7 +9,9 @@ import { site } from '../../data/site';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-const products = await getProductsByLang(lang);
+// У загальному каталозі показуємо лише «вітринні» товари; розмірні варіанти
+// (catalogHidden) живуть тільки у своїй категорії, щоб не дублювати сітку.
+const products = (await getProductsByLang(lang)).filter((p) => !p.data.catalogHidden);
 
 const base = localizePath('/', lang);
 const catalogUrl = new URL(localizePath('/katalog/', lang), site.url).href;

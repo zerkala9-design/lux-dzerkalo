@@ -23,6 +23,8 @@ const products = defineCollection({
       specs: z.array(z.object({ label: z.string(), value: z.string() })).default([]),
       order: z.number().default(100),
       featured: z.boolean().default(false),
+      // Не показувати в загальному каталозі /katalog/ (лишається лише у своїй категорії)
+      catalogHidden: z.boolean().default(false),
     }),
 });
 
