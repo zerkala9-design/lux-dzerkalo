@@ -1,0 +1,46 @@
+// Тонкі легасі-статті RU (без UK-двійника), що дублювали одна одну й категорії.
+// Рішення SEO-аудиту (варіант D4): 6 найцінніших — розширено як повноцінні статті,
+// решту нижче — лишаємо доступними (URL живий, 200), але виводимо з індексу
+// через <meta name="robots" content="noindex"> і виключаємо з sitemap та зі списку блогу.
+// Це безпечно й зворотно: жоден URL не видаляється і не змінюється.
+export const noindexArticleSlugs: string[] = [
+  '2017_04_gde-kupit-zerkalnuyu-plitku',
+  '2017_04_kupit-zerkalnuyu-plitku-nedorogo',
+  '2017_04_steklo-s-fatsetom',
+  '2017_04_zerkalnaya-potolochnaya-plitka-kupit',
+  '2017_04_zerkalnye-plitki-na-stenu-kupit',
+  '2017_zerkalnaya-plitka-tsena-za-1-kv-metr',
+  '2017_zerkalo-plitka-kupit',
+  '2023_zerkalnaya-plitka-v-interere',
+  '2023_zerkalnoe-panno-v-ukraine---stilniy-i-funktsionalniy-element',
+  'fartuk-s-fotopechatyu-na-kuhnyu',
+  'obychnye-zerkala',
+  'porezka-stekla',
+  'proizvodstvo-zerkalnoy-plitki',
+  'prozrachnie_okonnie_stekla',
+  'stekla_v_kieve',
+  'stekljannie_fartuki',
+  'steklo-4-mm',
+  'zerkala-s-fatsetom-_zerkalnoe-panno_-zerkalnaya-plitka_',
+  'zerkala_s_facetom1',
+  'zerkalnaja_plitka',
+  'zerkalnaja_plitka_s_facetom',
+  'zerkalnaya-plitka-dlya-vannoy',
+  'zerkalnaya-plitka-na-potolok',
+  'zerkalnaya-plitka-na-stenu',
+  'zerkalnaya-plitka-romb',
+  'zerkalnaya-plitka-s-fatsetom-kupit',
+  'zerkalnaya-plitka-s-fatsetom-tsena',
+  'zerkalnaya-plitka-v-interere',
+  'zerkalnaya-plitka-v-spalne',
+  'zerkalnaya-plitka-v-vannuyu',
+  'zerkalnaya-plitka',
+  'zerkalnaya-potolochnaya-plitka',
+  'zerkalnye-paneli-kupit',
+  'zerkalnye-paneli-tsena',
+  'zerkalo-dlya-biznesa',
+  'zerkalo_kupit',
+  'zerkalo_s_facetom',
+];
+
+export const noindexArticleSet = new Set(noindexArticleSlugs);

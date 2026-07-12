@@ -59,9 +59,22 @@ const productLd = {
       }
     : {}),
 };
+
+const breadcrumbsLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: t('nav.home'), item: new URL(base, site.url).href },
+    { '@type': 'ListItem', position: 2, name: t('catalog.title'), item: new URL(localizePath('/katalog/', lang), site.url).href },
+    ...(category
+      ? [{ '@type': 'ListItem', position: 3, name: catTitle(category, lang), item: new URL(localizePath(`/katalog/${category.slug}/`, lang), site.url).href }]
+      : []),
+    { '@type': 'ListItem', position: category ? 4 : 3, name: data.title, item: new URL(localizePath(`/tovar/${productSlug(product)}/`, lang), site.url).href },
+  ],
+};
 ---
 
-<BaseLayout title={data.title} description={data.summary} jsonLd={productLd}>
+<BaseLayout title={data.title} description={data.summary} jsonLd={[productLd, breadcrumbsLd]}>
   <section class="page-head page-head--slim">
     <div class="container">
       <nav class="crumbs">
