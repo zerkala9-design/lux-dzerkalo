@@ -16,7 +16,7 @@ const href = localizePath(`/tovar/${productSlug(product)}/`, lang);
 
 <article class="card">
   <a class="card__media" href={href} aria-label={data.title}>
-    <Image src={data.image} alt={data.title} width={520} height={390} />
+    <Image src={data.image} alt={data.title} width={520} height={390} densities={[1, 2]} />
   </a>
   <div class="card__body">
     <h3><a href={href}>{data.title}</a></h3>

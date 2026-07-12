@@ -76,13 +76,13 @@ const productLd = {
     <div class="container product__grid">
       <div class="product__gallery">
         <div class="product__main">
-          <Image src={data.image} alt={data.title} width={760} height={570} id="main-image" />
+          <Image src={data.image} alt={data.title} width={820} densities={[1, 2]} id="main-image" />
         </div>
         {gallery.length > 1 && (
           <div class="product__thumbs">
             {gallery.map((img, i) => (
               <button class:list={['thumb', { active: i === 0 }]} data-src={img.src} aria-label={`${data.title} ${i + 1}`}>
-                <Image src={img} alt={`${data.title} — ${i + 1}`} width={160} height={120} />
+                <Image src={img} alt={`${data.title} — ${i + 1}`} width={160} height={120} densities={[1, 2]} />
               </button>
             ))}
           </div>
