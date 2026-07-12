@@ -1,7 +1,7 @@
 ---
 title: "Зеркало 700×1700 мм"
 category: "interier"
-image: "../../../assets/products/gostinaya-1.jpg"
+image: "../../../assets/products/dzerkalo-rozmir.jpg"
 summary: "Готовое зеркало 700×1700 мм (70×170 см) из стекла 4 мм с полированным краем. Зеркало в полный рост — для спальни, гардеробной или прихожей. Цена 2690 грн, изготовление на заказ в Киеве."
 priceFrom: 2690
 priceUnit: "грн"

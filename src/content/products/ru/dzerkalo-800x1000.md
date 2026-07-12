@@ -1,7 +1,7 @@
 ---
 title: "Зеркало 800×1000 мм"
 category: "interier"
-image: "../../../assets/products/gostinaya-1.jpg"
+image: "../../../assets/products/dzerkalo-rozmir.jpg"
 summary: "Готовое зеркало 800×1000 мм (80×100 см) из стекла 4 мм с полированным краем. Хорошо смотрится в спальне, гостиной или над консолью. Цена 1690 грн, изготовление на заказ в Киеве."
 priceFrom: 1690
 priceUnit: "грн"

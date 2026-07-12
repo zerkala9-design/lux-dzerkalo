@@ -1,7 +1,7 @@
 ---
 title: "Дзеркало 500×700 мм"
 category: "interier"
-image: "../../../assets/products/gostinaya-1.jpg"
+image: "../../../assets/products/dzerkalo-rozmir.jpg"
 summary: "Готове дзеркало 500×700 мм (50×70 см) зі скла 4 мм з полірованим краєм. Підходить для ванної, передпокою чи над комодом. Ціна 990 грн, виготовлення на замовлення в Києві."
 priceFrom: 990
 priceUnit: "грн"

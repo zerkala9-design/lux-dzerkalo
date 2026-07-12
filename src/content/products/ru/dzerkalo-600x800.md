@@ -1,7 +1,7 @@
 ---
 title: "Зеркало 600×800 мм"
 category: "interier"
-image: "../../../assets/products/gostinaya-1.jpg"
+image: "../../../assets/products/dzerkalo-rozmir.jpg"
 summary: "Готовое зеркало 600×800 мм (60×80 см) из стекла 4 мм с полированным краем. Подходит для ванной, прихожей или над комодом. Цена 1190 грн, изготовление на заказ в Киеве."
 priceFrom: 1190
 priceUnit: "грн"

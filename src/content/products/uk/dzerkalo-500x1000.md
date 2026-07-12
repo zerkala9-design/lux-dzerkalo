@@ -1,7 +1,7 @@
 ---
 title: "Дзеркало 500×1000 мм"
 category: "interier"
-image: "../../../assets/products/gostinaya-1.jpg"
+image: "../../../assets/products/dzerkalo-rozmir.jpg"
 summary: "Готове дзеркало 500×1000 мм (50×100 см) зі скла 4 мм з полірованим краєм. Гарно виглядає у спальні, вітальні чи над консоллю. Ціна 1290 грн, виготовлення на замовлення в Києві."
 priceFrom: 1290
 priceUnit: "грн"

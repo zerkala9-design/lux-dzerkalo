@@ -1,7 +1,7 @@
 ---
 title: "Зеркало 600×1600 мм"
 category: "interier"
-image: "../../../assets/products/gostinaya-1.jpg"
+image: "../../../assets/products/dzerkalo-rozmir.jpg"
 summary: "Готовое зеркало 600×1600 мм (60×160 см) из стекла 4 мм с полированным краем. Зеркало в полный рост — для спальни, гардеробной или прихожей. Цена 2190 грн, изготовление на заказ в Киеве."
 priceFrom: 2190
 priceUnit: "грн"

@@ -1,7 +1,7 @@
 ---
 title: "Зеркало 800×1800 мм"
 category: "interier"
-image: "../../../assets/products/gostinaya-1.jpg"
+image: "../../../assets/products/dzerkalo-rozmir.jpg"
 summary: "Готовое зеркало 800×1800 мм (80×180 см) из стекла 4 мм с полированным краем. Зеркало в полный рост — для спальни, гардеробной или прихожей. Цена 3390 грн, изготовление на заказ в Киеве."
 priceFrom: 3390
 priceUnit: "грн"

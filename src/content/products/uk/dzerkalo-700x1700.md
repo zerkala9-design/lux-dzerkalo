@@ -1,7 +1,7 @@
 ---
 title: "Дзеркало 700×1700 мм"
 category: "interier"
-image: "../../../assets/products/gostinaya-1.jpg"
+image: "../../../assets/products/dzerkalo-rozmir.jpg"
 summary: "Готове дзеркало 700×1700 мм (70×170 см) зі скла 4 мм з полірованим краєм. Дзеркало у повний зріст — для спальні, гардеробної чи передпокою. Ціна 2690 грн, виготовлення на замовлення в Києві."
 priceFrom: 2690
 priceUnit: "грн"

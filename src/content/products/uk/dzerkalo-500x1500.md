@@ -1,7 +1,7 @@
 ---
 title: "Дзеркало 500×1500 мм"
 category: "interier"
-image: "../../../assets/products/gostinaya-1.jpg"
+image: "../../../assets/products/dzerkalo-rozmir.jpg"
 summary: "Готове дзеркало 500×1500 мм (50×150 см) зі скла 4 мм з полірованим краєм. Дзеркало у повний зріст — для спальні, гардеробної чи передпокою. Ціна 1790 грн, виготовлення на замовлення в Києві."
 priceFrom: 1790
 priceUnit: "грн"

@@ -1,7 +1,7 @@
 ---
 title: "Дзеркало 600×1600 мм"
 category: "interier"
-image: "../../../assets/products/gostinaya-1.jpg"
+image: "../../../assets/products/dzerkalo-rozmir.jpg"
 summary: "Готове дзеркало 600×1600 мм (60×160 см) зі скла 4 мм з полірованим краєм. Дзеркало у повний зріст — для спальні, гардеробної чи передпокою. Ціна 2190 грн, виготовлення на замовлення в Києві."
 priceFrom: 2190
 priceUnit: "грн"

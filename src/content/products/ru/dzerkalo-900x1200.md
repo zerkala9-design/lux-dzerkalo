@@ -1,7 +1,7 @@
 ---
 title: "Зеркало 900×1200 мм"
 category: "interier"
-image: "../../../assets/products/gostinaya-1.jpg"
+image: "../../../assets/products/dzerkalo-rozmir.jpg"
 summary: "Готовое зеркало 900×1200 мм (90×120 см) из стекла 4 мм с полированным краем. Хорошо смотрится в спальне, гостиной или над консолью. Цена 2190 грн, изготовление на заказ в Киеве."
 priceFrom: 2190
 priceUnit: "грн"

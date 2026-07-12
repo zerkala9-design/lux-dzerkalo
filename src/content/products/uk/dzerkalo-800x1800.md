@@ -1,7 +1,7 @@
 ---
 title: "Дзеркало 800×1800 мм"
 category: "interier"
-image: "../../../assets/products/gostinaya-1.jpg"
+image: "../../../assets/products/dzerkalo-rozmir.jpg"
 summary: "Готове дзеркало 800×1800 мм (80×180 см) зі скла 4 мм з полірованим краєм. Дзеркало у повний зріст — для спальні, гардеробної чи передпокою. Ціна 3390 грн, виготовлення на замовлення в Києві."
 priceFrom: 3390
 priceUnit: "грн"

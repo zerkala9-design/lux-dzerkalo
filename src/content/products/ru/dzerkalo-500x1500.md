@@ -1,7 +1,7 @@
 ---
 title: "Зеркало 500×1500 мм"
 category: "interier"
-image: "../../../assets/products/gostinaya-1.jpg"
+image: "../../../assets/products/dzerkalo-rozmir.jpg"
 summary: "Готовое зеркало 500×1500 мм (50×150 см) из стекла 4 мм с полированным краем. Зеркало в полный рост — для спальни, гардеробной или прихожей. Цена 1790 грн, изготовление на заказ в Киеве."
 priceFrom: 1790
 priceUnit: "грн"

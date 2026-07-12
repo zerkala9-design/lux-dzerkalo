@@ -1,7 +1,7 @@
 ---
 title: "Дзеркало 600×800 мм"
 category: "interier"
-image: "../../../assets/products/gostinaya-1.jpg"
+image: "../../../assets/products/dzerkalo-rozmir.jpg"
 summary: "Готове дзеркало 600×800 мм (60×80 см) зі скла 4 мм з полірованим краєм. Підходить для ванної, передпокою чи над комодом. Ціна 1190 грн, виготовлення на замовлення в Києві."
 priceFrom: 1190
 priceUnit: "грн"
