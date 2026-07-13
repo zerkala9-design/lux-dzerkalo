@@ -15,7 +15,7 @@ date: "2026-07-06"
 
 - **тренажёрный зал и спортзал** — контроль техники во время упражнений;
 - **[фитнес-клуб](/ru/statti/dzerkalna-stina-u-fitnes-klub/)** — большая зеркальная стена на групповой зал;
-- **[танцевальная студия](/ru/statti/dzerkala-dlya-tantsyuvalnoyi-studiyi/)** — сплошное зеркало от пола для хореографии;
+- **[танцевальный зал](/ru/statti/dzerkala-dlya-tantsyuvalnoyi-studiyi/)** — сплошное зеркало от пола для хореографии;
 - **[йога](/ru/statti/dzerkala-dlya-yohy/) и [стретчинг](/ru/statti/dzerkala-dlya-streychyngu/)** — ровное полотно от пола для контроля позы;
 - **[бокс и единоборства](/ru/statti/dzerkala-dlya-boksu/)** — прочное стекло с обязательной защитной плёнкой;
 - **[пол дэнс](/ru/statti/dzerkala-dlya-pul-dansu/)** — высокая стена до потолка с раскладкой вокруг пилонов;
