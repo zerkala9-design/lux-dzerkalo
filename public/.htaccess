@@ -22,6 +22,17 @@ DirectoryIndex index.html
   #     старий файл ще лишився на хостингу. ---
   RewriteRule "^statti/zamoviti-dzerkalo-_kiyiv_/?$" "https://%{HTTP_HOST}/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
   RewriteRule "^statti/stilni-ta-praktichni-dzerkala-dlya-tantsyuvalnogo-zalu/?$" "https://%{HTTP_HOST}/statti/dzerkala-dlya-tantsyuvalnoyi-studiyi/" [R=301,L]
+  # --- Прибирання 404-«привидів» від старого перемикача мов (UK-шляхи RU-only статей) ---
+  RewriteRule "^statti/zerkala-dlya-sportzala-kupit/?$" "https://%{HTTP_HOST}/statti/dzerkala-dlya-sportzalu-rozmiry-montazh/" [R=301,L]
+  RewriteRule "^statti/zerkala-dlya-sportzala/?$" "https://%{HTTP_HOST}/statti/dzerkala-dlya-sportzalu-rozmiry-montazh/" [R=301,L]
+  RewriteRule "^statti/2017_09_zerkalo-v-vannuyu-komnatu-kiev/?$" "https://%{HTTP_HOST}/statti/dzerkalo-u-vannu-kimnatu-kiyiv/" [R=301,L]
+  RewriteRule "^statti/zerkalnaja_plitka/?$" "https://%{HTTP_HOST}/katalog/dzerkalna-plitka/" [R=301,L]
+  RewriteRule "^statti/zerkalnaya-potolochnaya-plitka/?$" "https://%{HTTP_HOST}/katalog/dzerkalna-plitka/" [R=301,L]
+  RewriteRule "^statti/proizvodstvo-zerkalnoy-plitki/?$" "https://%{HTTP_HOST}/katalog/dzerkalna-plitka/" [R=301,L]
+  RewriteRule "^statti/izgotovlenie-zerkalnoy-plitki/?$" "https://%{HTTP_HOST}/katalog/dzerkalna-plitka/" [R=301,L]
+  RewriteRule "^statti/steklo-4-mm/?$" "https://%{HTTP_HOST}/katalog/" [R=301,L]
+  RewriteRule "^statti/porezka-stekla/?$" "https://%{HTTP_HOST}/katalog/" [R=301,L]
+  RewriteRule "^statti/obychnye-zerkala/?$" "https://%{HTTP_HOST}/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
   RewriteRule "^ru/statti/2017_09_zakazat-zerkalo-_kiev_/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
   RewriteRule "^ru/statti/2017_izgotovit-zerkalo-pod-zakaz/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
   RewriteRule "^ru/statti/2017_izgotovlenie-zerkal-na-zakaz/?$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
