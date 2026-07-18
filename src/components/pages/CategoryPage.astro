@@ -35,6 +35,11 @@ const metaTitle = lang === 'ru'
   ? `${catTitle(category, lang)} на заказ в Киеве`
   : `${catTitle(category, lang)} на замовлення в Києві`;
 
+// Тригери довіри під комерційні запити (реальні факти)
+const trust = lang === 'ru'
+  ? ['Производитель с 2011', 'Замеры и монтаж под ключ', 'Цена от производителя', 'Доставка НП по Украине']
+  : ['Виробник з 2011', 'Заміри та монтаж під ключ', 'Ціна від виробника', 'Доставка НП по Україні'];
+
 const breadcrumbsLd = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -54,6 +59,9 @@ const breadcrumbsLd = {
       </nav>
       <h1>{catTitle(category, lang)}</h1>
       <p>{catDescription(category, lang)}</p>
+      <ul class="trust-strip">
+        {trust.map((t) => <li>{t}</li>)}
+      </ul>
     </div>
   </section>
 
@@ -104,6 +112,9 @@ const breadcrumbsLd = {
   .chip { padding: 0.5em 1.1em; border-radius: 999px; border: 1.5px solid var(--line); color: var(--ink); font-size: 0.92rem; font-weight: 500; background: #fff; }
   .chip:hover { border-color: var(--accent); color: var(--accent-dark); }
   .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .trust-strip { list-style: none; padding: 0; margin: 1rem 0 0; display: flex; flex-wrap: wrap; gap: 8px 18px; }
+  .trust-strip li { position: relative; padding-left: 22px; font-size: 0.9rem; color: var(--ink-soft); font-weight: 500; }
+  .trust-strip li::before { content: '✓'; position: absolute; left: 0; color: var(--accent-dark); font-weight: 700; }
   .pillar-link { display: flex; flex-direction: column; gap: 0.5rem; background: var(--accent-soft); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 26px; color: var(--ink); }
   .pillar-link strong { font-family: var(--serif); font-size: 1.3rem; }
   .pillar-link:hover { border-color: var(--accent); }
