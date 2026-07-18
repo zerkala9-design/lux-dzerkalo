@@ -7,15 +7,17 @@ DirectoryIndex index.html
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
-  # --- Примусовий HTTPS (за проксі adm.tools: визначаємо через X-Forwarded-Proto) ---
+  # --- Канонічний хост: без www одразу на https (ОДИН редірект) ---
+  # Правило www стоїть ПЕРШИМ і вже пише https://, тож http://www/ → https://non-www/ за 1 стрибок.
+  RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/ [NC]
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+
+  # --- Примусовий HTTPS для non-www (за проксі adm.tools через X-Forwarded-Proto) ---
   RewriteCond %{HTTPS} off
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
   RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/ [NC]
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
-
-  # --- без www ---
-  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-  RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
 
   # --- Канонікалізація (чистка канібалізації): видалені дублі → головні сторінки.
   #     Ставимо ВИЩЕ за "віддати реальний файл", щоб 301 спрацював навіть якщо
