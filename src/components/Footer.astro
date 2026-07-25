@@ -1,12 +1,27 @@
 ---
 import { site, navItems, siteText } from '../data/site';
 import { categories, catTitle } from '../data/categories';
+import { landings } from '../data/landings';
 import { getLangFromUrl, useTranslations, localizePath } from '../i18n/ui';
 import { getArticleSlugSets } from '../lib/articles';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const st = siteText(lang);
+
+// Послуги (LLM/entity-лендінги) — сайт-широка перелінковка
+const svcMeta = [
+  { key: 'vyrobnyk', uk: 'Виробник дзеркал', ru: 'Производитель зеркал' },
+  { key: 'sportzalPk', uk: 'Спортзали під ключ', ru: 'Спортзалы под ключ' },
+  { key: 'led', uk: 'LED-дзеркала', ru: 'LED-зеркала' },
+  { key: 'plitka', uk: 'Дзеркальна плитка', ru: 'Зеркальная плитка' },
+  { key: 'paneli', uk: 'Дзеркальні панелі', ru: 'Зеркальные панели' },
+];
+const svcLinks = svcMeta.map((s) => ({
+  label: lang === 'ru' ? s.ru : s.uk,
+  href: lang === 'ru' ? `/ru/${landings[s.key].slugRu}/` : `/${landings[s.key].slugUk}/`,
+}));
+const svcHeading = lang === 'ru' ? 'Услуги' : 'Послуги';
 const year = new Date().getFullYear();
 
 // Перемикач мови: той самий шлях у протилежній мові
@@ -69,6 +84,15 @@ const socials = [
     </div>
 
     <div>
+      <h4>{svcHeading}</h4>
+      <ul>
+        {svcLinks.map((s) => (
+          <li><a href={s.href}>{s.label}</a></li>
+        ))}
+      </ul>
+    </div>
+
+    <div>
       <h4>{t('footer.contacts')}</h4>
       <ul class="footer-contacts">
         {site.phones.map((p) => (
@@ -94,7 +118,7 @@ const socials = [
 
 <style>
   .site-footer { background: var(--bg-dark); color: #aeb6c0; padding-top: 64px; }
-  .site-footer__grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.2fr; gap: 40px; padding-bottom: 48px; }
+  .site-footer__grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr 1.2fr; gap: 40px; padding-bottom: 48px; }
   .site-footer h4 { color: #fff; font-family: var(--font); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; }
   .site-footer ul { list-style: none; padding: 0; margin: 0; }
   .site-footer li { margin-bottom: 0.6rem; font-size: 0.95rem; }
@@ -116,6 +140,7 @@ const socials = [
   .footer-lang__opt:hover { color: var(--accent); }
   .footer-lang__opt.active { color: var(--accent); }
   .footer-lang__sep { color: #4a525c; }
+  @media (max-width: 1050px) { .site-footer__grid { grid-template-columns: 1fr 1fr 1fr; } }
   @media (max-width: 800px) { .site-footer__grid { grid-template-columns: 1fr 1fr; gap: 30px; } }
   @media (max-width: 480px) { .site-footer__grid { grid-template-columns: 1fr; } }
 </style>

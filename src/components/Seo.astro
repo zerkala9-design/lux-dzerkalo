@@ -9,20 +9,22 @@ interface Props {
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   noindex?: boolean;
   alternates?: boolean;
+  // Явна hreflang-пара, коли UA/RU слаги різні (інакше свопимо /ru/ у шляху)
+  hreflang?: { uk: string; ru: string };
 }
 
-const { title, description = '', image = '/og-default.jpg', jsonLd, noindex = false, alternates = true } = Astro.props;
+const { title, description = '', image = '/og-default.jpg', jsonLd, noindex = false, alternates = true, hreflang } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
 
 const fullTitle = title ? `${title} — ${site.name}` : `${site.name}`;
 const canonical = new URL(Astro.url.pathname, site.url).href;
 const ogImage = new URL(image, site.url).href;
 
-// hreflang-альтернативи: той самий шлях у обох мовах
+// hreflang-альтернативи: явна пара (різні слаги) або той самий шлях у обох мовах
 const path = Astro.url.pathname;
 const ukPath = path.replace(/^\/ru(\/|$)/, '/');
-const ukHref = new URL(ukPath === '' ? '/' : ukPath, site.url).href;
-const ruHref = new URL(ukPath === '/' ? '/ru/' : `/ru${ukPath}`, site.url).href;
+const ukHref = hreflang ? new URL(hreflang.uk, site.url).href : new URL(ukPath === '' ? '/' : ukPath, site.url).href;
+const ruHref = hreflang ? new URL(hreflang.ru, site.url).href : new URL(ukPath === '/' ? '/ru/' : `/ru${ukPath}`, site.url).href;
 const ogLocale = lang === 'ru' ? 'ru_RU' : 'uk_UA';
 ---
 

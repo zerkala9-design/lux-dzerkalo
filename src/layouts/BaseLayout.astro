@@ -14,11 +14,12 @@ interface Props {
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   noindex?: boolean;
   alternates?: boolean;
+  hreflang?: { uk: string; ru: string };
 }
 
 const lang = getLangFromUrl(Astro.url);
 const st = siteText(lang);
-const { title, description = st.description, image, jsonLd, noindex, alternates = true } = Astro.props;
+const { title, description = st.description, image, jsonLd, noindex, alternates = true, hreflang } = Astro.props;
 const htmlLang = lang === 'ru' ? 'ru' : 'uk';
 
 const orgLd = {
@@ -54,7 +55,7 @@ const allLd = jsonLd ? [orgLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])] :
 <!doctype html>
 <html lang={htmlLang}>
   <head>
-    <Seo title={title} description={description} image={image} jsonLd={allLd} noindex={noindex} alternates={alternates} />
+    <Seo title={title} description={description} image={image} jsonLd={allLd} noindex={noindex} alternates={alternates} hreflang={hreflang} />
     {site.analytics.googleSiteVerification && (
       <meta name="google-site-verification" content={site.analytics.googleSiteVerification} />
     )}
