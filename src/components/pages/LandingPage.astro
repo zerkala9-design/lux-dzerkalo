@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CallbackForm from '../CallbackForm.astro';
 import Faq from '../Faq.astro';
@@ -11,6 +12,13 @@ const { id } = Astro.props;
 const landing = landings[id];
 const lang = getLangFromUrl(Astro.url);
 const c = landing[lang];
+
+// Фото реальної роботи (з src/assets/gallery/) — необов'язкове
+const galleryImgs = import.meta.glob<{ default: ImageMetadata }>('../../assets/gallery/*.{jpg,jpeg,png,webp}', { eager: true });
+const workImg = landing.image
+  ? Object.entries(galleryImgs).find(([p]) => p.endsWith('/' + landing.image))?.[1].default
+  : undefined;
+const imgAlt = landing.imageAlt ? landing.imageAlt[lang] : c.h1;
 
 const path = lang === 'ru' ? `/ru/${landing.slugRu}/` : `/${landing.slugUk}/`;
 const canonical = new URL(path, site.url).href;
@@ -25,6 +33,7 @@ const mainLd = landing.schemaType === 'Product'
       '@type': 'Product',
       name: c.h1,
       description: c.metaDescription,
+      ...(workImg ? { image: new URL(workImg.src, site.url).href } : {}),
       brand: { '@type': 'Brand', name: site.name },
       ...(landing.price
         ? {
@@ -47,6 +56,7 @@ const mainLd = landing.schemaType === 'Product'
       serviceType: c.h1,
       provider: { '@type': 'LocalBusiness', '@id': businessId, name: site.name },
       areaServed: lang === 'ru' ? 'Киев и Украина' : 'Київ та Україна',
+      ...(workImg ? { image: new URL(workImg.src, site.url).href } : {}),
       url: canonical,
     };
 
@@ -71,6 +81,13 @@ const breadcrumbsLd = {
 
   <section class="section">
     <div class="container landing-body">
+      {workImg && (
+        <figure class="landing-work">
+          <Image src={workImg} alt={imgAlt} widths={[480, 760, 1080]} sizes="(max-width: 820px) 100vw, 820px" loading="eager" />
+          <figcaption>{imgAlt}</figcaption>
+        </figure>
+      )}
+
       {c.sections.map((s) => (
         <div class="landing-sec">
           <h2>{s.h2}</h2>
@@ -100,6 +117,9 @@ const breadcrumbsLd = {
   .crumbs a { color: var(--ink-soft); }
   .landing-lead { font-size: 1.15rem; color: var(--ink); max-width: 70ch; margin-top: 0.6rem; }
   .landing-body { max-width: 820px; }
+  .landing-work { margin: 0 0 2rem; }
+  .landing-work img { width: 100%; height: auto; max-height: 620px; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--line); }
+  .landing-work figcaption { margin-top: 0.5rem; font-size: 0.88rem; color: var(--muted); }
   .landing-sec { margin-bottom: 1.8rem; }
   .landing-sec h2 { font-family: var(--serif); color: var(--ink); font-size: 1.4rem; margin-bottom: 0.5rem; }
   .landing-sec :global(p) { color: var(--ink-soft); margin: 0 0 0.8rem; }

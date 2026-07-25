@@ -19,6 +19,9 @@ export interface Landing {
   schemaType: 'Service' | 'Product';
   price?: number;
   name: { uk: string; ru: string };
+  // Фото реальної роботи (файл у src/assets/gallery/) + alt
+  image?: string;
+  imageAlt?: { uk: string; ru: string };
   uk: LandingLang;
   ru: LandingLang;
 }
@@ -392,6 +395,11 @@ export const landings: Record<string, Landing> = {
     slugRu: 'zerkala-dlya-kofejni',
     schemaType: 'Service',
     name: { uk: 'Дзеркала для кав\'ярні (фотозона, бренд)', ru: 'Зеркала для кофейни (фотозона, бренд)' },
+    image: 'kavyarnya-fotozona.jpg',
+    imageAlt: {
+      uk: 'Дзеркало-фотозона у повний зріст із рослинною рамою та LED-підсвіткою в кав\'ярні — робота Lux Dzerkalo',
+      ru: 'Зеркало-фотозона в полный рост с растительной рамой и LED-подсветкой в кофейне — работа Lux Dzerkalo',
+    },
     uk: {
       metaTitle: 'Дзеркала для кав\'ярні — фотозони та брендовані дзеркала, Київ',
       metaDescription: 'Дзеркала для кав\'ярні та кафе на замовлення в Києві від Lux Dzerkalo: дзеркальні фотозони, брендовані дзеркала з логотипом і написом, дзеркальні стіни. Заміри й монтаж під ключ.',
