@@ -1,7 +1,7 @@
 ---
 title: "Велике дзеркало 2×1 м на всю стіну (2000×1000 мм)"
 category: "sportzal"
-image: "../../../assets/products/sportzal-1.jpg"
+image: "../../../assets/gallery/zal-trenazherny.jpg"
 summary: "Велике дзеркало на всю стіну 2000×1000 мм (2×1 метри): якісне скло 4 мм, полірований край. Для дзеркальної стіни в залі, студії чи вітальні. Виробник, ціна від 2800 грн."
 priceFrom: 2800
 priceUnit: "грн"
