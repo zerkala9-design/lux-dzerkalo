@@ -1,7 +1,7 @@
 ---
 title: "Кругле дзеркало на замовлення"
 category: "interier"
-image: "../../../assets/products/kruhle-dzerkalo.jpg"
+image: "../../../assets/gallery/robota-krugle-cherne.jpg"
 summary: "Кругле дзеркало на замовлення в Києві: у ванну, передпокій, спальню чи вітальню, будь-який діаметр, з поліруванням або фацетом. Виробник, ціна від 990 грн."
 priceFrom: 990
 priceUnit: "грн"

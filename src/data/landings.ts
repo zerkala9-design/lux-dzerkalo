@@ -139,6 +139,11 @@ export const landings: Record<string, Landing> = {
     schemaType: 'Product',
     price: 2500,
     name: { uk: 'LED-дзеркало на замовлення', ru: 'LED-зеркало на заказ' },
+    image: 'robota-led-vanna.jpg',
+    imageAlt: {
+      uk: 'Прямокутне LED-дзеркало з підсвіткою у ванній кімнаті — робота Lux Dzerkalo',
+      ru: 'Прямоугольное LED-зеркало с подсветкой в ванной комнате — работа Lux Dzerkalo',
+    },
     uk: {
       metaTitle: 'LED-дзеркала на замовлення — ціна від 2500 грн, Київ',
       metaDescription: 'LED-дзеркала на замовлення в Києві від виробника Lux Dzerkalo: ціна від 2500 грн, рівномірне світло, сенсор, димер, антизапотівання. Виготовлення за вашими розмірами.',
@@ -242,6 +247,11 @@ export const landings: Record<string, Landing> = {
     slugRu: 'zerkalnye-paneli-dlya-interera',
     schemaType: 'Service',
     name: { uk: 'Дзеркальні панелі для інтер\'єру', ru: 'Зеркальные панели для интерьера' },
+    image: 'robota-panno-loft.jpg',
+    imageAlt: {
+      uk: 'Дзеркальне панно з панелей у чорній сітці, лофт — робота Lux Dzerkalo',
+      ru: 'Зеркальное панно из панелей в чёрной сетке, лофт — работа Lux Dzerkalo',
+    },
     uk: {
       metaTitle: 'Дзеркальні панелі для інтер\'єру — на замовлення в Києві',
       metaDescription: 'Дзеркальні панелі для інтер\'єру на замовлення в Києві від виробника Lux Dzerkalo: дзеркальні стіни, стелі й панно за ескізом дизайнера, з фацетом. Для дизайнерів і забудовників.',

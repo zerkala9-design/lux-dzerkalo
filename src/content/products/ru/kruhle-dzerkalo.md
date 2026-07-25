@@ -1,7 +1,7 @@
 ---
 title: "Круглое зеркало на заказ"
 category: "interier"
-image: "../../../assets/products/kruhle-dzerkalo.jpg"
+image: "../../../assets/gallery/robota-krugle-cherne.jpg"
 summary: "Круглое зеркало на заказ в Киеве: в ванную, прихожую, спальню или гостиную, любой диаметр, с полировкой или фацетом. Производитель, цена от 990 грн."
 priceFrom: 990
 priceUnit: "грн"
