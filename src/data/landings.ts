@@ -85,6 +85,11 @@ export const landings: Record<string, Landing> = {
     slugRu: 'zerkala-dlya-sportzala-pod-klyuch',
     schemaType: 'Service',
     name: { uk: 'Дзеркала для спортзалу під ключ', ru: 'Зеркала для спортзала под ключ' },
+    image: 'robota-dzerkalna-stina-zal.jpg',
+    imageAlt: {
+      uk: 'Монтаж великої дзеркальної стіни в спортзалі/студії — робота Lux Dzerkalo',
+      ru: 'Монтаж большой зеркальной стены в спортзале/студии — работа Lux Dzerkalo',
+    },
     uk: {
       metaTitle: 'Дзеркала для спортзалу під ключ — виготовлення й монтаж, Київ',
       metaDescription: 'Дзеркала для спортзалу під ключ у Києві від виробника Lux Dzerkalo: великі суцільні дзеркальні стіни, безпечне кріплення, замір і монтаж власною бригадою. Від 2800 грн.',
