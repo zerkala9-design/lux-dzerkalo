@@ -5,10 +5,37 @@ import CallbackForm from '../CallbackForm.astro';
 import { categories, catTitle } from '../../data/categories';
 import { getLangFromUrl, useTranslations, localizePath } from '../../i18n/ui';
 import { getProductsByLang } from '../../lib/products';
+import { landings } from '../../data/landings';
 import { site } from '../../data/site';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+
+// Навігація «за типом» — робить каталог повноцінним хабом «дзеркала на замовлення»
+const lp = (k: string) => (lang === 'ru' ? `/ru/${landings[k].slugRu}/` : `/${landings[k].slugUk}/`);
+const P = (p: string) => localizePath(p, lang);
+const typeLinks = [
+  { uk: 'Дзеркала для ванної', ru: 'Зеркала для ванной', href: P('/katalog/dzerkala-dlya-vannoyi/') },
+  { uk: 'З LED-підсвіткою', ru: 'С LED-подсветкой', href: P('/katalog/dzerkala-z-led-pidsvitkoyu/') },
+  { uk: 'З фацетом', ru: 'С фацетом', href: P('/katalog/dzerkala-z-fatsetom/') },
+  { uk: 'Дзеркальна плитка', ru: 'Зеркальная плитка', href: P('/katalog/dzerkalna-plitka/') },
+  { uk: 'Дзеркальні панно', ru: 'Зеркальные панно', href: P('/katalog/dzerkalni-panno/') },
+  { uk: 'Для спортзалів і студій', ru: 'Для спортзалов и студий', href: P('/katalog/dzerkala-dlya-sportzaliv/') },
+  { uk: "Дзеркала в інтер'єрі", ru: 'Зеркала в интерьере', href: P('/katalog/dzerkala-v-interyeri/') },
+  { uk: 'У повний зріст (підлогові)', ru: 'В полный рост (напольные)', href: P('/tovar/dzerkalo-u-povnyy-zrist/') },
+  { uk: 'На стіну', ru: 'На стену', href: P('/tovar/dzerkalo-na-stinu/') },
+  { uk: 'Круглі та овальні', ru: 'Круглые и овальные', href: P('/statti/krugle-dzerkalo-na-zamovlennya/') },
+  { uk: 'Тоновані (графіт, бронза)', ru: 'Тонированные (графит, бронза)', href: P('/statti/tonovane-dzerkalo-grafit-bronza/') },
+  { uk: 'Декоративні', ru: 'Декоративные', href: P('/statti/zerkala-dekorativnye/') },
+  { uk: 'Гримерні (візажні)', ru: 'Гримёрные (визажные)', href: P('/tovar/grymerne-dzerkalo/') },
+  { uk: 'Дзеркальні панелі', ru: 'Зеркальные панели', href: lp('paneli') },
+  { uk: 'Для спортзалу під ключ', ru: 'Для спортзала под ключ', href: lp('sportzalPk') },
+  { uk: 'LED-дзеркала на замовлення', ru: 'LED-зеркала на заказ', href: lp('led') },
+].map((x) => ({ label: lang === 'ru' ? x.ru : x.uk, href: x.href }));
+const typesHeading = lang === 'ru' ? 'Зеркала на заказ — по типу' : 'Дзеркала на замовлення — за типом';
+const trust = lang === 'ru'
+  ? 'Производитель с 2011 · замеры и монтаж под ключ · доставка НП по Украине'
+  : 'Виробник з 2011 · заміри та монтаж під ключ · доставка НП по Україні';
 // У загальному каталозі показуємо лише «вітринні» товари; розмірні варіанти
 // (catalogHidden) живуть тільки у своїй категорії, щоб не дублювати сітку.
 const products = (await getProductsByLang(lang)).filter((p) => !p.data.catalogHidden);
@@ -39,6 +66,7 @@ const breadcrumbsLd = {
       <nav class="crumbs"><a href={base}>{t('nav.home')}</a> / <span>{t('catalog.title')}</span></nav>
       <h1>{t('catalog.title')}</h1>
       <p>{t('catalog.intro')}</p>
+      <p class="catalog-trust">{trust}</p>
     </div>
   </section>
 
@@ -51,6 +79,13 @@ const breadcrumbsLd = {
       </div>
       <div class="grid grid--3" style="margin-top: 2.5rem;">
         {products.map((p) => <ProductCard product={p} />)}
+      </div>
+
+      <div class="types">
+        <h2>{typesHeading}</h2>
+        <ul class="types__list">
+          {typeLinks.map((x) => (<li><a href={x.href}>{x.label}</a></li>))}
+        </ul>
       </div>
     </div>
   </section>
@@ -67,4 +102,10 @@ const breadcrumbsLd = {
   .chips { display: flex; flex-wrap: wrap; gap: 10px; }
   .chip { padding: 0.5em 1.1em; border-radius: 999px; border: 1.5px solid var(--line); color: var(--ink); font-size: 0.92rem; font-weight: 500; background: #fff; }
   .chip:hover { border-color: var(--accent); color: var(--accent-dark); }
+  .catalog-trust { margin-top: 0.8rem; font-size: 0.92rem; color: var(--accent-dark); font-weight: 600; }
+  .types { margin-top: 3rem; }
+  .types h2 { font-family: var(--serif); font-size: 1.4rem; margin-bottom: 1rem; }
+  .types__list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px 20px; }
+  .types__list a { display: block; padding: 8px 0; color: var(--ink); border-bottom: 1px solid var(--line); font-size: 0.96rem; }
+  .types__list a:hover { color: var(--accent-dark); }
 </style>
