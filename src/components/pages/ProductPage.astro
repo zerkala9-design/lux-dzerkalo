@@ -8,6 +8,7 @@ import { site } from '../../data/site';
 import { getCategory, catTitle } from '../../data/categories';
 import { getLangFromUrl, useTranslations, localizePath } from '../../i18n/ui';
 import { getProductsByLang, productSlug, type Product } from '../../lib/products';
+import { offerShippingDetails, merchantReturnPolicy } from '../../lib/schema';
 
 interface Props { product: Product; }
 const { product } = Astro.props;
@@ -30,7 +31,6 @@ const productLd = {
   name: data.title,
   description: data.summary,
   image: new URL(data.image.src, site.url).href,
-  category: category ? catTitle(category, lang) : undefined,
   brand: { '@type': 'Brand', name: site.name },
   ...(data.priceFrom
     ? {
@@ -41,20 +41,8 @@ const productLd = {
           availability: 'https://schema.org/InStock',
           itemCondition: 'https://schema.org/NewCondition',
           url: new URL(localizePath(`/tovar/${productSlug(product)}/`, lang), site.url).href,
-          shippingDetails: {
-            '@type': 'OfferShippingDetails',
-            shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'UA' },
-            deliveryTime: {
-              '@type': 'ShippingDeliveryTime',
-              handlingTime: { '@type': 'QuantitativeValue', minValue: 2, maxValue: 7, unitCode: 'DAY' },
-              transitTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 3, unitCode: 'DAY' },
-            },
-          },
-          hasMerchantReturnPolicy: {
-            '@type': 'MerchantReturnPolicy',
-            applicableCountry: 'UA',
-            returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted',
-          },
+          shippingDetails: offerShippingDetails,
+          hasMerchantReturnPolicy: merchantReturnPolicy,
         },
       }
     : {}),

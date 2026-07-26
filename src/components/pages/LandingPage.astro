@@ -5,6 +5,7 @@ import CallbackForm from '../CallbackForm.astro';
 import Faq from '../Faq.astro';
 import { site } from '../../data/site';
 import { landings } from '../../data/landings';
+import { offerShippingDetails, merchantReturnPolicy } from '../../lib/schema';
 import { getLangFromUrl, localizePath } from '../../i18n/ui';
 
 interface Props { id: string }
@@ -33,7 +34,7 @@ const mainLd = landing.schemaType === 'Product'
       '@type': 'Product',
       name: c.h1,
       description: c.metaDescription,
-      ...(workImg ? { image: new URL(workImg.src, site.url).href } : {}),
+      image: workImg ? new URL(workImg.src, site.url).href : new URL('/og-default.jpg', site.url).href,
       brand: { '@type': 'Brand', name: site.name },
       ...(landing.price
         ? {
@@ -45,6 +46,8 @@ const mainLd = landing.schemaType === 'Product'
               itemCondition: 'https://schema.org/NewCondition',
               url: canonical,
               seller: { '@type': 'Organization', '@id': businessId, name: site.name },
+              shippingDetails: offerShippingDetails,
+              hasMerchantReturnPolicy: merchantReturnPolicy,
             },
           }
         : {}),
