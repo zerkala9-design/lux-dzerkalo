@@ -13,6 +13,9 @@
 - Після скидання контейнера `node_modules` може зникнути → `npm ci` (або `npm install`), потім білд.
 - **Завжди білдити перед пушем.** Перевіряти згенерований HTML у `dist/`.
 
+## Code style rules
+Follow YAGNI. Prefer stdlib and native platform features over new code. Prefer one-liner solutions where safe. Don't rewrite what already exists — reuse it. Before adding code ask: is it needed? does stdlib do it? can it be one line?
+
 ## Деплой і git
 - Робоча/деплойна гілка: **`claude/brave-clarke-vm26lr`** — пуш у неї авто-деплоїть сайт (FTP з `dist/`).
 - Комітити й пушити після кожної логічної зміни: `git push origin claude/brave-clarke-vm26lr` (ретраї при мережевих збоях).
