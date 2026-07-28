@@ -27,8 +27,7 @@ const pillarMap: Record<string, { slug: string; uk: string; ru: string }> = {
   plitka: { slug: 'dzerkalna-plitka-u-vannu-ta-na-stinu', uk: 'Дзеркальна плитка у ванну та на стіну', ru: 'Зеркальная плитка в ванную и на стену' },
   sportzal: { slug: 'dzerkala-dlya-zaliv-i-studiy', uk: 'Дзеркала для залів і студій: розміри та монтаж', ru: 'Зеркала для залов и студий: размеры и монтаж' },
   interier: { slug: 'dzerkalo-v-kvartyru', uk: 'Дзеркало в квартиру: види, розміри, куди повісити', ru: 'Зеркало в квартиру: виды, размеры, куда повесить' },
-  // RU-стаття панно в noindex → RU-лейбл порожній, лінк показуємо лише в UA.
-  panno: { slug: 'dzerkalne-panno-v-ukrayini---stilniy-ta-funktsionalniy-element', uk: 'Дзеркальне панно з фацетом: види, розкладка та ціна', ru: '' },
+  panno: { slug: 'dzerkalne-panno-v-ukrayini---stilniy-ta-funktsionalniy-element', uk: 'Дзеркальне панно з фацетом: види, розкладка та ціна', ru: 'Зеркальное панно с фацетом: виды, раскладка и цена' },
 };
 const pillar = pillarMap[category.key];
 const pillarLabel = pillar ? (lang === 'ru' ? pillar.ru : pillar.uk) : '';

@@ -61,6 +61,7 @@ DirectoryIndex index.html
   RewriteRule "^ru/statti/2017_09_zerkalo-v-vannuyu-komnatu-kupit-v-kieve/?$" "https://%{HTTP_HOST}/ru/statti/dzerkalo-u-vannu-kimnatu-kiyiv/" [R=301,L]
   RewriteRule "^ru/statti/2017_zerkalo-dlya-vanny-pod-zakaz/?$" "https://%{HTTP_HOST}/ru/statti/dzerkalo-u-vannu-kimnatu-kiyiv/" [R=301,L]
   RewriteRule "^ru/statti/zerkalo-v-vannuyu/?$" "https://%{HTTP_HOST}/ru/statti/dzerkalo-u-vannu-kimnatu-kiyiv/" [R=301,L]
+  RewriteRule "^ru/statti/2023_zerkalnoe-panno-v-ukraine---stilniy-i-funktsionalniy-element/?$" "https://%{HTTP_HOST}/ru/statti/dzerkalne-panno-v-ukrayini---stilniy-ta-funktsionalniy-element/" [R=301,L]
 
   # --- ВАЖЛИВО: якщо реальний файл або тека існують — віддати їх, не редиректити ---
   RewriteCond %{REQUEST_FILENAME} -f [OR]
@@ -143,7 +144,7 @@ DirectoryIndex index.html
   RewriteRule "^ru/stati/2023/stilnye-i-praktichnye-zerkala-dlya-tantsevalnogo-zala_ss\.html$" "https://%{HTTP_HOST}/ru/statti/dzerkala-dlya-tantsyuvalnoyi-studiyi/" [R=301,L]
   RewriteRule "^ru/stati/2023/zerkala-pod-zakaz-v-kieve_ss\.html$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]
   RewriteRule "^ru/stati/2023/zerkalnaya-plitka-v-interere_ss\.html$" "https://%{HTTP_HOST}/ru/statti/2023_zerkalnaya-plitka-v-interere/" [R=301,L]
-  RewriteRule "^ru/stati/2023/zerkalnoe-panno-v-ukraine---stilniy-i-funktsionalniy-element_ss\.html$" "https://%{HTTP_HOST}/ru/statti/2023_zerkalnoe-panno-v-ukraine---stilniy-i-funktsionalniy-element/" [R=301,L]
+  RewriteRule "^ru/stati/2023/zerkalnoe-panno-v-ukraine---stilniy-i-funktsionalniy-element_ss\.html$" "https://%{HTTP_HOST}/ru/statti/dzerkalne-panno-v-ukrayini---stilniy-ta-funktsionalniy-element/" [R=301,L]
   RewriteRule "^ru/stati/fartuk-s-fotopechatyu-na-kuhnyu_ss\.html$" "https://%{HTTP_HOST}/ru/statti/fartuk-s-fotopechatyu-na-kuhnyu/" [R=301,L]
   RewriteRule "^ru/stati/izgotovlenie-zerkalnoy-plitki_ss\.html$" "https://%{HTTP_HOST}/ru/statti/izgotovlenie-zerkalnoy-plitki/" [R=301,L]
   RewriteRule "^ru/stati/izgotovlenie_zerkal\.html$" "https://%{HTTP_HOST}/ru/statti/dzerkala-na-zamovlennya-v-kievi/" [R=301,L]

@@ -12,7 +12,6 @@ export const noindexArticleSlugs: string[] = [
   '2017_zerkalnaya-plitka-tsena-za-1-kv-metr',
   '2017_zerkalo-plitka-kupit',
   '2023_zerkalnaya-plitka-v-interere',
-  '2023_zerkalnoe-panno-v-ukraine---stilniy-i-funktsionalniy-element',
   'fartuk-s-fotopechatyu-na-kuhnyu',
   'obychnye-zerkala',
   'porezka-stekla',
