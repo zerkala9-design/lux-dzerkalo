@@ -27,8 +27,11 @@ const pillarMap: Record<string, { slug: string; uk: string; ru: string }> = {
   plitka: { slug: 'dzerkalna-plitka-u-vannu-ta-na-stinu', uk: 'Дзеркальна плитка у ванну та на стіну', ru: 'Зеркальная плитка в ванную и на стену' },
   sportzal: { slug: 'dzerkala-dlya-zaliv-i-studiy', uk: 'Дзеркала для залів і студій: розміри та монтаж', ru: 'Зеркала для залов и студий: размеры и монтаж' },
   interier: { slug: 'dzerkalo-v-kvartyru', uk: 'Дзеркало в квартиру: види, розміри, куди повісити', ru: 'Зеркало в квартиру: виды, размеры, куда повесить' },
+  // RU-стаття панно в noindex → RU-лейбл порожній, лінк показуємо лише в UA.
+  panno: { slug: 'dzerkalne-panno-v-ukrayini---stilniy-ta-funktsionalniy-element', uk: 'Дзеркальне панно з фацетом: види, розкладка та ціна', ru: '' },
 };
 const pillar = pillarMap[category.key];
+const pillarLabel = pillar ? (lang === 'ru' ? pillar.ru : pillar.uk) : '';
 
 // Заголовок із локальним наміром (під пошукові запити «… в Києві / в Киеве»)
 const metaTitle = lang === 'ru'
@@ -85,12 +88,12 @@ const breadcrumbsLd = {
     </div>
   </section>
 
-  {pillar && (
+  {pillar && pillarLabel && (
     <section class="section">
       <div class="container">
         <a href={localizePath(`/statti/${pillar.slug}/`, lang)} class="pillar-link">
           <span class="eyebrow">{lang === 'ru' ? 'Читайте также' : 'Читайте також'}</span>
-          <strong>{lang === 'ru' ? pillar.ru : pillar.uk}</strong>
+          <strong>{pillarLabel}</strong>
           <span class="link-arrow">{t('articles.readMore')}</span>
         </a>
       </div>
