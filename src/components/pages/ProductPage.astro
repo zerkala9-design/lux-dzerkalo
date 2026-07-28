@@ -1,6 +1,6 @@
 ---
 import { render } from 'astro:content';
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProductCard from '../ProductCard.astro';
 import CallbackForm from '../CallbackForm.astro';
@@ -25,12 +25,15 @@ const related = (await getProductsByLang(lang))
 
 const gallery = [data.image, ...(data.gallery ?? [])];
 
+// getImage гарантує емітований JPEG (data.image.src може вести на неемітований оригінал → 404).
+const schemaImg = await getImage({ src: data.image, format: 'jpeg', width: 1200 });
+
 const productLd = {
   '@context': 'https://schema.org',
   '@type': 'Product',
   name: data.title,
   description: data.summary,
-  image: new URL(data.image.src, site.url).href,
+  image: new URL(schemaImg.src, site.url).href,
   brand: { '@type': 'Brand', name: site.name },
   ...(data.priceFrom
     ? {

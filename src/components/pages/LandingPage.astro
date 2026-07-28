@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CallbackForm from '../CallbackForm.astro';
 import Faq from '../Faq.astro';
@@ -21,6 +21,11 @@ const workImg = landing.image
   : undefined;
 const imgAlt = landing.imageAlt ? landing.imageAlt[lang] : c.h1;
 
+// Абсолютний URL емітованого JPEG для schema (workImg.src може вести на неемітований оригінал → 404).
+const workImgUrl = workImg
+  ? new URL((await getImage({ src: workImg, format: 'jpeg', width: 1200 })).src, site.url).href
+  : new URL('/og-default.jpg', site.url).href;
+
 const path = lang === 'ru' ? `/ru/${landing.slugRu}/` : `/${landing.slugUk}/`;
 const canonical = new URL(path, site.url).href;
 const hreflang = { uk: `/${landing.slugUk}/`, ru: `/ru/${landing.slugRu}/` };
@@ -34,7 +39,7 @@ const mainLd = landing.schemaType === 'Product'
       '@type': 'Product',
       name: c.h1,
       description: c.metaDescription,
-      image: workImg ? new URL(workImg.src, site.url).href : new URL('/og-default.jpg', site.url).href,
+      image: workImgUrl,
       brand: { '@type': 'Brand', name: site.name },
       ...(landing.price
         ? {
@@ -59,7 +64,7 @@ const mainLd = landing.schemaType === 'Product'
       serviceType: c.h1,
       provider: { '@type': 'LocalBusiness', '@id': businessId, name: site.name },
       areaServed: lang === 'ru' ? 'Киев и Украина' : 'Київ та Україна',
-      ...(workImg ? { image: new URL(workImg.src, site.url).href } : {}),
+      ...(workImg ? { image: workImgUrl } : {}),
       url: canonical,
     };
 

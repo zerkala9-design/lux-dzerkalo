@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { getImage } from 'astro:assets';
 import { site } from '../data/site';
 import { getProductsByLang, productSlug } from '../lib/products';
 import { getCategory, catTitle } from '../data/categories';
@@ -13,12 +14,15 @@ const esc = (s: string) =>
 export const GET: APIRoute = async () => {
   const products = (await getProductsByLang('uk')).filter((p) => p.data.priceFrom != null);
 
-  const items = products
-    .map((p) => {
+  const items = await Promise.all(products
+    .map(async (p) => {
       const d = p.data;
       const slug = productSlug(p);
       const link = new URL(`/tovar/${slug}/`, site.url).href;
-      const image = new URL(d.image.src, site.url).href;
+      // getImage гарантує, що JPEG-файл реально згенерується в dist (на відміну
+      // від data.image.src, який може вказувати на неемітований оригінал → 404).
+      const optimized = await getImage({ src: d.image, format: 'jpeg', width: 1200 });
+      const image = new URL(optimized.src, site.url).href;
       const cat = getCategory(d.category);
       const productType = cat ? catTitle(cat, 'uk') : 'Дзеркала';
       const idBlock = d.sku
@@ -38,8 +42,8 @@ export const GET: APIRoute = async () => {
     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Mirrors</g:google_product_category>
     <g:product_type>${esc(productType)}</g:product_type>
   </item>`;
-    })
-    .join('\n');
+    }));
+  const itemsXml = items.join('\n');
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
@@ -47,7 +51,7 @@ export const GET: APIRoute = async () => {
   <title>${esc(site.name)} — каталог</title>
   <link>${site.url}</link>
   <description>Дзеркала на замовлення, дзеркальна плитка, панно — виробник, Київ</description>
-${items}
+${itemsXml}
 </channel>
 </rss>
 `;
