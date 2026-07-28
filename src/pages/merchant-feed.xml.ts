@@ -41,6 +41,8 @@ export const GET: APIRoute = async () => {
     ${idBlock}
     <g:google_product_category>Home &amp; Garden &gt; Decor &gt; Mirrors</g:google_product_category>
     <g:product_type>${esc(productType)}</g:product_type>
+    <g:excluded_destination>Local_inventory_ads</g:excluded_destination>
+    <g:excluded_destination>Free_local_listings</g:excluded_destination>
   </item>`;
     }));
   const itemsXml = items.join('\n');
