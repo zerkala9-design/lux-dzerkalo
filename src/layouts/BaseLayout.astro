@@ -5,6 +5,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { site, siteText } from '../data/site';
 import { getLangFromUrl } from '../i18n/ui';
+import { reviews, reviewStats } from '../data/reviews';
 import Analytics from '../components/Analytics.astro';
 
 interface Props {
@@ -15,11 +16,12 @@ interface Props {
   noindex?: boolean;
   alternates?: boolean;
   hreflang?: { uk: string; ru: string };
+  withReviews?: boolean;
 }
 
 const lang = getLangFromUrl(Astro.url);
 const st = siteText(lang);
-const { title, description = st.description, image, jsonLd, noindex, alternates = true, hreflang } = Astro.props;
+const { title, description = st.description, image, jsonLd, noindex, alternates = true, hreflang, withReviews = false } = Astro.props;
 const htmlLang = lang === 'ru' ? 'ru' : 'uk';
 
 const orgLd = {
@@ -47,6 +49,25 @@ const orgLd = {
     site.social.facebook,
     site.social.telegram,
   ].filter(Boolean),
+  // Рейтинг і відгуки вливаємо в ЄДИНИЙ вузол LocalBusiness (лише там, де є блок відгуків),
+  // щоб не плодити другий LocalBusiness-вузол у structured data.
+  ...(withReviews
+    ? {
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: reviewStats.ratingValue,
+          reviewCount: reviewStats.reviewCount,
+          bestRating: 5,
+        },
+        review: reviews.map((r) => ({
+          '@type': 'Review',
+          author: { '@type': 'Person', name: r.author },
+          reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5 },
+          reviewBody: r.text,
+          ...(r.date ? { datePublished: r.date } : {}),
+        })),
+      }
+    : {}),
 };
 
 const allLd = jsonLd ? [orgLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])] : orgLd;

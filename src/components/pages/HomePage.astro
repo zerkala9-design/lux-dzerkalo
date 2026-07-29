@@ -15,6 +15,11 @@ import heroImg from '../../assets/hero.jpg';
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
+// Короткий meta-опис головної (≤160 симв.) — багатий опис лишається у schema.
+const homeDesc = lang === 'ru'
+  ? 'Производитель зеркал в Киеве с 2011: на заказ по размеру — ванная, фацет, LED-подсветка, панно, спортзалы. Замеры, монтаж, доставка Новой Почтой.'
+  : 'Виробник дзеркал у Києві з 2011: на замовлення за розміром — ванна, фацет, LED-підсвітка, панно, спортзали. Заміри, монтаж, доставка Новою Поштою.';
+
 const products = await getProductsByLang(lang);
 const featured = products.filter((p) => p.data.featured).slice(0, 4);
 const faqItems = getHomeFaq(lang);
@@ -49,7 +54,7 @@ const topics = [
 const topicsHeading = lang === 'ru' ? 'Полезно знать' : 'Корисно знати';
 ---
 
-<BaseLayout title={homeTitle}>
+<BaseLayout title={homeTitle} description={homeDesc} withReviews={true}>
   <section class="hero">
     <div class="hero__bg">
       <Image src={heroImg} alt={t('site.tagline')} widths={[768, 1280, 1920]} sizes="100vw" loading="eager" fetchpriority="high" />

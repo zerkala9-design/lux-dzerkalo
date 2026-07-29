@@ -14,29 +14,8 @@ const tr = {
 
 const hasReviews = reviews.length > 0;
 
-// Мікророзмітка: рейтинг + відгуки на бізнесі
-const reviewsLd = hasReviews
-  ? {
-      '@context': 'https://schema.org',
-      '@type': 'LocalBusiness',
-      '@id': `${site.url}/#business`,
-      name: site.name,
-      url: site.url,
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: reviewStats.ratingValue,
-        reviewCount: reviewStats.reviewCount,
-        bestRating: 5,
-      },
-      review: reviews.map((r) => ({
-        '@type': 'Review',
-        author: { '@type': 'Person', name: r.author },
-        reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5 },
-        reviewBody: r.text,
-        ...(r.date ? { datePublished: r.date } : {}),
-      })),
-    }
-  : null;
+// Structured data для рейтингу/відгуків тепер у ЄДИНОМУ LocalBusiness-вузлі
+// (BaseLayout, проп withReviews) — тут лише візуальний блок.
 
 // Відносна дата: «X днів/тижнів/місяців/років тому»
 function relativeDate(iso?: string): string {
@@ -136,7 +115,6 @@ const cards = reviews.map((r) => ({
 
       <div class="reviews__dots" id="reviews-dots" aria-hidden="true"></div>
     </div>
-    <script type="application/ld+json" set:html={JSON.stringify(reviewsLd)} />
   </section>
 )}
 
