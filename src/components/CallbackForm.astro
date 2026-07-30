@@ -75,6 +75,10 @@ const { title = t('form.title'), text = t('form.text') } = Astro.props;
       const message = String(data.get('message') || '');
       const subject = encodeURIComponent(`${subjectPrefix} ${name}`);
       const body = encodeURIComponent(`${name}\n${phone}\n\n${message}`);
+      // GA4-подія ліда (відправка форми) — для вимірювання конверсій.
+      if (typeof (window as any).gtag === 'function') {
+        (window as any).gtag('event', 'lead_form_submit', { form: 'callback', page: location.pathname });
+      }
       // Без бекенду: відкриваємо поштовий клієнт із заповненою заявкою.
       window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
     });

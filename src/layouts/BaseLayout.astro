@@ -126,5 +126,19 @@ const allLd = jsonLd ? [orgLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])] :
       }
       @media (max-width: 900px) { .float-call { display: grid; } }
     </style>
+
+    <!-- GA4-події лідів: клік по телефону / Viber (сайтово). Форму трекає CallbackForm. -->
+    <script is:inline>
+      document.addEventListener('click', function (e) {
+        var a = e.target && e.target.closest && e.target.closest('a[href]');
+        if (!a || typeof window.gtag !== 'function') return;
+        var href = a.getAttribute('href') || '';
+        if (href.indexOf('tel:') === 0) {
+          window.gtag('event', 'phone_click', { phone: href.slice(4), page: location.pathname });
+        } else if (href.indexOf('viber:') === 0) {
+          window.gtag('event', 'viber_click', { page: location.pathname });
+        }
+      }, { passive: true });
+    </script>
   </body>
 </html>
