@@ -18,6 +18,8 @@ export default defineConfig({
     sitemap({
       i18n: { defaultLocale: 'uk', locales: { uk: 'uk-UA', ru: 'ru-UA' } },
       filter: (page) => !noindexPaths.some((p) => page.endsWith(p)),
+      // lastmod = дата білду: сигнал Google про свіжість → швидша переіндексація змінених сторінок.
+      serialize: (item) => ({ ...item, lastmod: new Date().toISOString() }),
     }),
   ],
   build: {
