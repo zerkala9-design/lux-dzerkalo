@@ -2615,10 +2615,6 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
            
            <div class="card-title-row">
              <div class="result-main" id="wall-total-price">0 ₴</div>
-             <div class="card-sub" style="text-align:right;">
-               <div id="wall-area-info">0 м²</div>
-               <div id="wall-sheets-info">0 шт</div>
-             </div>
            </div>
            <!-- SVG CONTAINER -->
            <div style="margin-top:8px;">
@@ -2626,10 +2622,6 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
            </div>
            <div class="details-title">Деталізація</div>
            <div id="wall-details" style="font-size:11px;line-height:1.6;color:#d1d5db;min-height:80px;">Натисни "Розрахувати".</div>
-           
-           <button class="btn-secondary" id="btn-wall-to-calc" style="margin-top:8px;width:100%;">
-             Перейти в калькулятор (редагувати ціну)
-           </button>
         </div>
       </div>
     </div>
@@ -4328,8 +4320,8 @@ document.querySelectorAll(".calc-input").forEach(i => {
     const grandTotal = totalBase + extra;
 
     document.getElementById("wall-total-price").textContent = formatUAH(grandTotal);
-    document.getElementById("wall-area-info").textContent = areaTotal.toFixed(2) + " м²";
-    document.getElementById("wall-sheets-info").textContent = cols + " листів";
+    { const _wa=document.getElementById("wall-area-info"); if(_wa) _wa.textContent = areaTotal.toFixed(2) + " м²"; }
+    { const _ws=document.getElementById("wall-sheets-info"); if(_ws) _ws.textContent = cols + " листів"; }
 
     let detailsArr = [];
     detailsArr.push(`Стіна: ${W}×${H} мм`);
@@ -4498,7 +4490,7 @@ document.querySelectorAll(".calc-input").forEach(i => {
   document.getElementById("wall-toggle-install").addEventListener("click", ()=>toggleBtn("wall-toggle-install"));
   document.getElementById("wall-toggle-delivery").addEventListener("click", ()=>toggleBtn("wall-toggle-delivery"));
 
-  document.getElementById("btn-wall-to-calc").addEventListener("click", () => {
+  document.getElementById("btn-wall-to-calc")?.addEventListener("click", () => {
     const W = safeInt(document.getElementById("wall_width").value);
     const H = safeInt(document.getElementById("wall_height").value);
     const maxW = safeInt(document.getElementById("max_sheet_w").value);
@@ -7717,7 +7709,6 @@ return c;
 </script>
 
 <!-- Floating Chat Widget -->
-<div id="chat-fab" title="Чат" onclick="try{window.__reflectiqueOpenChat&&window.__reflectiqueOpenChat()}catch(e){}">💬</div>
 
 <div id="chat-panel" class="chat-hidden" aria-hidden="true">
   <div class="chat-header">
