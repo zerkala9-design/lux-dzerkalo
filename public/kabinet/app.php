@@ -2918,11 +2918,6 @@ id="view-machines">
 
       <div class="orders-toolbar">
         <div class="orders-folders" id="orders-folders"></div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
-          <button class="btn-secondary" id="orders-add-folder">📁 Нова папка</button>
-          <button class="btn-secondary" id="orders-delete-folder">🗑 Видалити папку</button>
-          <button class="btn-primary" id="orders-shared-narad">🧾 Наряд</button>
-        </div>
       </div>
 
       <div style="overflow:auto;max-height:380px;">
@@ -5327,45 +5322,24 @@ function rxParseBarcodeText(raw){
   const ordersTable = document.getElementById("orders-table");
   const ordersBody = ordersTable ? ordersTable.querySelector("tbody") : null;
 
-  let activeFolder = "_root";
+  let activeFolder = "__all";
   const selectedIds = new Set();
 
   function renderFolderChips(){
     if(!foldersBar) return;
     foldersBar.innerHTML = "";
-    const s = loadFolderState();
-    const folders = getFolders();
-    const folderTitles = readJSON("reflectique_folder_titles_v1", {});
-    // pinned first, then alpha, _root last? keep _root first
-    const pinned = folders.filter(f=>f!=="_root" && (s[f]?.pinned));
-    const rest = folders.filter(f=>f!=="_root" && !(s[f]?.pinned)).sort((a,b)=>a.localeCompare(b,'uk'));
-    const final = ["_root", ...pinned, ...rest];
-
-    final.forEach(f=>{
-      ensureFolderState(s, f);
-      const chip = document.createElement("div");
-      chip.className = "orders-folder-chip" + (activeFolder===f ? " active": "");
-      chip.textContent = (f==="_root" ? "Без папки" : ("📁 "+(folderTitles[f]||f)));
-      chip.title = "Клік: відкрити • Подвійний клік: згортання • Правий клік: закріпити";
-      chip.addEventListener("click", ()=>{ activeFolder=f; window.renderOrders && window.renderOrders(); renderFolderChips(); });
-      chip.addEventListener("dblclick", ()=>{ s[f].collapsed=!s[f].collapsed; saveFolderState(s); window.renderOrders && window.renderOrders(); });
-      chip.addEventListener("contextmenu", (e)=>{ e.preventDefault();
-        if(e.shiftKey && f!=="_root"){ deleteFolderByName(f); return; }
-        s[f].pinned=!s[f].pinned; saveFolderState(s); renderFolderChips(); window.renderOrders && window.renderOrders(); });
-
-      // droppable for drag
-      chip.addEventListener("dragover", (e)=>{ e.preventDefault(); chip.classList.add("drag-over"); });
-      chip.addEventListener("dragleave", ()=> chip.classList.remove("drag-over"));
-      chip.addEventListener("drop", (e)=>{
-        e.preventDefault(); chip.classList.remove("drag-over");
-        const id = e.dataTransfer?.getData("text/order-id");
-        if(!id) return;
-        moveOrderToFolder(id, f);
-      });
-
-      foldersBar.appendChild(chip);
+    // Спрощено: один чип «Замовлення» показує всі активні замовлення.
+    // (папки прибрані з інтерфейсу — поряд лишається лише кнопка «Архів»)
+    const chip = document.createElement("div");
+    chip.className = "orders-folder-chip" + ((activeFolder==="__all"||activeFolder==="_root") ? " active" : "");
+    chip.textContent = "Замовлення";
+    chip.addEventListener("click", ()=>{
+      try{ localStorage.setItem("rx_show_archive","0"); }catch(e){}
+      activeFolder = "__all";
+      window.renderOrders && window.renderOrders();
+      renderFolderChips();
     });
-    saveFolderState(s);
+    foldersBar.appendChild(chip);
   }
 
   function moveOrderToFolder(orderId, folder){
@@ -5455,8 +5429,8 @@ function rxParseBarcodeText(raw){
         <td>${formatUAH(o.total||0)}</td>
         <td><span class="badge ${badgeClass}" onclick="changeStatusById('${o.id}')">${o.statusLabel || ({new:"Новий", in_progress:"В роботі", done:"Виконано"}[o.status]||o.status)}</span></td>
         <td>
-          <button class="btn-chip" onclick="loadOrderById('${o.id}')">Відкрити</button>
-          <button class="btn-chip" onclick="downloadNaradById('${o.id}')">Наряд</button>
+          <button class="btn-chip" onclick="loadOrderById('${o.id}')">Відправити</button>
+          <button class="btn-chip" onclick="printNaradById('${o.id}')">Наряд</button>
           <button class="btn-secondary" onclick="deleteOrderById('${o.id}')" style="padding:2px 6px;">×</button>
         </td>
       `;
@@ -5474,13 +5448,18 @@ function rxParseBarcodeText(raw){
     // stable global ordering by timestamp descending (newest first) inside folder
     const sorted = [...list].sort((a,b)=> (getOrderTs(b)-getOrderTs(a)));
 
-    showFolders.forEach(folderName=>{
-      if(!folders.includes(folderName)) return;
-      addFolderRow(folderName);
-      if(state[folderName]?.collapsed) return;
-      const arr = sorted.filter(o=> (o.folder||"_root")===folderName);
-      arr.forEach((o, idx)=> renderOrderRow(o, list.indexOf(o)));
-    });
+    if(activeFolder === "__all"){
+      // Плаский список усіх активних замовлень (без заголовків папок)
+      sorted.forEach(o=> renderOrderRow(o, list.indexOf(o)));
+    } else {
+      showFolders.forEach(folderName=>{
+        if(!folders.includes(folderName)) return;
+        addFolderRow(folderName);
+        if(state[folderName]?.collapsed) return;
+        const arr = sorted.filter(o=> (o.folder||"_root")===folderName);
+        arr.forEach((o, idx)=> renderOrderRow(o, list.indexOf(o)));
+      });
+    }
 
     try{ window.updateAnalytics && window.updateAnalytics(); }catch(e){}
     try{ window.renderSharedCalcs && window.renderSharedCalcs(); }catch(e){}
@@ -5746,6 +5725,8 @@ function rxParseBarcodeText(raw){
     }catch(e){}
 return c;
   }
+  // Робимо доступною для інших блоків (drawNarad живе в іншому замиканні)
+  try{ window.drawSharedNarad = drawSharedNarad; }catch(e){}
 
   async function openNaradModal(){
     if(!window.openNaradModal) return {};
@@ -7326,7 +7307,7 @@ return c;
     });
   }
 
-  window.downloadNarad = async function(indexOrOrder){
+  window.downloadNarad = async function(indexOrOrder, mode){
     let order;
     if(indexOrOrder && typeof indexOrOrder === "object"){
       order = indexOrOrder; // прямий об'єкт (напр. архівне замовлення)
@@ -7339,9 +7320,25 @@ return c;
     let ex={};
     try{ ex = await (window.openNaradModal ? window.openNaradModal() : Promise.resolve({})); }catch(e){ return; }
 
-    
+
 
     const cv = drawNarad(order, ex);
+
+    if(mode === "print"){
+      // Наряд для друкування: відкриваємо у новому вікні й викликаємо друк.
+      try{
+        const dataUrl = cv.toDataURL("image/png");
+        const w = window.open("", "_blank");
+        if(!w){ alert("Дозволь спливаючі вікна, щоб надрукувати наряд."); return; }
+        w.document.open();
+        w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Наряд</title>'
+          + '<style>@page{margin:8mm} html,body{margin:0;padding:0;background:#fff}'
+          + ' img{display:block;width:100%;max-width:900px;margin:0 auto}</style></head>'
+          + '<body><img src="' + dataUrl + '" onload="setTimeout(function(){try{window.focus();window.print();}catch(e){}},200)"></body></html>');
+        w.document.close();
+      }catch(e){ alert("Не вдалося відкрити друк: " + (e && e.message ? e.message : e)); }
+      return;
+    }
 
     cv.toBlob((blob)=>{
       const a=document.createElement("a");
@@ -7352,6 +7349,19 @@ return c;
       a.click();
       setTimeout(()=>{ try{ URL.revokeObjectURL(a.href); }catch(e){} a.remove(); }, 600);
     }, "image/png");
+  };
+
+  // Друк наряду по id (шукає й серед активних, і серед архівних замовлень)
+  window.printNaradById = (id)=>{
+    const list = JSON.parse(localStorage.getItem("reflectique_orders")||"[]");
+    const i = list.findIndex(o=>o && String(o.id)===String(id));
+    if(i>=0){ window.downloadNarad && window.downloadNarad(i, "print"); return; }
+    try{
+      const arch = JSON.parse(localStorage.getItem("reflectique_orders_archive")||"[]");
+      const o = arch.find(x=>x && String(x.id)===String(id));
+      if(o){ window.downloadNarad && window.downloadNarad(o, "print"); return; }
+    }catch(e){}
+    alert("Замовлення не знайдено");
   };
 })();
 </script>
@@ -9184,7 +9194,9 @@ function exportSingleNaradPNG(order){
       try{ window.renderOrders && window.renderOrders(); }catch(e){}
     });
     const left = bar.querySelector(".orders-folders") || bar;
-    left.appendChild(chip);
+    // Дубль кнопки «Архів» прибрано з інтерфейсу — використовуємо лише
+    // основну кнопку «Архів» (rx-archive-toggle). Чип не додаємо в DOM.
+    // left.appendChild(chip);
 
     // wrap renderOrders to filter
     if(typeof window.renderOrders === "function" && !window.renderOrders.__rxPatched){
@@ -9663,7 +9675,7 @@ function exportSingleNaradPNG(order){
               <td class="muted">${eta}</td>
               <td class="muted">${o.machine||""}</td>
               <td class="muted">v${o.version||1}</td>
-              <td><button class="btn-chip" type="button" onclick="window.downloadNaradById && window.downloadNaradById('${oid}')">Наряд</button></td>
+              <td><button class="btn-chip" type="button" onclick="window.printNaradById && window.printNaradById('${oid}')">Наряд</button></td>
             </tr>`;
           });
           tb.innerHTML = `
