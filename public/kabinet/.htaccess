@@ -1,0 +1,15 @@
+# Приватний кабінет /kabinet — вхід через index.php (серверний пароль).
+
+# Головний файл теки — PHP-гейт із паролем.
+DirectoryIndex index.php
+
+# Прямий доступ до самого застосунку заборонений — його віддає лише index.php
+# після успішного входу. Так ніхто не обійде пароль через /kabinet/app.html.
+<Files "app.html">
+  Require all denied
+</Files>
+
+# Не індексувати кабінет пошуковими системами.
+<IfModule mod_headers.c>
+  Header set X-Robots-Tag "noindex, nofollow"
+</IfModule>
