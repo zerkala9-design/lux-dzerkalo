@@ -2234,22 +2234,13 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
       </button>
 
       <div class="nav-group-title">Операції</div>
-      <button class="nav-btn" data-view="inventory" data-title="Склад">
-        <span class="nav-btn-dot"></span> Склад
-      </button>
       <button class="nav-btn" data-view="orders" data-title="Замовлення">
         <span class="nav-btn-dot"></span> Замовлення
-      </button>
-      <button class="nav-btn" data-view="products" data-title="Товари">
-        <span class="nav-btn-dot"></span> Товари
       </button>
 
       <div class="nav-group-title">Аналітика</div>
       <button class="nav-btn" data-view="analytics" data-title="Аналітика">
         <span class="nav-btn-dot"></span> Аналітика
-      </button>
-      <button class="nav-btn" data-view="clients" data-title="Клієнти">
-        <span class="nav-btn-dot"></span> Клієнти
       </button>
       <button class="nav-btn" data-view="account" data-title="Акаунт">
         <span class="nav-btn-dot"></span> Акаунт
@@ -2259,9 +2250,6 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
       <div class="nav-group-title">Інше</div>
       <button class="nav-btn" data-view="machines" data-title="Станки">
         <span class="nav-btn-dot"></span> Станки
-      </button>
-      <button class="nav-btn" data-view="scanner" data-title="Сканер">
-        <span class="nav-btn-dot"></span> Сканер
       </button>
 </nav>
     <div class="sidebar-footer">
@@ -2723,138 +2711,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
     </div>
   </div>
 
-  <!-- VIEW: INVENTORY -->
-  <div class="view" id="view-inventory">
-    <div class="card">
-      <div class="card-title-row">
-        <div class="card-title">Склад матеріалів</div>
-      </div>
-      
-<div class="form-grid-3" style="margin:10px 0 6px 0;">
-  <div class="field" style="grid-column:1 / -1;">
-    <label for="inv-search">Пошук</label>
-    <div class="inv-search-row">
-      <input class="input" id="inv-search" type="text" placeholder="Артикул або розмір...">
-      <button id="inv-filters-toggle" class="filters-btn" type="button" title="Фільтри">⚙️</button>
-    </div>
-  </div>
-</div>
-
-<div id="inv-filters-panel" class="inv-filters-panel">
-<div class="field">
-          <label for="inv-filter-color">Фільтр: колір</label>
-          <select class="select" id="inv-filter-color">
-            <option value="all">Усі</option>
-            <option value="silver">Срібло</option>
-            <option value="bronze">Бронза</option>
-            <option value="graphite">Графіт</option>
-            <option value="diamond">Діамант</option>
-          </select>
-        </div>
-<div class="form-grid-3" style="margin-bottom:10px;">
-        <div class="field">
-          <label for="inv-filter-folder">Фільтр: папка</label>
-          <select class="select" id="inv-filter-folder">
-            <option value="all">Усі</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="inv-filter-stock">Фільтр: наявність</label>
-          <select class="select" id="inv-filter-stock">
-            <option value="all">Усі</option>
-            <option value="in">Є в наявності</option>
-            <option value="out">Немає</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="inv-sort">Сортування</label>
-          <select class="select" id="inv-sort">
-            <option value="created_desc">Нові зверху</option>
-            <option value="created_asc">Старі зверху</option>
-            <option value="size_desc">Розмір (площа) ↓</option>
-            <option value="size_asc">Розмір (площа) ↑</option>
-            <option value="qty_desc">Кількість ↓</option>
-            <option value="qty_asc">Кількість ↑</option>
-          </select>
-        </div>
-      </div>
-
-</div>
-
-      <div class="form-grid-2" style="margin-bottom:10px;">
-        <div class="field">
-          <label for="inv-name">Назва</label>
-          <input class="input" id="inv-name" placeholder="Скло срібне 4 мм 2550×1600">
-        </div>
-        <div class="field">
-          <label for="inv-width">Ширина, мм</label>
-          <input class="input" id="inv-width" type="number" min="0" value="2550">
-        </div>
-        <div class="field">
-          <label for="inv-height">Висота, мм</label>
-          <input class="input" id="inv-height" type="number" min="0" value="1600">
-        
-        <div class="field">
-          <label for="inv-thickness">Товщина, мм</label>
-          <select class="select" id="inv-thickness">
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="8">8</option>
-            <option value="10">10</option>
-          </select>
-        </div>
-</div>
-        <div class="field">
-          <label for="inv-color">Колір</label>
-          <select class="select" id="inv-color">
-            <option value="silver">Срібло</option>
-            <option value="bronze">Бронза</option>
-            <option value="graphite">Графіт</option>
-            <option value="diamond">Діамант</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="inv-folder">Папка</label>
-          <select class="select" id="inv-folder">
-            <option value="_root">Без папки</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="inv-qty">Кількість</label>
-          <input class="input" id="inv-qty" type="number" min="0" value="1">
-        </div>
-      </div>
-      <div style="margin-bottom:8px;display:flex;gap:8px;">
-        <button class="btn-primary" id="inv-add">Додати</button>
-        <button class="btn-secondary" id="inv-add-folder">📁 Нова папка</button>
-        <button class="btn-secondary" id="inv-clear">Очистити</button>
-      </div>
-<div style="overflow:auto;max-height:360px;">
-        <table id="inv-table">
-          <thead>
-            <tr><th>#</th><th>Артикул</th><th>Ш×В</th><th>Колір</th><th>Товщ.</th><th>Кількість</th><th></th></tr>
-          </thead>
-          <tbody id="inventory-table-body"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ===== INVENTORY EXTRAS (ONLY in Склад) ===== -->
-    <div class="card" id="inv-totals-card" style="margin-top:14px;">
-      <div class="card-title-row">
-        <div class="card-title">Загальний обʼєм дзеркала</div>
-      <div style="display:flex;gap:8px;align-items:center;"><button class="btn-chip" id="inv-totals-refresh" type="button" title="Оновити">⟲ Оновити</button></div></div>
-      <div style="font-size:12px;color:#9ca3af;line-height:1.6;">
-        <span id="inv-totals-text">Срібло: <b>0 м²</b> · Бронза: <b>0 м²</b> · Графіт: <b>0 м²</b></span>
-      </div>
-    </div>
-</div>
-
-
-
-
-<!-- VIEW: MACHINES -->
+  <!-- VIEW: MACHINES -->
 <div class="view" 
 id="view-machines">
   <div class="card">
@@ -2889,26 +2746,7 @@ id="view-machines">
 </div>
 
 
-  <!-- VIEW: SCANNER -->
-  <div class="view" id="view-scanner">
-    <div class="card">
-      <div class="card-title-row">
-        <div class="card-title">Сканер</div>
-        <div class="card-sub">Відскануй штрих-код (або встав ID) і натисни Enter — покажу інформацію про замовлення.</div>
-      </div>
-
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-        <input class="input" id="scanner-input" type="text" placeholder="Скануй тут… (Enter)" style="max-width:420px;" />
-        <button class="btn-primary" id="scanner-scan" type="button">СКАНУВАТИ</button>
-        <button class="btn-secondary" id="scanner-clear" type="button">Очистити</button>
-      </div>
-
-      <div id="scanner-result" style="margin-top:12px;"></div>
-    </div>
-  </div>
-
-
-<!-- VIEW: ORDERS -->
+  <!-- VIEW: ORDERS -->
   <div class="view" id="view-orders">
     <div class="card">
       <div class="card-title-row">
@@ -2924,7 +2762,6 @@ id="view-machines">
         <table id="orders-table">
           <thead>
             <tr>
-              <th style="width:34px;"></th>
               <th>#</th>
               <th>Дата</th>
               <th>Клієнт</th>
@@ -2937,23 +2774,6 @@ id="view-machines">
           <tbody></tbody>
         </table>
       </div>
-    </div>
-  </div>
-
-  <!-- VIEW: PRODUCTS -->
-  <div class="view" id="view-products">
-    <div class="card">
-      <div class="card-title-row">
-        <div class="card-title">Каталог товарів</div>
-        <div>
-          <button class="btn-primary" id="btn-add-product">+ Додати товар</button>
-        </div>
-      </div>
-      <div class="field" style="margin-bottom:12px;max-width:300px;">
-        <label for="product-search">Пошук</label>
-        <input class="input" id="product-search" type="text" placeholder="Введіть назву...">
-      </div>
-      <div id="products-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;"></div>
     </div>
   </div>
 
@@ -2991,31 +2811,6 @@ id="view-machines">
           <div class="price-section-title">Кількість замовлень</div>
           <div id="analytics-count" style="font-size:20px;font-weight:600;margin-bottom:10px;">0</div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- VIEW: CLIENTS -->
-  <div class="view" id="view-clients">
-    <div class="card">
-      <div class="card-title-row">
-        <div class="card-title">Клієнти</div>
-      </div>
-      <div class="form-grid-2" style="margin-bottom:10px;">
-        <div class="field"><label>Імʼя</label><input class="input" id="client-name"></div>
-        <div class="field"><label>Телефон</label><input class="input" id="client-phone"></div>
-        <div class="field"><label>Тег</label><input class="input" id="client-tag"></div>
-        <div class="field"><label>Примітка</label><input class="input" id="client-notes"></div>
-      </div>
-      <div style="margin-bottom:8px;">
-        <button class="btn-primary" id="client-add">Додати</button>
-        <button class="btn-secondary" id="client-clear" style="margin-left:8px;">Очистити</button>
-      </div>
-      <div style="overflow:auto;max-height:360px;">
-        <table id="clients-table">
-          <thead><tr><th>#</th><th>Імʼя</th><th>Телефон</th><th>Тег</th><th></th></tr></thead>
-          <tbody></tbody>
-        </table>
       </div>
     </div>
   </div>
@@ -4937,6 +4732,7 @@ document.getElementById("btn-calc-pano")?.addEventListener("click", ()=>{
 
   
 function renderInventory() {
+    if(!invBody) return; // розділ «Склад» прибрано
     const inv = getInventory();
     invBody.innerHTML = "";
 
@@ -5410,34 +5206,21 @@ function rxParseBarcodeText(raw){
       const tr = document.createElement("tr");
       const badgeClass = o.status==="new"?"new":o.status==="in_progress"?"in_progress":"done";
       tr.className = `status-${o.status}`;
-      tr.draggable = true;
       tr.dataset.orderId = o.id;
 
-      tr.addEventListener("dragstart", (e)=>{
-        tr.classList.add("order-dragging");
-        e.dataTransfer?.setData("text/order-id", o.id);
-      });
-      tr.addEventListener("dragend", ()=> tr.classList.remove("order-dragging"));
-
-      const checked = selectedIds.has(o.id);
       tr.innerHTML = `
-        <td><input class="order-select" type="checkbox" ${checked?"checked":""}></td>
         <td>${iInAll+1}</td>
         <td>${o.date||""}</td>
         <td>${o.client||"-"}</td>
         <td>${o.size||""} (${o.qty||0}шт)</td>
         <td>${formatUAH(o.total||0)}</td>
-        <td><span class="badge ${badgeClass}" onclick="changeStatusById('${o.id}')">${o.statusLabel || ({new:"Новий", in_progress:"В роботі", done:"Виконано"}[o.status]||o.status)}</span></td>
-        <td>
+        <td><span class="badge ${badgeClass}" style="font-size:11px;padding:2px 7px;white-space:nowrap;" onclick="changeStatusById('${o.id}')">${o.statusLabel || ({new:"Новий", in_progress:"В роботі", done:"Виконано"}[o.status]||o.status)}</span></td>
+        <td style="white-space:nowrap;">
           <button class="btn-chip" onclick="loadOrderById('${o.id}')">Відправити</button>
           <button class="btn-chip" onclick="printNaradById('${o.id}')">Наряд</button>
           <button class="btn-secondary" onclick="deleteOrderById('${o.id}')" style="padding:2px 6px;">×</button>
         </td>
       `;
-      const cb = tr.querySelector("input.order-select");
-      cb.addEventListener("change", ()=>{
-        if(cb.checked) selectedIds.add(o.id); else selectedIds.delete(o.id);
-      });
       ordersBody.appendChild(tr);
     }
 
@@ -6141,6 +5924,7 @@ return c;
   const productSearch = document.getElementById("product-search");
   
   function renderProducts(filter = "") {
+    if(!productsGrid) return; // розділ «Товари» прибрано
     const list = JSON.parse(localStorage.getItem("reflectique_products")||"[]");
     productsGrid.innerHTML = "";
     
@@ -6210,13 +5994,13 @@ return c;
     renderProducts(productSearch.value);
   };
   
-  productSearch.addEventListener("input", (e) => renderProducts(e.target.value));
-  
+  productSearch?.addEventListener("input", (e) => renderProducts(e.target.value));
+
   const addProductModal = document.getElementById("add-product-modal");
-  document.getElementById("btn-add-product").addEventListener("click", () => addProductModal.classList.add("active"));
-  document.getElementById("add-product-close").addEventListener("click", () => addProductModal.classList.remove("active"));
-  
-  document.getElementById("save-product").addEventListener("click", () => {
+  document.getElementById("btn-add-product")?.addEventListener("click", () => addProductModal.classList.add("active"));
+  document.getElementById("add-product-close")?.addEventListener("click", () => addProductModal.classList.remove("active"));
+
+  document.getElementById("save-product")?.addEventListener("click", () => {
     const name = document.getElementById("product-name").value.trim();
     const size = document.getElementById("product-size").value.trim();
     const color = document.getElementById("product-color").value;
@@ -6280,6 +6064,7 @@ return c;
   const clientsBody = document.querySelector("#clients-table tbody");
   
   function renderClients() {
+    if(!clientsBody) return; // розділ «Клієнти» прибрано
     const list = JSON.parse(localStorage.getItem("reflectique_clients")||"[]");
     clientsBody.innerHTML = "";
     list.forEach((c, i) => {
@@ -6302,7 +6087,7 @@ return c;
     renderClients();
   };
   
-  document.getElementById("client-add").addEventListener("click", () => {
+  document.getElementById("client-add")?.addEventListener("click", () => {
     const name = document.getElementById("client-name").value.trim();
     const phone = document.getElementById("client-phone").value.trim();
     const tag = document.getElementById("client-tag").value.trim();
@@ -6321,7 +6106,7 @@ return c;
     document.getElementById("client-notes").value = "";
   });
   
-  document.getElementById("client-clear").addEventListener("click", () => {
+  document.getElementById("client-clear")?.addEventListener("click", () => {
     if(!confirm("Очистити всіх клієнтів?")) return;
     localStorage.removeItem("reflectique_clients");
     renderClients();
