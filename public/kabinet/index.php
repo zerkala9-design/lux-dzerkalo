@@ -12,7 +12,7 @@
  */
 
 // bcrypt-хеш пароля (не сам пароль!).
-$PASS_HASH = '$2y$12$YIK/XWg/WPGBQ72aDL/0h.8.SbwnanQsYvAp/i2gvweUDlbzUwobS';
+$PASS_HASH = '$2y$12$Cu21nx9TBkE1/6uf7i.Eo.tviz4.Q7hA/m1/zXvlkBVvorAxWCXri';
 
 session_start();
 
