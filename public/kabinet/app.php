@@ -5556,9 +5556,15 @@ function rxParseBarcodeText(raw){
   };
   window.downloadNaradById = (id)=>{
     const list = getOrders();
-    const i = list.findIndex(o=>o && o.id===id);
-    if(i<0) return;
-    window.downloadNarad && window.downloadNarad(i);
+    const i = list.findIndex(o=>o && String(o.id)===String(id));
+    if(i>=0){ window.downloadNarad && window.downloadNarad(i); return; }
+    // виконані замовлення авто-переносяться в архів — шукаємо й там
+    try{
+      const arch = JSON.parse(localStorage.getItem("reflectique_orders_archive")||"[]");
+      const o = arch.find(x=>x && String(x.id)===String(id));
+      if(o){ window.downloadNarad && window.downloadNarad(o); return; }
+    }catch(e){}
+    alert("Замовлення не знайдено");
   };
 
   // ===== API for scanner/shared-narad folders =====
@@ -7320,9 +7326,14 @@ return c;
     });
   }
 
-  window.downloadNarad = async function(index){
-    const list = JSON.parse(localStorage.getItem("reflectique_orders")||"[]");
-    const order = list[index];
+  window.downloadNarad = async function(indexOrOrder){
+    let order;
+    if(indexOrOrder && typeof indexOrOrder === "object"){
+      order = indexOrOrder; // прямий об'єкт (напр. архівне замовлення)
+    }else{
+      const list = JSON.parse(localStorage.getItem("reflectique_orders")||"[]");
+      order = list[indexOrOrder];
+    }
     if(!order){ alert("Замовлення не знайдено"); return; }
 
     let ex={};
@@ -9630,14 +9641,18 @@ function exportSingleNaradPNG(order){
   window.renderOrders = function(){
     try{
       const showArchive = localStorage.getItem("rx_show_archive")==="1";
+      const thead = document.querySelector("#orders-table thead");
       if(showArchive){
-        const tbl = document.getElementById("orders-table");
-        if(tbl){
+        // Пишемо в <tbody>, а НЕ замінюємо всю таблицю — інакше зникає tbody,
+        // у який пише звичайний рендер, і після виходу список не оновлюється.
+        const tb = document.querySelector("#orders-table tbody");
+        if(tb){
+          if(thead) thead.style.display = "none";
           const arch = getArchiveOrders();
-          // simple render (read-only)
           let rows = "";
           arch.forEach((o, i)=>{
             const eta = o?.eta?.end ? new Date(o.eta.end).toLocaleString("uk-UA") : "";
+            const oid = String(o.id||"").replace(/['"\\]/g,"");
             rows += `<tr>
               <td style="font-weight:800;">АРХ</td>
               <td>${(o.date||"")}</td>
@@ -9648,15 +9663,20 @@ function exportSingleNaradPNG(order){
               <td class="muted">${eta}</td>
               <td class="muted">${o.machine||""}</td>
               <td class="muted">v${o.version||1}</td>
+              <td><button class="btn-chip" type="button" onclick="window.downloadNaradById && window.downloadNaradById('${oid}')">Наряд</button></td>
             </tr>`;
           });
-          tbl.innerHTML = `
-            <tr class="order-folder-row"><td colspan="9">Архів (тільки перегляд) · ${arch.length}</td></tr>
-            <tr><th>#</th><th>Дата</th><th>Розмір</th><th>К-ть</th><th>Сума</th><th>Статус</th><th>ETA</th><th>Станок</th><th>Версія</th></tr>
-            ${rows || `<tr><td colspan="9" class="muted" style="text-align:center;padding:14px;">Архів порожній</td></tr>`}
+          tb.innerHTML = `
+            <tr class="order-folder-row"><td colspan="10">Архів (тільки перегляд) · ${arch.length}
+              <button class="btn-chip" type="button" style="margin-left:10px;" onclick="try{localStorage.setItem('rx_show_archive','0');}catch(e){} if(window.renderOrders){window.renderOrders();}">← Вийти з архіву</button>
+            </td></tr>
+            <tr><th>#</th><th>Дата</th><th>Розмір</th><th>К-ть</th><th>Сума</th><th>Статус</th><th>ETA</th><th>Станок</th><th>Версія</th><th>Наряд</th></tr>
+            ${rows || `<tr><td colspan="10" class="muted" style="text-align:center;padding:14px;">Архів порожній</td></tr>`}
           `;
           return;
         }
+      } else {
+        if(thead) thead.style.display = "";
       }
     }catch(e){}
     try{ return _renderOrders ? _renderOrders() : undefined; }catch(e){ console.error(e); }
