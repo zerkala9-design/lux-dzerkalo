@@ -1,3 +1,10 @@
+<?php
+// Самозахист: цей файл віддає застосунок ЛИШЕ авторизованим (сесія з index.php).
+// Працює незалежно від .htaccess — прямий доступ без входу неможливий.
+session_start();
+if (empty($_SESSION["kabinet_ok"])) { header("Location: /kabinet/"); exit; }
+header("X-Robots-Tag: noindex, nofollow");
+?>
 <!DOCTYPE html>
 <html lang="uk">
 <head>

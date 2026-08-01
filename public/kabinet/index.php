@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pass'])) {
     if (password_verify((string) $_POST['pass'], $PASS_HASH)) {
         session_regenerate_id(true);
         $_SESSION['kabinet_ok'] = true;
-        header('Location: /kabinet/');
+        header('Location: /kabinet/app.php');
         exit;
     }
     $error = true;
@@ -39,11 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pass'])) {
     usleep(600000);
 }
 
-// Уже авторизований → віддаємо застосунок
+// Уже авторизований → застосунок (самозахищений app.php)
 if (!empty($_SESSION['kabinet_ok'])) {
-    header('Content-Type: text/html; charset=utf-8');
-    header('X-Robots-Tag: noindex, nofollow');
-    readfile(__DIR__ . '/app.html');
+    header('Location: /kabinet/app.php');
     exit;
 }
 
