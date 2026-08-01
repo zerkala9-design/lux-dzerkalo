@@ -2594,6 +2594,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 
           <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
             <button class="btn-primary" id="btn-split-wall">Розрахувати</button>
+            <button class="btn-secondary" id="btn-wall-save-order">Зберегти замовлення</button>
           </div>
         </div>
 
@@ -4269,6 +4270,40 @@ document.querySelectorAll(".calc-input").forEach(i => {
   document.getElementById("btn-split-wall").addEventListener("click", calcWall);
   ["wall_width","wall_height","max_sheet_w","wall_has_film"].forEach(id=>document.getElementById(id).addEventListener("change", calcWall));
   document.querySelectorAll('input[name="wall_mount"]').forEach(r=>r.addEventListener("change", calcWall));
+
+  // Зберегти замовлення з калькулятора Спорт-залів (стіна)
+  document.getElementById("btn-wall-save-order")?.addEventListener("click", (e)=>{
+    e.preventDefault();
+    const totalTxt = document.getElementById("wall-total-price")?.textContent || "";
+    const total = parseFloat(totalTxt.replace(/[^0-9.]/g,""));
+    if(!(total>0)){ alert("Спочатку натисни Розрахувати"); return; }
+    let user=null; try{ user = JSON.parse(localStorage.getItem("reflectique_current_user")); }catch(e){}
+    const W = document.getElementById("wall_width")?.value || "";
+    const H = document.getElementById("wall_height")?.value || "";
+    const list = JSON.parse(localStorage.getItem("reflectique_orders")||"[]");
+    list.unshift({
+      id: (crypto?.randomUUID ? crypto.randomUUID() : ("id_"+Math.random().toString(16).slice(2)+Date.now())),
+      ts: Date.now(),
+      date: new Date().toLocaleString("uk-UA"),
+      client: user?.name || "Гість",
+      size: `${W}x${H}`,
+      qty: 1,
+      total: total,
+      shape: "wall",
+      version: 1,
+      versions: [{ v:1, ts:Date.now(), user:(user?.name||"Гість"), note:"Створено (Спорт-зал)", total: total, snapshot:null }],
+      machine: (window.rxPickMachine ? window.rxPickMachine() : null),
+      priority: (window.rxPickPriority ? window.rxPickPriority() : "standard"),
+      priorityCoef: (window.rxPriorityCoef ? window.rxPriorityCoef(window.rxPickPriority ? window.rxPickPriority() : "standard") : 1),
+      eta: null,
+      archived: false,
+      status: "new",
+      statusLabel: "Новий"
+    });
+    localStorage.setItem("reflectique_orders", JSON.stringify(list));
+    try{ window.renderOrders && window.renderOrders(); }catch(e){}
+    alert("Замовлення збережено!");
+  });
   
   function toggleBtn(id) {
     const btn = document.getElementById(id);
@@ -9432,6 +9467,17 @@ function exportSingleNaradPNG(order){
     }
   });
 
+  // Видалення замовлення з архіву
+  window.deleteArchivedOrder = (id)=>{
+    if(!confirm("Видалити замовлення з архіву? Дію не можна скасувати.")) return;
+    try{
+      const arch = JSON.parse(localStorage.getItem("reflectique_orders_archive")||"[]")
+                     .filter(o=> o && String(o.id)!==String(id));
+      localStorage.setItem("reflectique_orders_archive", JSON.stringify(arch));
+    }catch(e){}
+    try{ window.renderOrders && window.renderOrders(); }catch(e){}
+  };
+
   // ---------- Patch: renderOrders filter (hide archived unless toggled) ----------
   // Wrap existing renderer safely.
   const _renderOrders = window.renderOrders;
@@ -9460,14 +9506,14 @@ function exportSingleNaradPNG(order){
               <td class="muted">${eta}</td>
               <td class="muted">${o.machine||""}</td>
               <td class="muted">v${o.version||1}</td>
-              <td><button class="btn-chip" type="button" onclick="window.printNaradById && window.printNaradById('${oid}')">Наряд</button></td>
+              <td style="white-space:nowrap;"><button class="btn-chip" type="button" onclick="window.printNaradById && window.printNaradById('${oid}')">Наряд</button> <button class="btn-secondary" type="button" style="padding:2px 6px;" onclick="window.deleteArchivedOrder && window.deleteArchivedOrder('${oid}')">×</button></td>
             </tr>`;
           });
           tb.innerHTML = `
             <tr class="order-folder-row"><td colspan="10">Архів (тільки перегляд) · ${arch.length}
               <button class="btn-chip" type="button" style="margin-left:10px;" onclick="try{localStorage.setItem('rx_show_archive','0');}catch(e){} if(window.renderOrders){window.renderOrders();}">← Вийти з архіву</button>
             </td></tr>
-            <tr><th>#</th><th>Дата</th><th>Розмір</th><th>К-ть</th><th>Сума</th><th>Статус</th><th>ETA</th><th>Станок</th><th>Версія</th><th>Наряд</th></tr>
+            <tr><th>#</th><th>Дата</th><th>Розмір</th><th>К-ть</th><th>Сума</th><th>Статус</th><th>ETA</th><th>Станок</th><th>Версія</th><th>Дії</th></tr>
             ${rows || `<tr><td colspan="10" class="muted" style="text-align:center;padding:14px;">Архів порожній</td></tr>`}
           `;
           return;
