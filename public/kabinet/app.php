@@ -2522,7 +2522,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 
         <!-- RIGHT RESULT -->
         <div class="preview-box" id="calc-preview-box">
-          <button class="screenshot-btn" id="btn-calc-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">📤 Відправити / завантажити</button>
+          <button class="screenshot-btn" id="btn-calc-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">Відправити</button>
           
           <div class="mirror-preview-row">
             <div class="mirror-shape" id="mirror-shape"></div>
@@ -2611,7 +2611,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 
         <!-- RIGHT RESULT -->
         <div id="wall-result-container" class="preview-box">
-           <button class="screenshot-btn" id="btn-wall-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">📤 Відправити / завантажити</button>
+           <button class="screenshot-btn" id="btn-wall-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">Відправити</button>
            
            <div class="card-title-row">
              <div class="result-main" id="wall-total-price">0 ₴</div>
@@ -2703,7 +2703,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
         </div>
 
         <div id="pano-result-container" class="preview-box">
-          <button class="screenshot-btn" id="btn-pano-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">📤 Відправити / завантажити</button>
+          <button class="screenshot-btn" id="btn-pano-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">Відправити</button>
           
           <div class="card-title-row">
             <div class="result-main" id="pano-total-price">0 ₴</div>
