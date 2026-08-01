@@ -4222,11 +4222,10 @@ document.querySelectorAll(".calc-input").forEach(i => {
     if(detailsEl) {
       originalHTML = detailsEl.innerHTML;
       originalFontSize = detailsEl.style.fontSize;
-      const simpleVersion = detailsEl.getAttribute("data-simple");
-      if(simpleVersion) {
-        detailsEl.innerHTML = simpleVersion;
-        detailsEl.style.fontSize = "14px";
-      }
+      // Знімок містить ту саму ДЕТАЛЬНУ деталізацію, що й на екрані калькулятора
+      // (з формулами, «Ціна 1 шт (з обробкою)», Монтаж/Доставка, «Все разом»),
+      // а не спрощену версію. Лише трохи збільшуємо шрифт для читабельності.
+      detailsEl.style.fontSize = "14px";
     }
     
     // Increase other text sizes
