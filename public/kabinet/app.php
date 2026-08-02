@@ -2017,7 +2017,6 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
     <div class="settings-tabs">
       <button type="button" class="settings-tab" data-tab="main">Основне</button>
       <button type="button" class="settings-tab active" data-tab="price">Прайс</button>
-      <button type="button" class="settings-tab" data-tab="sync">Синхронізація</button>
     </div>
 
     <div id="settings-main-section" class="settings-section" style="display:none;">
@@ -2167,12 +2166,10 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
       <button class="btn-secondary" id="sync-test-btn" type="button">Перевірити</button>
     </div>
     <div class="card-sub" id="sync-status" style="margin-top:6px;opacity:.9;"></div>
+    </div><!-- end (прихована) sync section -->
 
-  
     <div class="settings-footer" style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px;">
-      <button class="btn-primary" id="settings-save" type="button">Зберегти</button>
-    </div>
-
+      <button class="btn-primary" id="settings-save" type="button">💾 Зберегти</button>
     </div>
   </div>
 </div>
@@ -4208,6 +4205,38 @@ document.querySelectorAll(".calc-input").forEach(i => {
   document.getElementById("btn-split-wall").addEventListener("click", calcWall);
   ["wall_width","wall_height","max_sheet_w","wall_has_film"].forEach(id=>document.getElementById(id).addEventListener("change", calcWall));
   document.querySelectorAll('input[name="wall_mount"]').forEach(r=>r.addEventListener("change", calcWall));
+
+  // ===== Збереження попередньої сесії калькулятора Спорт-залів =====
+  const WALL_SESSION_KEY = "reflectique_wall_session_v1";
+  function saveWallSession(){
+    try{
+      const mount = document.querySelector('input[name="wall_mount"]:checked')?.value || "";
+      localStorage.setItem(WALL_SESSION_KEY, JSON.stringify({
+        w: document.getElementById("wall_width")?.value,
+        h: document.getElementById("wall_height")?.value,
+        maxw: document.getElementById("max_sheet_w")?.value,
+        film: !!document.getElementById("wall_has_film")?.checked,
+        mount: mount
+      }));
+    }catch(e){}
+  }
+  function restoreWallSession(){
+    try{
+      const s = JSON.parse(localStorage.getItem(WALL_SESSION_KEY)||"null");
+      if(!s) return;
+      if(s.w!=null && document.getElementById("wall_width")) document.getElementById("wall_width").value = s.w;
+      if(s.h!=null && document.getElementById("wall_height")) document.getElementById("wall_height").value = s.h;
+      if(s.maxw!=null && document.getElementById("max_sheet_w")) document.getElementById("max_sheet_w").value = s.maxw;
+      const f = document.getElementById("wall_has_film"); if(f) f.checked = !!s.film;
+      if(s.mount){ const r = document.querySelector('input[name="wall_mount"][value="'+s.mount+'"]'); if(r) r.checked = true; }
+    }catch(e){}
+  }
+  // зберігати при будь-якій зміні
+  ["wall_width","wall_height","max_sheet_w","wall_has_film"].forEach(id=>document.getElementById(id)?.addEventListener("change", saveWallSession));
+  document.querySelectorAll('input[name="wall_mount"]').forEach(r=>r.addEventListener("change", saveWallSession));
+  document.getElementById("btn-split-wall")?.addEventListener("click", saveWallSession);
+  // відновити попередню сесію на старті
+  restoreWallSession();
 
   // Зберегти замовлення з калькулятора Спорт-залів (стіна)
   document.getElementById("btn-wall-save-order")?.addEventListener("click", (e)=>{
@@ -9999,6 +10028,132 @@ function exportSingleNaradPNG(order){
   });
 })();
 
+</script>
+
+<!-- ===== Спільна синхронізація кабінету (замовлення + параметри) для всіх акаунтів ===== -->
+<script>
+(function(){
+  const EP = "/kabinet/sync.php";
+  async function pull(key){
+    try{
+      const r = await fetch(EP+"?key="+key, {cache:"no-store", credentials:"same-origin"});
+      if(!r.ok) return undefined;
+      const t = await r.text();
+      return JSON.parse(t);
+    }catch(e){ return undefined; }
+  }
+  async function push(key, data){
+    try{
+      await fetch(EP+"?key="+key, {method:"POST", credentials:"same-origin",
+        headers:{"Content-Type":"application/json"}, body:JSON.stringify(data)});
+      return true;
+    }catch(e){ return false; }
+  }
+  window.rxServerSync = { pull, push };
+
+  /* ---------- ПАРАМЕТРИ / ПРАЙС ---------- */
+  function readParams(){
+    const o = {};
+    document.querySelectorAll('#settings-price-section input, #settings-main-section input').forEach(el=>{
+      if(el.type === 'radio'){ if(el.checked && el.name) o["r:"+el.name] = el.value; }
+      else if(el.type === 'checkbox'){ if(el.id) o[el.id] = el.checked; }
+      else if(el.id){ o[el.id] = el.value; }
+    });
+    return o;
+  }
+  function applyParams(o){
+    if(!o || typeof o !== 'object') return;
+    Object.keys(o).forEach(k=>{
+      if(k.indexOf("r:") === 0){
+        const name = k.slice(2);
+        const r = document.querySelector('input[name="'+name+'"][value="'+o[k]+'"]');
+        if(r) r.checked = true;
+        return;
+      }
+      const el = document.getElementById(k);
+      if(!el) return;
+      if(el.type === 'checkbox') el.checked = !!o[k];
+      else el.value = o[k];
+    });
+  }
+  window.rxSaveParams = async function(){
+    const p = readParams();
+    try{ localStorage.setItem("reflectique_prices", JSON.stringify(p)); }catch(e){}
+    await push("params", p);
+  };
+  // Кнопка «Зберегти» у Параметрах: зберігаємо прайс локально і на сервер (спільно)
+  const saveBtn = document.getElementById("settings-save");
+  if(saveBtn){
+    saveBtn.addEventListener("click", async ()=>{
+      const old = saveBtn.textContent;
+      await window.rxSaveParams();
+      saveBtn.textContent = "Збережено ✓";
+      setTimeout(()=>{ saveBtn.textContent = old; }, 1500);
+    });
+  }
+
+  /* ---------- ЗАМОВЛЕННЯ + АРХІВ ---------- */
+  const KEYS = [
+    { lk: "reflectique_orders",         sk: "orders"  },
+    { lk: "reflectique_orders_archive", sk: "archive" }
+  ];
+  const last = {}; // sk -> last known JSON string (спільний стан)
+
+  async function syncKey(k){
+    const server = await pull(k.sk);              // масив | null | undefined(помилка мережі)
+    if(server === undefined) return false;        // мережа недоступна — пропускаємо
+    const localRaw = localStorage.getItem(k.lk) || "[]";
+    const serverRaw = Array.isArray(server) ? JSON.stringify(server) : null;
+
+    if(serverRaw !== null && serverRaw !== localRaw && serverRaw !== last[k.sk]){
+      // Хтось інший змінив на сервері → застосовуємо
+      localStorage.setItem(k.lk, serverRaw);
+      last[k.sk] = serverRaw;
+      return true;
+    }
+    if(localRaw !== last[k.sk]){
+      // Локальні зміни → відправляємо на сервер (спільно для всіх)
+      await push(k.sk, JSON.parse(localRaw));
+      last[k.sk] = localRaw;
+    }
+    return false;
+  }
+
+  async function loop(){
+    let changed = false;
+    for(const k of KEYS){ try{ if(await syncKey(k)) changed = true; }catch(e){} }
+    if(changed){ try{ window.renderOrders && window.renderOrders(); }catch(e){} }
+  }
+
+  // Старт: параметри + перший підтяг замовлень
+  (async ()=>{
+    // Параметри: сервер > локально
+    let params = await pull("params");
+    if(!(params && typeof params === 'object')){
+      try{ params = JSON.parse(localStorage.getItem("reflectique_prices")||"null"); }catch(e){ params = null; }
+    }
+    if(params){
+      try{ applyParams(params); }catch(e){}
+      try{ document.getElementById("btn-calc") && document.getElementById("btn-calc").click(); }catch(e){}
+    }
+
+    // Замовлення/архів: якщо на сервері є — беремо звідти, інакше засіваємо локальними
+    for(const k of KEYS){
+      const server = await pull(k.sk);
+      const localRaw = localStorage.getItem(k.lk) || "[]";
+      if(Array.isArray(server)){
+        localStorage.setItem(k.lk, JSON.stringify(server));
+        last[k.sk] = JSON.stringify(server);
+      }else{
+        last[k.sk] = localRaw;
+        if(localRaw && localRaw !== "[]"){ await push(k.sk, JSON.parse(localRaw)); }
+      }
+    }
+    try{ window.renderOrders && window.renderOrders(); }catch(e){}
+
+    setInterval(loop, 5000);
+  })();
+})();
 </script>
 </body>
 </html>

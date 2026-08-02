@@ -10,3 +10,6 @@ node_modules/
 .env
 .env.production
 .DS_Store
+
+# runtime shared-store for kabinet (created on server)
+public/kabinet/data/
