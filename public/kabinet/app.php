@@ -4247,6 +4247,11 @@ document.querySelectorAll(".calc-input").forEach(i => {
     let user=null; try{ user = JSON.parse(localStorage.getItem("reflectique_current_user")); }catch(e){}
     const W = document.getElementById("wall_width")?.value || "";
     const H = document.getElementById("wall_height")?.value || "";
+    // Розкладка на листи (для «стрічки листів» у наряді)
+    const wNum = parseFloat(W)||0, hNum = parseFloat(H)||0;
+    const maxw = parseFloat(document.getElementById("max_sheet_w")?.value)||2550;
+    const cols = (wNum>0 && maxw>0) ? Math.ceil(wNum/maxw) : 1;
+    const sheetW = cols>0 ? Math.round(wNum/cols) : Math.round(wNum);
     const list = JSON.parse(localStorage.getItem("reflectique_orders")||"[]");
     list.unshift({
       id: (crypto?.randomUUID ? crypto.randomUUID() : ("id_"+Math.random().toString(16).slice(2)+Date.now())),
@@ -4254,9 +4259,10 @@ document.querySelectorAll(".calc-input").forEach(i => {
       date: new Date().toLocaleString("uk-UA"),
       client: user?.name || "Гість",
       size: `${W}x${H}`,
-      qty: 1,
+      qty: cols,
       total: total,
       shape: "wall",
+      wallSheets: { cols: cols, sheetW: sheetW, sheetH: Math.round(hNum), wallW: Math.round(wNum), wallH: Math.round(hNum) },
       version: 1,
       versions: [{ v:1, ts:Date.now(), user:(user?.name||"Гість"), note:"Створено (Спорт-зал)", total: total, snapshot:null }],
       machine: (window.rxPickMachine ? window.rxPickMachine() : null),
@@ -5407,7 +5413,7 @@ function rxParseBarcodeText(raw){
 
     // header
     const no = (function(){ try{ let n=parseInt(localStorage.getItem("reflectique_shared_narad_counter")||"0",10)||0; n++; localStorage.setItem("reflectique_shared_narad_counter", String(n)); return n; }catch(e){ return 1; } })();
-    text("Reflectique MF", 120, 110, 98, true);
+    text("Lux Dzerkalo", 120, 110, 98, true);
     text("№ " + String(no).padStart(4,"0"), W-140, 130, 72, true, "right");
 
     const now = new Date();
@@ -5487,6 +5493,29 @@ function rxParseBarcodeText(raw){
       line(100, y+rowH-22, W-100, y+rowH-22);
       y += rowH;
     });
+
+    // --- Стрічка листів для замовлень «Спорт-зал» (стіна) ---
+    try{
+      const wallO = (orders||[]).find(o=>o && o.wallSheets && o.wallSheets.cols>0);
+      if(wallO){
+        const ws = wallO.wallSheets;
+        let sy = y + 20;
+        const stripH = 340, padX2 = 120, stripW = W - 2*padX2;
+        const maxSy = H - 460 - stripH - 130;
+        if(sy > maxSy) sy = maxSy;
+        text(`Розкладка стіни: ${ws.wallW}×${ws.wallH} мм · Листів: ${ws.cols} шт по ${ws.sheetW}×${ws.sheetH} мм`, padX2, sy, 42, true);
+        sy += 74;
+        const cols = ws.cols, cw = stripW / cols;
+        ctx.strokeStyle="#111"; ctx.lineWidth=4;
+        for(let i=0;i<cols;i++){
+          ctx.strokeRect(padX2 + i*cw, sy, cw, stripH);
+          text(String(i+1), padX2 + i*cw + cw/2, sy + stripH/2 - 26, 48, true, "center");
+        }
+        text(`${ws.sheetW} мм`, padX2 + cw/2, sy + stripH + 12, 34, false, "center");
+        text(`Ширина стіни: ${ws.wallW} мм`, padX2 + stripW/2, sy + stripH + 64, 36, true, "center");
+        y = sy + stripH + 140;
+      }
+    }catch(e){}
 
     // text("Примітки:", 120, H-210, 46, true);
     // no line requested
