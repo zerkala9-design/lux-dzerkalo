@@ -9,7 +9,7 @@ header("X-Robots-Tag: noindex, nofollow");
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
-  <title>Reflectique MF · Web v6.11</title>
+  <title>Lux Dzerkalo · Кабінет</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="robots" content="noindex, nofollow" />
   <script src="/kabinet/vendor/html2canvas.min.js"></script>
@@ -2215,10 +2215,8 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <div class="logo-icon"></div>
       <div>
-        <div class="logo-title">Reflectique <span>MF</span></div>
-        <div class="logo-sub">дзеркальне виробництво</div>
+        <div class="logo-title"><span>Lux</span> Dzerkalo</div>
       </div>
     </div>
     <nav class="nav">
@@ -2242,15 +2240,6 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
       <button class="nav-btn" data-view="analytics" data-title="Аналітика">
         <span class="nav-btn-dot"></span> Аналітика
       </button>
-      <button class="nav-btn" data-view="account" data-title="Акаунт">
-        <span class="nav-btn-dot"></span> Акаунт
-      </button>
-    
-            <div style="margin-top:auto"></div>
-      <div class="nav-group-title">Інше</div>
-      <button class="nav-btn" data-view="machines" data-title="Станки">
-        <span class="nav-btn-dot"></span> Станки
-      </button>
 </nav>
     <div class="sidebar-footer">
       v6.11 · web build
@@ -2261,7 +2250,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
   <main class="main">
     <header class="topbar">
       <div>
-        <div class="topbar-left-sub">Reflectique MF · калькулятор та управління</div>
+        <div class="topbar-left-sub">Lux Dzerkalo · калькулятор та управління</div>
         <div class="topbar-left-title" id="topbar-title">Детальний калькулятор</div>
       </div>
       <div class="topbar-right">
@@ -2712,41 +2701,6 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
     </div>
   </div>
 
-  <!-- VIEW: MACHINES -->
-<div class="view" 
-id="view-machines">
-  <div class="card">
-    <div class="card-title-row">
-      <div class="card-title">Станки</div>
-      <div class="card-sub">4 кнопки: обери станок → нижче відкриється “Навчання”.</div>
-    </div>
-
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
-      <button class="btn-secondary" type="button" id="m-btn-intermac">Intermac</button>
-      <button class="btn-secondary" type="button" id="m-btn-edge">Прямолінійка</button>
-      <button class="btn-secondary" type="button" id="m-btn-facet">Фацет</button>
-      <button class="btn-secondary" type="button" id="m-btn-drill">Свердлильний</button>
-    </div>
-
-    <div class="card" style="margin-top:12px;">
-      <div class="card-title-row">
-        <div class="card-title" id="m-title">Навчання · Intermac</div>
-        <div class="card-sub" id="m-sub">Базові правила, запуск, стоп, що робити при збоях.</div>
-      </div>
-      <div id="m-training" style="font-size:12px;line-height:1.7;color:#e5e7eb;">
-        <ul style="padding-left:18px;margin-top:6px;">
-          <li><b>Перед стартом:</b> вакуум/повітря/вода, чисті присоски, інструмент без биття.</li>
-          <li><b>Нуль/база:</b> перевірити референс і калібрування, зробити 1 тестову деталь.</li>
-          <li><b>Типові проблеми:</b> не тримає вакуум → шланги/клапан; сколи → подача води/інструмент; розмір “пливе” → люфт/калібровка.</li>
-          <li><b>Стоп:</b> дочекатись повної зупинки, знеструмити при сервісі.</li>
-        </ul>
-        <div style="margin-top:8px;color:#9ca3af;">Цей блок можна доповнювати під ваші реальні помилки та процедури.</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
   <!-- VIEW: ORDERS -->
   <div class="view" id="view-orders">
     <div class="card">
@@ -2816,22 +2770,6 @@ id="view-machines">
     </div>
   </div>
 
-  <!-- VIEW: ACCOUNT -->
-  <div class="view" id="view-account">
-    <div class="card">
-      <div class="card-title-row">
-        <div class="card-title">Акаунт</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
-        <div class="avatar" id="account-avatar" style="width:80px;height:80px;"></div>
-        <div>
-          <button class="btn-secondary" id="change-avatar">Змінити аватар</button>
-        </div>
-      </div>
-      <div id="account-info" style="font-size:13px;line-height:1.6;margin-bottom:10px;"></div>
-      <button class="btn-secondary" id="account-logout">Вийти</button>
-    </div>
-  </div>
 
 </section>
 </main>
@@ -3032,12 +2970,12 @@ syncState();
   function getCurrentUser() { try { return JSON.parse(localStorage.getItem("reflectique_current_user")); } catch { return null; } }
   function setCurrentUser(u) {
     localStorage.setItem("reflectique_current_user", JSON.stringify(u));
-    topbarUser.textContent = u.name || u.email;
-    document.getElementById("account-info").textContent = `Імʼя: ${u.name}\nEmail: ${u.email}`;
-    
+    if(topbarUser) topbarUser.textContent = u.name || u.email;
+    { const _ai=document.getElementById("account-info"); if(_ai) _ai.textContent = `Імʼя: ${u.name}\nEmail: ${u.email}`; }
+
     const avatarUrl = u.avatar || "";
-    document.getElementById("avatar").style.backgroundImage = avatarUrl ? `url(${avatarUrl})` : "linear-gradient(135deg, #f97316, #facc15)";
-    document.getElementById("account-avatar").style.backgroundImage = avatarUrl ? `url(${avatarUrl})` : "linear-gradient(135deg, #f97316, #facc15)";
+    { const _av=document.getElementById("avatar"); if(_av) _av.style.backgroundImage = avatarUrl ? `url(${avatarUrl})` : "linear-gradient(135deg, #f97316, #facc15)"; }
+    { const _aav=document.getElementById("account-avatar"); if(_aav) _aav.style.backgroundImage = avatarUrl ? `url(${avatarUrl})` : "linear-gradient(135deg, #f97316, #facc15)"; }
   }
   function logout() { 
     localStorage.removeItem("reflectique_current_user"); 
@@ -3078,8 +3016,8 @@ syncState();
     renderSharedCalcs();
   });
   
-  document.getElementById("logout-btn").addEventListener("click", logout);
-  document.getElementById("account-logout").addEventListener("click", logout);
+  document.getElementById("logout-btn")?.addEventListener("click", logout);
+  document.getElementById("account-logout")?.addEventListener("click", logout);
   
   // Topbar avatar: toggle sidebar collapse (desktop) / open-close (mobile)
   function toggleSidebarFromAvatar(e) {
@@ -3095,7 +3033,7 @@ syncState();
   document.getElementById("avatar").addEventListener("click", toggleSidebarFromAvatar);
 
   // Avatar change remains only in Account screen
-  document.getElementById("change-avatar").addEventListener("click", (e) => {
+  document.getElementById("change-avatar")?.addEventListener("click", (e) => {
     e.stopPropagation();
     document.getElementById("avatar-upload").click();
   });
