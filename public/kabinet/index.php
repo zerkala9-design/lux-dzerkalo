@@ -14,12 +14,24 @@
 // bcrypt-хеш пароля (не сам пароль!).
 $PASS_HASH = '$2y$12$Cu21nx9TBkE1/6uf7i.Eo.tviz4.Q7hA/m1/zXvlkBVvorAxWCXri';
 
+// Токен «запамʼятати мене» — привʼязаний до пароля (зміна пароля скидає всі токени)
+$REMEMBER = hash('sha256', $PASS_HASH . '|lux-kabinet-remember-v1');
+$COOKIE   = 'kabinet_remember';
+$YEAR     = 31536000;
+
+// Тримати сесію довго (щоб не питати пароль щоразу)
+@ini_set('session.gc_maxlifetime', (string) $YEAR);
+session_set_cookie_params([
+    'lifetime' => $YEAR, 'path' => '/kabinet/', 'secure' => true,
+    'httponly' => true, 'samesite' => 'Lax',
+]);
 session_start();
 
 // Вихід
 if (isset($_GET['logout'])) {
     $_SESSION = [];
     session_destroy();
+    setcookie($COOKIE, '', time() - 3600, '/kabinet/', '', true, true);
     header('Location: /kabinet/');
     exit;
 }
@@ -31,12 +43,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pass'])) {
     if (password_verify((string) $_POST['pass'], $PASS_HASH)) {
         session_regenerate_id(true);
         $_SESSION['kabinet_ok'] = true;
+        // запамʼятати на рік
+        setcookie($COOKIE, $REMEMBER, time() + $YEAR, '/kabinet/', '', true, true);
         header('Location: /kabinet/app.php');
         exit;
     }
     $error = true;
     // невелика затримка проти перебору
     usleep(600000);
+}
+
+// Автовхід за токеном «запамʼятати мене» (пароль вже вводили раніше)
+if (empty($_SESSION['kabinet_ok'])
+    && isset($_COOKIE[$COOKIE])
+    && hash_equals($REMEMBER, (string) $_COOKIE[$COOKIE])) {
+    $_SESSION['kabinet_ok'] = true;
+    setcookie($COOKIE, $REMEMBER, time() + $YEAR, '/kabinet/', '', true, true); // продовжити
 }
 
 // Уже авторизований → застосунок (самозахищений app.php)
@@ -61,6 +83,7 @@ header('X-Robots-Tag: noindex, nofollow');
   <meta name="apple-mobile-web-app-title" content="Lux Кабінет" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0b1020" />
+  <link rel="manifest" href="/kabinet/manifest.json" />
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{min-height:100vh;display:flex;align-items:center;justify-content:center;

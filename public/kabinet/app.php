@@ -1,7 +1,20 @@
 <?php
 // Самозахист: цей файл віддає застосунок ЛИШЕ авторизованим (сесія з index.php).
 // Працює незалежно від .htaccess — прямий доступ без входу неможливий.
+@ini_set('session.gc_maxlifetime', '31536000');
+session_set_cookie_params([
+    'lifetime' => 31536000, 'path' => '/kabinet/', 'secure' => true,
+    'httponly' => true, 'samesite' => 'Lax',
+]);
 session_start();
+// Автовхід за токеном «запамʼятати мене» (щоб не питати пароль щоразу)
+$PASS_HASH_APP = '$2y$12$Cu21nx9TBkE1/6uf7i.Eo.tviz4.Q7hA/m1/zXvlkBVvorAxWCXri';
+$REMEMBER_APP  = hash('sha256', $PASS_HASH_APP . '|lux-kabinet-remember-v1');
+if (empty($_SESSION["kabinet_ok"])
+    && isset($_COOKIE['kabinet_remember'])
+    && hash_equals($REMEMBER_APP, (string) $_COOKIE['kabinet_remember'])) {
+    $_SESSION["kabinet_ok"] = true;
+}
 if (empty($_SESSION["kabinet_ok"])) { header("Location: /kabinet/"); exit; }
 header("X-Robots-Tag: noindex, nofollow");
 ?>
@@ -18,6 +31,14 @@ header("X-Robots-Tag: noindex, nofollow");
   <meta name="apple-mobile-web-app-title" content="Lux Кабінет" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0b1020" />
+  <link rel="manifest" href="/kabinet/manifest.json" />
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function(){
+        navigator.serviceWorker.register('/kabinet/sw.js', { scope: '/kabinet/' }).catch(function(){});
+      });
+    }
+  </script>
   <script src="/kabinet/vendor/html2canvas.min.js"></script>
   <script src="/kabinet/vendor/JsBarcode.all.min.js"></script>
   <style>

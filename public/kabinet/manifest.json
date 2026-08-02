@@ -1,0 +1,14 @@
+{
+  "name": "Lux Dzerkalo · Кабінет",
+  "short_name": "Lux Кабінет",
+  "start_url": "/kabinet/app.php",
+  "scope": "/kabinet/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#05060a",
+  "theme_color": "#0b1020",
+  "icons": [
+    { "src": "/kabinet/apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" },
+    { "src": "/kabinet/apple-touch-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
