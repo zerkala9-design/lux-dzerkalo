@@ -12,6 +12,12 @@ header("X-Robots-Tag: noindex, nofollow");
   <title>Lux Dzerkalo · Кабінет</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="robots" content="noindex, nofollow" />
+  <link rel="apple-touch-icon" href="/kabinet/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" href="/kabinet/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Lux Кабінет" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0b1020" />
   <script src="/kabinet/vendor/html2canvas.min.js"></script>
   <script src="/kabinet/vendor/JsBarcode.all.min.js"></script>
   <style>
