@@ -4078,11 +4078,11 @@ document.querySelectorAll(".calc-input").forEach(i => {
 
     let detailsArr = [];
     detailsArr.push(`Стіна: ${W}×${H} мм`);
-    detailsArr.push(`Листів: ${cols} шт по ${sheetW.toFixed(1)}×${sheetH} мм`);
+    detailsArr.push(`Листів: ${sheetH}-${Math.round(sheetW)}мм-${cols}шт`);
     detailsArr.push(`Дзеркало: ${(sheetGlassCost * cols).toFixed(0)} грн`);
     detailsArr.push(`Обробка: ${(sheetPrCost * cols).toFixed(0)} грн`);
     if(filmP) detailsArr.push(`Плівка: ${(sheetFilmCost * cols).toFixed(0)} грн`);
-    detailsArr.push(`Кріплення (${mountDesc}): ${mountCost.toFixed(0)} грн`);
+    detailsArr.push(`Кріплення: ${mountCost.toFixed(0)} грн`);
     if(hasInst) detailsArr.push(`Монтаж: ${(extra - (hasDel ? (priceState.delivery_type==="percent" ? totalBase*(priceState.price_delivery/100) : priceState.price_delivery) : 0)).toFixed(0)} грн`);
     if(hasDel) detailsArr.push(`Доставка: ${(priceState.delivery_type==="percent" ? totalBase*(priceState.price_delivery/100) : priceState.price_delivery).toFixed(0)} грн`);
     detailsArr.push(`Разом: ${grandTotal.toFixed(0)} грн`);
@@ -5530,7 +5530,7 @@ function rxParseBarcodeText(raw){
         const stripH = 340, padX2 = 120, stripW = W - 2*padX2;
         const maxSy = H - 460 - stripH - 130;
         if(sy > maxSy) sy = maxSy;
-        text(`Розкладка стіни: ${ws.wallW}×${ws.wallH} мм · Листів: ${ws.cols} шт по ${ws.sheetW}×${ws.sheetH} мм`, padX2, sy, 42, true);
+        text(`Розкладка стіни: ${ws.wallW}×${ws.wallH} мм · Листи: ${ws.sheetH}-${ws.sheetW}мм-${ws.cols}шт`, padX2, sy, 42, true);
         sy += 74;
         const cols = ws.cols, cw = stripW / cols;
         ctx.strokeStyle="#111"; ctx.lineWidth=4;
