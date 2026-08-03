@@ -5500,25 +5500,31 @@ function rxParseBarcodeText(raw){
 
     let y = startY+92;
     const rowH = 170;
-    orders.forEach((o, idx)=>{
+    // Розгортаємо позиції: кілька розмірів у замовленні (items) → кожен окремим рядком
+    const lines = [];
+    (orders||[]).forEach(o=>{
+      if(!o) return;
+      const meta = [
+        (o.has_led?"LED":""), (o.has_film?"Плівка":""), (o.has_profile?"Профіль":""),
+        (o.facetMM?("RF-"+String(o.facetMM)+"мм"):""), (o.processing||o.pr?"PR":"")
+      ].filter(Boolean).join("  ");
+      const colorTxt = o.color ? String(o.color) : "";
+      if(Array.isArray(o.items) && o.items.length){
+        o.items.forEach(it=> lines.push({ size:`${it.w}x${it.h}`, qty:it.q, meta, color:colorTxt }));
+      } else {
+        lines.push({ size:(o.size||"—"), qty:(o.qty||0), meta, color:colorTxt });
+      }
+    });
+    let idx = 0;
+    lines.forEach(ln=>{
       if(y + rowH > H-240) return;
-      const client = o.client || "—";
-      const note = o.note || o.notes || "";
-      const left = note ? (client+" • "+note) : client;
-      const details = [
-        (o.size||"—") + ` (${o.color||""}${o.thicknessMM?(" "+o.thicknessMM+"мм"):""})`,
-        (o.has_led?"LED":""),
-        (o.has_film?"Плівка":""),
-        (o.has_profile?"Профіль":""),
-        (o.facetMM?("RF-"+String(o.facetMM)+"мм"):""),
-        (o.processing||o.pr? "PR":"")
-      ].filter(Boolean).join("   ");
+      const details = [ ln.size + (ln.color? ` (${ln.color})`:""), ln.meta ].filter(Boolean).join("   ");
       text(String(idx+1), col1, y, 44, true);
-      // left column removed
       text(details, col2, y, 40, false);
-      text(String(o.qty||0), col4, y, 44, true, "right");
+      text(String(ln.qty||0), col4, y, 44, true, "right");
       line(100, y+rowH-22, W-100, y+rowH-22);
       y += rowH;
+      idx++;
     });
 
     // --- Стрічка листів для замовлень «Спорт-зал» (стіна) ---
@@ -5924,8 +5930,15 @@ return c;
     const list = JSON.parse(localStorage.getItem("reflectique_orders")||"[]");
     
     let size = "";
+    let itemsArr = null;
     if(currentShape==="rect") {
-      size = `${(getRectItems()[0]?.w ?? 0)}x${(getRectItems()[0]?.h ?? 0)}`;
+      // Зберігаємо ВСІ позиції (кілька розмірів), щоб усі йшли в наряд
+      itemsArr = (getRectItems()||[])
+        .map(it=>({ w: safeInt(it.w,0), h: safeInt(it.h,0), q: safeInt(it.q,0) }))
+        .filter(it=> it.w>0 && it.h>0 && it.q>0);
+      size = itemsArr.length
+        ? itemsArr.map(it=>`${it.w}x${it.h}`).join(", ")
+        : `${(getRectItems()[0]?.w ?? 0)}x${(getRectItems()[0]?.h ?? 0)}`;
     } else if(currentShape==="circle") {
       size = `d${document.getElementById("circle_diameter").value}`;
     } else if(currentShape==="ellipse") {
@@ -5933,12 +5946,13 @@ return c;
     } else {
       size = `${document.getElementById("diamond_d1").value}x${document.getElementById("diamond_d2").value}`;
     }
-    
-    const qty = currentShape==="rect" ? document.getElementById("qty").value :
-                currentShape==="circle" ? document.getElementById("circle_qty").value :
-                currentShape==="ellipse" ? document.getElementById("ellipse_qty").value :
-                document.getElementById("diamond_qty").value;
-    
+
+    const qty = currentShape==="rect"
+      ? (itemsArr && itemsArr.length ? itemsArr.reduce((s,it)=>s+it.q,0) : document.getElementById("qty").value)
+      : currentShape==="circle" ? document.getElementById("circle_qty").value :
+        currentShape==="ellipse" ? document.getElementById("ellipse_qty").value :
+        document.getElementById("diamond_qty").value;
+
     list.unshift({
       id: (crypto?.randomUUID ? crypto.randomUUID() : ("id_"+Math.random().toString(16).slice(2)+Date.now())),
       ts: Date.now(),
@@ -5946,6 +5960,7 @@ return c;
       client: user?.name || "Гість",
       size: size,
       qty: qty,
+      items: (itemsArr && itemsArr.length ? itemsArr : undefined),
       total: total,
       shape: currentShape,
       color: mirrorColor,
@@ -7150,6 +7165,59 @@ return c;
     });
   }
 
+  // Наряд у внутрішньому вікні (щоб можна було повернутись у замовлення)
+  function rxShowNaradOverlay(cv){
+    const dataUrl = cv.toDataURL("image/png");
+    let ov = document.getElementById("rx-narad-overlay");
+    if(!ov){
+      ov = document.createElement("div");
+      ov.id = "rx-narad-overlay";
+      ov.style.cssText = "position:fixed;inset:0;z-index:2000000;background:rgba(3,4,8,.97);display:flex;flex-direction:column;";
+      ov.innerHTML =
+        '<div style="display:flex;gap:8px;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.1);">'
+        + '<button id="rx-narad-back" style="background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:10px 14px;font-weight:800;font-size:15px;cursor:pointer;">← Замовлення</button>'
+        + '<div style="display:flex;gap:8px;">'
+        + '<button id="rx-narad-send" style="background:rgba(255,122,0,.18);color:#ffb35a;border:1px solid rgba(255,122,0,.5);border-radius:12px;padding:10px 14px;font-weight:800;font-size:15px;cursor:pointer;">📤 Відправити</button>'
+        + '<button id="rx-narad-print" style="background:linear-gradient(90deg,#ffb35a,#ff7a00);color:#1a1205;border:0;border-radius:12px;padding:10px 16px;font-weight:850;font-size:15px;cursor:pointer;">🖨 Друк</button>'
+        + '</div></div>'
+        + '<div id="rx-narad-scroll" style="flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:14px;text-align:center;"><img id="rx-narad-img" alt="Наряд" style="width:100%;max-width:900px;background:#fff;border-radius:6px;" /></div>';
+      document.body.appendChild(ov);
+      ov.querySelector("#rx-narad-back").addEventListener("click", ()=>{ ov.style.display="none"; });
+      ov.querySelector("#rx-narad-print").addEventListener("click", ()=> rxPrintDataUrl(ov.__dataUrl));
+      ov.querySelector("#rx-narad-send").addEventListener("click", ()=> rxShareDataUrl(ov.__dataUrl));
+    }
+    ov.__dataUrl = dataUrl;
+    ov.querySelector("#rx-narad-img").src = dataUrl;
+    const sc = ov.querySelector("#rx-narad-scroll"); if(sc) sc.scrollTop = 0;
+    ov.style.display = "flex";
+  }
+  function rxPrintDataUrl(dataUrl){
+    try{
+      const ifr = document.createElement("iframe");
+      ifr.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;";
+      document.body.appendChild(ifr);
+      const d = ifr.contentWindow.document;
+      d.open();
+      d.write('<!DOCTYPE html><html><head><meta charset="utf-8"><style>@page{margin:8mm}html,body{margin:0;padding:0;background:#fff}img{display:block;width:100%}</style></head><body><img src="'+dataUrl+'"></body></html>');
+      d.close();
+      const doPrint = ()=>{ try{ ifr.contentWindow.focus(); ifr.contentWindow.print(); }catch(e){} setTimeout(()=>{ try{ ifr.remove(); }catch(e){} }, 1500); };
+      const img = d.images && d.images[0];
+      if(img && !img.complete){ img.onload = doPrint; setTimeout(doPrint, 900); } else { setTimeout(doPrint, 250); }
+    }catch(e){ alert("Друк недоступний на цьому пристрої. Скористайся «Відправити»."); }
+  }
+  async function rxShareDataUrl(dataUrl){
+    try{
+      const res = await fetch(dataUrl); const blob = await res.blob();
+      const file = new File([blob], "Narad.png", {type:"image/png"});
+      if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+        await navigator.share({files:[file], title:"Наряд"}); return;
+      }
+    }catch(e){}
+    const a=document.createElement("a"); a.download="Narad.png"; a.href=dataUrl;
+    document.body.appendChild(a); a.click(); setTimeout(()=>{ try{a.remove();}catch(e){} }, 500);
+  }
+  window.rxShowNaradOverlay = rxShowNaradOverlay;
+
   window.downloadNarad = async function(indexOrOrder, mode){
     let order;
     if(indexOrOrder && typeof indexOrOrder === "object"){
@@ -7168,18 +7236,8 @@ return c;
     const cv = drawNarad(order, ex);
 
     if(mode === "print"){
-      // Наряд для друкування: відкриваємо у новому вікні й викликаємо друк.
-      try{
-        const dataUrl = cv.toDataURL("image/png");
-        const w = window.open("", "_blank");
-        if(!w){ alert("Дозволь спливаючі вікна, щоб надрукувати наряд."); return; }
-        w.document.open();
-        w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Наряд</title>'
-          + '<style>@page{margin:8mm} html,body{margin:0;padding:0;background:#fff}'
-          + ' img{display:block;width:100%;max-width:900px;margin:0 auto}</style></head>'
-          + '<body><img src="' + dataUrl + '" onload="setTimeout(function(){try{window.focus();window.print();}catch(e){}},200)"></body></html>');
-        w.document.close();
-      }catch(e){ alert("Не вдалося відкрити друк: " + (e && e.message ? e.message : e)); }
+      // Показуємо наряд у внутрішньому вікні (з кнопкою «← Замовлення»)
+      try{ rxShowNaradOverlay(cv); }catch(e){ alert("Не вдалося показати наряд: " + (e && e.message ? e.message : e)); }
       return;
     }
 
@@ -9681,8 +9739,26 @@ function exportSingleNaradPNG(order){
     }
 
     const shape = pickShapeFallback();
-    const qty = pickQty(shape);
-    const size = pickSize(shape);
+    let qty = pickQty(shape);
+    let size = pickSize(shape);
+
+    // Прямокутне: зберігаємо ВСІ позиції (кілька розмірів), щоб усі йшли в наряд
+    let items = null;
+    if(shape === "rect"){
+      try{
+        if(typeof getRectItems === "function"){ // eslint-disable-line no-undef
+          items = getRectItems() // eslint-disable-line no-undef
+            .map(it=>({ w: Math.round(+it.w||0), h: Math.round(+it.h||0), q: Math.max(0, parseInt(it.q,10)||0) }))
+            .filter(it=> it.w>0 && it.h>0 && it.q>0);
+        }
+      }catch(e){ items = null; }
+      if(items && items.length){
+        size = items.map(it=>`${it.w}x${it.h}`).join(", ");
+        qty  = items.reduce((s,it)=>s+it.q,0);
+      }
+    }
+    let color = null;
+    try{ if(typeof mirrorColor !== "undefined") color = mirrorColor; else if(window.mirrorColor) color = window.mirrorColor; }catch(e){} // eslint-disable-line no-undef
 
     const user = getUserSafe();
     const list = getOrdersSafe();
@@ -9700,6 +9776,8 @@ function exportSingleNaradPNG(order){
       client: user?.name || "Гість",
       size,
       qty,
+      items: (items && items.length ? items : undefined),
+      color: color || undefined,
       total,
       shape,
 
