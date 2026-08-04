@@ -2123,12 +2123,10 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 
       <div>
         <div class="price-section-title">Отвори (грн/шт)</div>
-        <div class="price-row"><span class="label">4-5мм (5-8мм)</span><input class="input" id="hole_4_5_small" type="number" value="45"></div>
-        <div class="price-row"><span class="label">4-5мм (10-16мм)</span><input class="input" id="hole_4_5_mid" type="number" value="85"></div>
-        <div class="price-row"><span class="label">4-5мм (20-30мм)</span><input class="input" id="hole_4_5_big" type="number" value="85"></div>
-        <div class="price-row"><span class="label">6-10мм (5-8мм)</span><input class="input" id="hole_6_10_small" type="number" value="60"></div>
-        <div class="price-row"><span class="label">6-10мм (10-16мм)</span><input class="input" id="hole_6_10_mid" type="number" value="102"></div>
-        <div class="price-row"><span class="label">6-10мм (20-30мм)</span><input class="input" id="hole_6_10_big" type="number" value="162"></div>
+        <div class="price-row"><span class="label">Ø 5-8 мм</span><input class="input" id="hole_b1" type="number" value="45"></div>
+        <div class="price-row"><span class="label">Ø 10-16 мм</span><input class="input" id="hole_b2" type="number" value="65"></div>
+        <div class="price-row"><span class="label">Ø 20-30 мм</span><input class="input" id="hole_b3" type="number" value="85"></div>
+        <div class="price-row"><span class="label">Ø 35-65 мм</span><input class="input" id="hole_b4" type="number" value="120"></div>
       </div>
 
       <div>
@@ -2446,20 +2444,35 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
           </div>
 
           <div>
-            <div class="card-sub" style="margin-bottom:4px;">Отвори (кількість)</div>
-            <div class="form-grid-3">
-              <div class="field">
-                <label for="holes_small">5–8 мм</label>
-                <input class="input calc-input" id="holes_small" type="number" min="0" value="0">
-              </div>
-              <div class="field">
-                <label for="holes_mid">10–16 мм</label>
-                <input class="input calc-input" id="holes_mid" type="number" min="0" value="0">
-              </div>
-              <div class="field">
-                <label for="holes_big">20–30 мм</label>
-                <input class="input calc-input" id="holes_big" type="number" min="0" value="0">
-              </div>
+            <div class="card-sub" style="margin-bottom:4px;">Отвори</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <select class="input calc-input" id="holes_d" style="flex:1;min-width:0;">
+                <optgroup label="5–8 мм">
+                  <option value="5">Ø 5 мм</option>
+                  <option value="6">Ø 6 мм</option>
+                  <option value="8">Ø 8 мм</option>
+                </optgroup>
+                <optgroup label="10–16 мм">
+                  <option value="10">Ø 10 мм</option>
+                  <option value="12">Ø 12 мм</option>
+                  <option value="16">Ø 16 мм</option>
+                </optgroup>
+                <optgroup label="20–30 мм">
+                  <option value="20">Ø 20 мм</option>
+                  <option value="22">Ø 22 мм</option>
+                  <option value="26">Ø 26 мм</option>
+                  <option value="30">Ø 30 мм</option>
+                </optgroup>
+                <optgroup label="35–65 мм">
+                  <option value="35">Ø 35 мм</option>
+                  <option value="40">Ø 40 мм</option>
+                  <option value="45">Ø 45 мм</option>
+                  <option value="55">Ø 55 мм</option>
+                  <option value="65">Ø 65 мм</option>
+                </optgroup>
+              </select>
+              <input class="input calc-input" id="holes_q" type="number" min="0" value="0" style="width:88px;">
+              <span style="color:#9ca3af;font-size:14px;">шт</span>
             </div>
           </div>
 
@@ -3165,8 +3178,7 @@ syncState();
     pr_4_opt: 45, pr_5_opt: 55, pr_6_opt: 60, pr_8_opt: 75, pr_10_opt: 95,
     facet_10: 150, facet_15: 175, facet_20: 185, facet_25: 285, facet_30: 330, facet_35: 365,
     facet_10_opt: 130, facet_15_opt: 150, facet_20_opt: 160, facet_25_opt: 240, facet_30_opt: 280, facet_35_opt: 310,
-    hole_4_5_small: 45, hole_4_5_mid: 85, hole_4_5_big: 85,
-    hole_6_10_small: 60, hole_6_10_mid: 102, hole_6_10_big: 162,
+    hole_b1: 45, hole_b2: 65, hole_b3: 85, hole_b4: 120,
     price_film_m2: 50, price_profile_m: 150, price_mount_point_pc: 80,
     price_led_per_m: 3500, price_complexity: 20, price_sensor: 500, price_delivery: 1500, price_install: 80,
     complexity_type: "fixed", delivery_type: "fixed", install_type: "percent", price_mode: "retail", ui_scale: 1
@@ -3231,12 +3243,10 @@ syncState();
     document.getElementById("facet_25_opt").value = 195;
     document.getElementById("facet_30_opt").value = 250;
     document.getElementById("facet_35_opt").value = 300;
-    document.getElementById("hole_4_5_small").value = 45;
-    document.getElementById("hole_4_5_mid").value = 85;
-    document.getElementById("hole_4_5_big").value = 85;
-    document.getElementById("hole_6_10_small").value = 60;
-    document.getElementById("hole_6_10_mid").value = 102;
-    document.getElementById("hole_6_10_big").value = 162;
+    document.getElementById("hole_b1").value = 45;
+    document.getElementById("hole_b2").value = 65;
+    document.getElementById("hole_b3").value = 85;
+    document.getElementById("hole_b4").value = 120;
     document.getElementById("price_film_m2").value = 50;
     document.getElementById("price_profile_m").value = 150;
     document.getElementById("price_mount_point_pc").value = 80;
@@ -3268,9 +3278,8 @@ syncState();
       thickness: document.querySelector('input[name="thickness"]:checked')?.value,
       edge_type: document.querySelector('input[name="edge_type"]:checked')?.value,
       facet_size: document.querySelector('input[name="facet_size"]:checked')?.value,
-      holes_small: document.getElementById("holes_small").value,
-      holes_mid: document.getElementById("holes_mid").value,
-      holes_big: document.getElementById("holes_big").value,
+      holes_d: document.getElementById("holes_d")?.value,
+      holes_q: document.getElementById("holes_q")?.value,
       has_film: document.getElementById("has_film").checked,
       has_led: document.getElementById("has_led").checked,
       has_profile: document.getElementById("has_profile").checked,
@@ -3327,9 +3336,8 @@ syncState();
         if(facetRadio) facetRadio.checked = true;
       }
       
-      document.getElementById("holes_small").value = state.holes_small || 0;
-      document.getElementById("holes_mid").value = state.holes_mid || 0;
-      document.getElementById("holes_big").value = state.holes_big || 0;
+      if(state.holes_d!=null && document.getElementById("holes_d")) document.getElementById("holes_d").value = state.holes_d;
+      if(document.getElementById("holes_q")) document.getElementById("holes_q").value = state.holes_q || 0;
       document.getElementById("has_film").checked = state.has_film || false;
       document.getElementById("has_led").checked = state.has_led || false;
       document.getElementById("has_profile").checked = state.has_profile || false;
@@ -3582,12 +3590,15 @@ function updateShapePreview() {
     const facetKey = `facet_${facet}${suffix}`;
     const facetPriceM = priceState[facetKey] || 0;
 
-    const hS = safeInt(document.getElementById("holes_small").value);
-    const hM = safeInt(document.getElementById("holes_mid").value);
-    const hB = safeInt(document.getElementById("holes_big").value);
-    let holesCost = 0;
-    if(thickness<=5) holesCost = hS*priceState.hole_4_5_small + hM*priceState.hole_4_5_mid + hB*priceState.hole_4_5_big;
-    else holesCost = hS*priceState.hole_6_10_small + hM*priceState.hole_6_10_mid + hB*priceState.hole_6_10_big;
+    const holeQ = safeInt(document.getElementById("holes_q")?.value, 0);
+    const holeD = safeInt(document.getElementById("holes_d")?.value, 0);
+    const holeBandPrice = (d)=>{
+      if(d<=8) return priceState.hole_b1;
+      if(d<=16) return priceState.hole_b2;
+      if(d<=30) return priceState.hole_b3;
+      return priceState.hole_b4;
+    };
+    let holesCost = holeQ * (holeBandPrice(holeD) || 0);
 
     const hasFilm = document.getElementById("has_film").checked;
     const hasLed = document.getElementById("has_led").checked;
