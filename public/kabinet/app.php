@@ -2016,7 +2016,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
         <label class="btn-primary" style="cursor:pointer;margin:0;">
           Вибрати фото
-          <input id="ocr-file" type="file" accept="image/*" capture="environment" multiple style="display:none;">
+          <input id="ocr-file" type="file" accept="image/*" multiple style="display:none;">
         </label>
         <button class="btn-secondary" type="button" id="ocr-run" disabled>Розпізнати</button>
       </div>
