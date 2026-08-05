@@ -10451,7 +10451,8 @@ function exportSingleNaradPNG(order){
 <!-- OCR: розпізнавання розмірів з фото (Tesseract.js, ліниве завантаження з CDN) -->
 <script>
 (function(){
-  var TESS_URL = "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
+  var TESS_DIR = "/kabinet/vendor/tesseract/";
+  var TESS_URL = TESS_DIR + "tesseract.min.js";
   var modal = document.getElementById("ocr-modal");
   if(!modal) return;
   var fileInput = document.getElementById("ocr-file");
@@ -10562,9 +10563,14 @@ function exportSingleNaradPNG(order){
     var worker = null, collected = [];
     loadTesseract()
       .then(function(){ progText.textContent = "Готую розпізнавач…";
-        return window.Tesseract.createWorker("eng", 1, { logger: function(m){
-          if(m.status === "recognizing text"){ progBar.style.width = Math.round((m.progress||0)*100) + "%"; }
-        }});
+        return window.Tesseract.createWorker("eng", 1, {
+          workerPath: TESS_DIR + "worker.min.js",
+          corePath: TESS_DIR,
+          langPath: TESS_DIR,
+          logger: function(m){
+            if(m.status === "recognizing text"){ progBar.style.width = Math.round((m.progress||0)*100) + "%"; }
+          }
+        });
       })
       .then(function(w){ worker = w; return worker.setParameters({ tessedit_char_whitelist: "0123456789xX×*/.,- ", tessedit_pageseg_mode: "6" }); })
       .then(function(){
