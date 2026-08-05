@@ -10509,7 +10509,14 @@ function exportSingleNaradPNG(order){
     if(!e) return "невідома помилка";
     if(typeof e === "string") return e;
     if(e.message) return e.message;
-    try{ return JSON.stringify(e); }catch(_){ return String(e); }
+    if(e.error && e.error.message) return e.error.message;
+    var parts = [];
+    if(e.name) parts.push(e.name);
+    if(e.type) parts.push(e.type);
+    if(e.filename) parts.push(e.filename + ":" + (e.lineno || "?"));
+    if(parts.length) return parts.join(" ");
+    try{ var s = JSON.stringify(e); if(s && s !== "{}") return s; }catch(_){}
+    return "движок несумісний із цим браузером";
   }
   // Надійне читання фото (в т.ч. HEIC з айфона + правильна орієнтація)
   function loadViaImg(file){
@@ -10593,12 +10600,13 @@ function exportSingleNaradPNG(order){
       .then(function(){ progText.textContent = "Готую розпізнавач…";
         return window.Tesseract.createWorker("eng", 1, {
           workerPath: TESS_DIR + "worker.min.js",
-          corePath: TESS_DIR,
+          // Примусово несиметричне ядро (без SIMD) — найсумісніше з Safari/iPhone
+          corePath: TESS_DIR + "tesseract-core-lstm.wasm.js",
           langPath: TESS_DIR,
           logger: function(m){
             if(m.status === "recognizing text"){ progBar.style.width = Math.round((m.progress||0)*100) + "%"; }
           }
-        });
+        }).catch(function(e){ throw new Error("не вдалося запустити розпізнавач: " + errMsg(e)); });
       })
       .then(function(w){ worker = w; return worker.setParameters({ tessedit_char_whitelist: "0123456789xX*/.,- " }); })
       .then(function(){
