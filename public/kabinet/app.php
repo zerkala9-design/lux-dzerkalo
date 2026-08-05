@@ -2789,6 +2789,34 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
   /* ===== HELPERS ===== */
   function safeInt(val, def = 0) { const n = parseInt(val, 10); return Number.isFinite(n) ? n : def; }
   // ===== RECT ITEMS (multiple sizes) =====
+  // Розбір вставлених розмірів: "1022х1023-5шт", кілька рядків/через кому тощо.
+  function parsePastedSizes(text){
+    const out = [];
+    // W [х/x/×/*] H [ -/: Q ]  — Q лише після роздільника, щоб не зʼїсти наступний розмір
+    const re = /(\d+(?:[.,]\d+)?)\s*[хxX×хХ*]\s*(\d+(?:[.,]\d+)?)(?:\s*[-–—:]\s*(\d+))?/g;
+    let m;
+    while((m = re.exec(String(text||"")))){
+      const w = parseFloat(m[1].replace(",", "."));
+      const h = parseFloat(m[2].replace(",", "."));
+      const q = m[3] ? parseInt(m[3], 10) : 1;
+      if(w > 0 && h > 0) out.push({ w, h, q: (q > 0 ? q : 1) });
+    }
+    return out;
+  }
+  function applyPastedSizes(row, entries){
+    if(!row || !entries || !entries.length) return;
+    const set = (sel, val)=>{ const el = row.querySelector(sel); if(el) el.value = val; };
+    set(".rect-w", entries[0].w); set(".rect-h", entries[0].h); set(".rect-q", entries[0].q);
+    let anchor = row;
+    for(let i = 1; i < entries.length; i++){
+      const nr = rectItemTemplate(entries[i].w, entries[i].h, entries[i].q);
+      anchor.after(nr);
+      anchor = nr;
+    }
+    try{ calculate(); }catch(e){}
+    try{ syncState(); }catch(e){}
+  }
+
   function rectItemTemplate(w=0,h=0,q=1){
     const row = document.createElement("div");
     row.className = "rect-item-row";
@@ -2827,6 +2855,17 @@ syncState();
         syncState();
       });
     });
+    // Розумна вставка у поле ширини: "1022х1023-5шт" → авто-розкладка + нові рядки
+    const wInput = row.querySelector(".rect-w");
+    if(wInput){
+      wInput.addEventListener("paste", (e)=>{
+        const text = (e.clipboardData || window.clipboardData) ? (e.clipboardData || window.clipboardData).getData("text") : "";
+        const entries = parsePastedSizes(text);
+        if(!entries.length) return; // звичайне число — стандартна вставка
+        e.preventDefault();
+        applyPastedSizes(row, entries);
+      });
+    }
     return row;
   }
 
@@ -3805,7 +3844,8 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
 
 	          d.push(`3. Монтаж: ${instCost.toFixed(2)} грн`);
 	          d.push(`4. Доставка: ${delCost.toFixed(2)} грн`);
-	          d.push(`<b>Все разом: ${total.toFixed(2)} грн</b>`);
+	          try{ var _hr=(typeof getHoleRows==="function"?getHoleRows():[]).filter(function(h){return h.q>0&&h.d>0;}); if(_hr.length&&holesCost){ d.push("Отвори ("+_hr.map(function(h){return "Ø"+h.d+"×"+h.q;}).join(", ")+"): "+holesCost.toFixed(2)+" грн"); } }catch(e){}
+		          d.push(`<b>Все разом: ${total.toFixed(2)} грн</b>`);
 	        }
 
         detailsEl.innerHTML = d.length ? d.join("<br>") : 'Натисни "Перерахувати".';
