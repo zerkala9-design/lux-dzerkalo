@@ -2793,7 +2793,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
   function parsePastedSizes(text){
     const out = [];
     // W [х/x/×/*] H [ -/: Q ]  — Q лише після роздільника, щоб не зʼїсти наступний розмір
-    const re = /(\d+(?:[.,]\d+)?)\s*[хxX×хХ*]\s*(\d+(?:[.,]\d+)?)(?:\s*[-–—:]\s*(\d+))?/g;
+    const re = /(\d+(?:[.,]\d+)?)\s*[xXхХ×*\/]\s*(\d+(?:[.,]\d+)?)(?:\s*[-–—:]\s*(\d+))?/g;
     let m;
     while((m = re.exec(String(text||"")))){
       const w = parseFloat(m[1].replace(",", "."));
@@ -3838,14 +3838,15 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
 	            if(hasProf) processing.push(`Алюмінієвий профіль: ${(perimUnit*it.q).toFixed(3)} м × ${(priceState?.price_profile_m||0).toFixed(0)} = ${(profUnit*it.q).toFixed(2)} грн`);
 	            d.push(`2. Обробка: ${processing.length ? processing.join("; ") : "0.00 грн"}`);
 
+	            if(idx===0){ try{ var _hr=(typeof getHoleRows==="function"?getHoleRows():[]).filter(function(h){return h.q>0&&h.d>0;}); if(_hr.length&&holesCost){ d.push("Отвори ("+_hr.map(function(h){return "Ø"+h.d+"×"+h.q;}).join(", ")+"): "+holesCost.toFixed(2)+" грн"); } }catch(e){} }
+
 	            // як ти просив: лише тут показуємо "ціну за 1 шт" з урахуванням обробки
 	            d.push(`<b>Ціна 1 шт (з обробкою): ${unitTotal.toFixed(2)} грн</b>`);
 	          });
 
 	          d.push(`3. Монтаж: ${instCost.toFixed(2)} грн`);
 	          d.push(`4. Доставка: ${delCost.toFixed(2)} грн`);
-	          try{ var _hr=(typeof getHoleRows==="function"?getHoleRows():[]).filter(function(h){return h.q>0&&h.d>0;}); if(_hr.length&&holesCost){ d.push("Отвори ("+_hr.map(function(h){return "Ø"+h.d+"×"+h.q;}).join(", ")+"): "+holesCost.toFixed(2)+" грн"); } }catch(e){}
-		          d.push(`<b>Все разом: ${total.toFixed(2)} грн</b>`);
+	          		          d.push(`<b>Все разом: ${total.toFixed(2)} грн</b>`);
 	        }
 
         detailsEl.innerHTML = d.length ? d.join("<br>") : 'Натисни "Перерахувати".';
