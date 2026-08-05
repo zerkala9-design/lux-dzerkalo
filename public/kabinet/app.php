@@ -2001,6 +2001,43 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
   </div>
 </div>
 
+<!-- OCR: розпізнавання розмірів з фото зошита -->
+<div id="ocr-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(2,6,16,.72);backdrop-filter:blur(3px);padding:16px;overflow:auto;">
+  <div style="max-width:560px;margin:24px auto;background:#0f1428;border:1px solid rgba(255,255,255,.10);border-radius:18px;box-shadow:0 24px 70px rgba(0,0,0,.55);overflow:hidden;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.08);">
+      <div style="font-weight:800;font-size:17px;">📷 Розпізнати розміри з фото</div>
+      <span id="ocr-close" style="cursor:pointer;font-size:18px;opacity:.8;">✕</span>
+    </div>
+    <div style="padding:18px;">
+      <p style="font-size:12.5px;color:#9ca3af;line-height:1.5;margin-bottom:12px;">
+        Сфоткай сторінку з розмірами (або вибери фото). Я розпізнаю текст, а ти перевіриш і виправиш рядки перед вставкою.
+        Формат рядка: <b>ширина × висота - кількість</b>, напр. <span style="color:#cbd5e1;">1200х800 - 3шт</span>.
+      </p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+        <label class="btn-primary" style="cursor:pointer;margin:0;">
+          Вибрати фото
+          <input id="ocr-file" type="file" accept="image/*" capture="environment" multiple style="display:none;">
+        </label>
+        <button class="btn-secondary" type="button" id="ocr-run" disabled>Розпізнати</button>
+      </div>
+      <div id="ocr-thumbs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;"></div>
+      <div id="ocr-progress" style="display:none;font-size:12px;color:#9ca3af;margin-bottom:10px;">
+        <div id="ocr-progress-text">Готуюсь…</div>
+        <div style="height:6px;background:rgba(255,255,255,.08);border-radius:6px;margin-top:6px;overflow:hidden;">
+          <div id="ocr-progress-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#ffb35a,#ff7a00);transition:width .2s;"></div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:#9ca3af;margin-bottom:4px;">Розпізнані рядки (можна редагувати):</div>
+      <textarea id="ocr-text" rows="7" style="width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.25);color:#fff;font-size:14px;font-family:ui-monospace,Menlo,Consolas,monospace;outline:none;resize:vertical;" placeholder="Тут зʼявляться розпізнані розміри…"></textarea>
+      <div id="ocr-preview" style="font-size:12.5px;color:#9ca3af;margin-top:8px;min-height:18px;"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
+        <button class="btn-primary" type="button" id="ocr-insert" disabled>Вставити в калькулятор</button>
+        <button class="btn-secondary" type="button" id="ocr-cancel">Закрити</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- AUTH -->
 <div id="auth-overlay">
   <div id="auth-card">
@@ -2319,6 +2356,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
   <div id="rect-items" style="display:flex;flex-direction:column;gap:8px;margin-top:6px;"></div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
     <button class="btn-secondary" type="button" id="rect-add">＋ Додати розмір</button>
+    <button class="btn-secondary" type="button" id="ocr-open">📷 Розпізнати з фото</button>
     <button class="btn-secondary" type="button" id="calc-reset">⟲ Скинути до нулів</button>
   </div>
   <div style="margin-top:8px;color:#9ca3af;font-size:11px;line-height:1.35;">
@@ -10407,6 +10445,167 @@ function exportSingleNaradPNG(order){
 
     setInterval(loop, 5000);
   })();
+})();
+</script>
+
+<!-- OCR: розпізнавання розмірів з фото (Tesseract.js, ліниве завантаження з CDN) -->
+<script>
+(function(){
+  var TESS_URL = "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
+  var modal = document.getElementById("ocr-modal");
+  if(!modal) return;
+  var fileInput = document.getElementById("ocr-file");
+  var runBtn    = document.getElementById("ocr-run");
+  var insertBtn = document.getElementById("ocr-insert");
+  var textArea  = document.getElementById("ocr-text");
+  var previewEl = document.getElementById("ocr-preview");
+  var thumbsEl  = document.getElementById("ocr-thumbs");
+  var progWrap  = document.getElementById("ocr-progress");
+  var progText  = document.getElementById("ocr-progress-text");
+  var progBar   = document.getElementById("ocr-progress-bar");
+  var files = [];
+  var tessLoading = null;
+
+  function open(){ modal.style.display = "block"; }
+  function close(){ modal.style.display = "none"; }
+  document.getElementById("ocr-open") && document.getElementById("ocr-open").addEventListener("click", open);
+  document.getElementById("ocr-close") && document.getElementById("ocr-close").addEventListener("click", close);
+  document.getElementById("ocr-cancel") && document.getElementById("ocr-cancel").addEventListener("click", close);
+  modal.addEventListener("click", function(e){ if(e.target === modal) close(); });
+
+  // Парсинг рядків: спочатку через звичайний вставлятор, потім — числовий фолбек
+  function ocrParse(text){
+    var out = [];
+    String(text||"").split(/\r?\n/).forEach(function(raw){
+      var line = raw.trim();
+      if(!line) return;
+      var viaRe = (typeof parsePastedSizes === "function") ? parsePastedSizes(line) : [];
+      if(viaRe.length){ out.push.apply(out, viaRe); return; }
+      var nums = (line.match(/\d+(?:[.,]\d+)?/g) || []).map(function(n){ return parseFloat(n.replace(",", ".")); });
+      if(nums.length >= 2){
+        var w = nums[0], h = nums[1], q = 1;
+        if(nums.length >= 3){ var t = Math.round(nums[2]); if(t > 0 && t < 1000) q = t; }
+        if(w > 0 && h > 0) out.push({ w:w, h:h, q:q });
+      }
+    });
+    return out;
+  }
+
+  function updatePreview(){
+    var entries = ocrParse(textArea.value);
+    if(entries.length){
+      previewEl.innerHTML = "✅ Знайдено розмірів: <b>" + entries.length + "</b> — " +
+        entries.map(function(e){ return e.w + "×" + e.h + (e.q>1 ? ("×"+e.q) : ""); }).join(", ");
+      insertBtn.disabled = false;
+    } else {
+      previewEl.textContent = textArea.value.trim() ? "Не бачу жодного розміру у форматі Ш×В. Виправ рядки вручну." : "";
+      insertBtn.disabled = true;
+    }
+  }
+  textArea.addEventListener("input", updatePreview);
+
+  fileInput.addEventListener("change", function(){
+    files = Array.prototype.slice.call(fileInput.files || []);
+    thumbsEl.innerHTML = "";
+    files.forEach(function(f){
+      var img = document.createElement("img");
+      img.style.cssText = "width:54px;height:54px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.15);";
+      img.src = URL.createObjectURL(f);
+      thumbsEl.appendChild(img);
+    });
+    runBtn.disabled = files.length === 0;
+  });
+
+  function loadTesseract(){
+    if(window.Tesseract) return Promise.resolve();
+    if(tessLoading) return tessLoading;
+    tessLoading = new Promise(function(res, rej){
+      var s = document.createElement("script");
+      s.src = TESS_URL;
+      s.onload = function(){ res(); };
+      s.onerror = function(){ tessLoading = null; rej(new Error("Не вдалося завантажити OCR — перевір інтернет")); };
+      document.head.appendChild(s);
+    });
+    return tessLoading;
+  }
+
+  // Підготовка фото: масштаб + сірий + розтяг контрасту (краще для розпізнавання)
+  function preprocess(file){
+    return new Promise(function(resolve, reject){
+      var img = new Image();
+      img.onload = function(){
+        var w = img.naturalWidth, h = img.naturalHeight, big = Math.max(w, h);
+        var scale = big > 2000 ? 2000/big : (big < 1200 ? 1200/big : 1);
+        var tw = Math.round(w*scale), th = Math.round(h*scale);
+        var c = document.createElement("canvas"); c.width = tw; c.height = th;
+        var ctx = c.getContext("2d"); ctx.drawImage(img, 0, 0, tw, th);
+        try{
+          var id = ctx.getImageData(0, 0, tw, th), d = id.data, min = 255, max = 0, i, g;
+          for(i = 0; i < d.length; i += 4){ g = d[i]*0.299 + d[i+1]*0.587 + d[i+2]*0.114; d[i]=d[i+1]=d[i+2]=g; if(g<min)min=g; if(g>max)max=g; }
+          var range = Math.max(1, max - min);
+          for(i = 0; i < d.length; i += 4){ var v = (d[i]-min)/range*255; d[i]=d[i+1]=d[i+2]=v; }
+          ctx.putImageData(id, 0, 0);
+        }catch(e){ /* CORS/great sizes — лишаємо як є */ }
+        URL.revokeObjectURL(img.src);
+        resolve(c);
+      };
+      img.onerror = function(){ reject(new Error("Не вдалося відкрити фото")); };
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  runBtn.addEventListener("click", function(){
+    if(!files.length) return;
+    runBtn.disabled = true; insertBtn.disabled = true;
+    progWrap.style.display = "block"; progBar.style.width = "0%";
+    progText.textContent = "Завантажую OCR…";
+    var worker = null, collected = [];
+    loadTesseract()
+      .then(function(){ progText.textContent = "Готую розпізнавач…";
+        return window.Tesseract.createWorker("eng", 1, { logger: function(m){
+          if(m.status === "recognizing text"){ progBar.style.width = Math.round((m.progress||0)*100) + "%"; }
+        }});
+      })
+      .then(function(w){ worker = w; return worker.setParameters({ tessedit_char_whitelist: "0123456789xX×*/.,- ", tessedit_pageseg_mode: "6" }); })
+      .then(function(){
+        var chain = Promise.resolve();
+        files.forEach(function(f, idx){
+          chain = chain.then(function(){
+            progText.textContent = "Розпізнаю фото " + (idx+1) + " з " + files.length + "…";
+            progBar.style.width = "0%";
+            return preprocess(f).then(function(canvas){ return worker.recognize(canvas); }).then(function(r){ collected.push((r.data && r.data.text) || ""); });
+          });
+        });
+        return chain;
+      })
+      .then(function(){ return worker ? worker.terminate() : null; })
+      .then(function(){
+        progWrap.style.display = "none";
+        var joined = collected.join("\n").replace(/[ \t]+/g, " ").replace(/\n{2,}/g, "\n").trim();
+        textArea.value = joined;
+        updatePreview();
+        runBtn.disabled = false;
+      })
+      .catch(function(err){
+        progWrap.style.display = "none";
+        runBtn.disabled = false;
+        previewEl.textContent = "⚠️ " + (err && err.message ? err.message : "Помилка розпізнавання");
+        try{ if(worker) worker.terminate(); }catch(e){}
+      });
+  });
+
+  insertBtn.addEventListener("click", function(){
+    var entries = ocrParse(textArea.value);
+    if(!entries.length) return;
+    try{
+      var tab = document.querySelector('.shape-tab[data-shape="rect"]');
+      if(tab && !tab.classList.contains("active")) tab.click();
+    }catch(e){}
+    try{ if(typeof setRectItems === "function") setRectItems(entries); }catch(e){}
+    try{ if(typeof calculate === "function") calculate(); }catch(e){}
+    try{ if(typeof syncState === "function") syncState(); }catch(e){}
+    close();
+  });
 })();
 </script>
 </body>
