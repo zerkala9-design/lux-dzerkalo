@@ -2445,35 +2445,8 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 
           <div>
             <div class="card-sub" style="margin-bottom:4px;">Отвори</div>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <select class="input calc-input" id="holes_d" style="flex:1;min-width:0;">
-                <optgroup label="5–8 мм">
-                  <option value="5">Ø 5 мм</option>
-                  <option value="6">Ø 6 мм</option>
-                  <option value="8">Ø 8 мм</option>
-                </optgroup>
-                <optgroup label="10–16 мм">
-                  <option value="10">Ø 10 мм</option>
-                  <option value="12">Ø 12 мм</option>
-                  <option value="16">Ø 16 мм</option>
-                </optgroup>
-                <optgroup label="20–30 мм">
-                  <option value="20">Ø 20 мм</option>
-                  <option value="22">Ø 22 мм</option>
-                  <option value="26">Ø 26 мм</option>
-                  <option value="30">Ø 30 мм</option>
-                </optgroup>
-                <optgroup label="35–65 мм">
-                  <option value="35">Ø 35 мм</option>
-                  <option value="40">Ø 40 мм</option>
-                  <option value="45">Ø 45 мм</option>
-                  <option value="55">Ø 55 мм</option>
-                  <option value="65">Ø 65 мм</option>
-                </optgroup>
-              </select>
-              <input class="input calc-input" id="holes_q" type="number" min="0" value="0" style="width:88px;">
-              <span style="color:#9ca3af;font-size:14px;">шт</span>
-            </div>
+            <div id="holes-list"></div>
+            <button class="btn-secondary" id="holes-add" type="button" style="margin-top:2px;padding:6px 12px;font-size:13px;">+ Додати отвір</button>
           </div>
 
           <div>
@@ -3278,8 +3251,7 @@ syncState();
       thickness: document.querySelector('input[name="thickness"]:checked')?.value,
       edge_type: document.querySelector('input[name="edge_type"]:checked')?.value,
       facet_size: document.querySelector('input[name="facet_size"]:checked')?.value,
-      holes_d: document.getElementById("holes_d")?.value,
-      holes_q: document.getElementById("holes_q")?.value,
+      holes: (typeof getHoleRows === "function" ? getHoleRows() : []),
       has_film: document.getElementById("has_film").checked,
       has_led: document.getElementById("has_led").checked,
       has_profile: document.getElementById("has_profile").checked,
@@ -3336,8 +3308,7 @@ syncState();
         if(facetRadio) facetRadio.checked = true;
       }
       
-      if(state.holes_d!=null && document.getElementById("holes_d")) document.getElementById("holes_d").value = state.holes_d;
-      if(document.getElementById("holes_q")) document.getElementById("holes_q").value = state.holes_q || 0;
+      if(typeof renderHoleRows === "function") renderHoleRows(state.holes);
       document.getElementById("has_film").checked = state.has_film || false;
       document.getElementById("has_led").checked = state.has_led || false;
       document.getElementById("has_profile").checked = state.has_profile || false;
@@ -3590,15 +3561,16 @@ function updateShapePreview() {
     const facetKey = `facet_${facet}${suffix}`;
     const facetPriceM = priceState[facetKey] || 0;
 
-    const holeQ = safeInt(document.getElementById("holes_q")?.value, 0);
-    const holeD = safeInt(document.getElementById("holes_d")?.value, 0);
     const holeBandPrice = (d)=>{
       if(d<=8) return priceState.hole_b1;
       if(d<=16) return priceState.hole_b2;
       if(d<=30) return priceState.hole_b3;
       return priceState.hole_b4;
     };
-    let holesCost = holeQ * (holeBandPrice(holeD) || 0);
+    let holesCost = 0;
+    (typeof getHoleRows==="function" ? getHoleRows() : []).forEach(h=>{
+      if(h.q>0 && h.d>0) holesCost += h.q * (holeBandPrice(h.d) || 0);
+    });
 
     const hasFilm = document.getElementById("has_film").checked;
     const hasLed = document.getElementById("has_led").checked;
@@ -3886,6 +3858,54 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
   bindSelectRadioSync("thickness_select", "thickness");
   bindSelectRadioSync("edge_type_select", "edge_type");
   bindSelectRadioSync("facet_size_select", "facet_size");
+
+  // ===== Отвори: кілька діаметрів на одному дзеркалі =====
+  const HOLE_OPTIONS_HTML =
+    '<optgroup label="5–8 мм"><option value="5">Ø 5 мм</option><option value="6">Ø 6 мм</option><option value="8">Ø 8 мм</option></optgroup>'+
+    '<optgroup label="10–16 мм"><option value="10">Ø 10 мм</option><option value="12">Ø 12 мм</option><option value="16">Ø 16 мм</option></optgroup>'+
+    '<optgroup label="20–30 мм"><option value="20">Ø 20 мм</option><option value="22">Ø 22 мм</option><option value="26">Ø 26 мм</option><option value="30">Ø 30 мм</option></optgroup>'+
+    '<optgroup label="35–65 мм"><option value="35">Ø 35 мм</option><option value="40">Ø 40 мм</option><option value="45">Ø 45 мм</option><option value="55">Ø 55 мм</option><option value="65">Ø 65 мм</option></optgroup>';
+  function holeRowEl(d, q){
+    const row = document.createElement("div");
+    row.className = "holes-row";
+    row.style.cssText = "display:flex;gap:8px;align-items:center;margin-bottom:8px;";
+    row.innerHTML =
+      '<select class="input holes-d" style="flex:1;min-width:0;">'+HOLE_OPTIONS_HTML+'</select>'+
+      '<input class="input holes-q" type="number" min="0" value="'+(q||0)+'" style="width:76px;">'+
+      '<span style="color:#9ca3af;font-size:14px;">шт</span>'+
+      '<button type="button" class="btn-secondary holes-remove" title="Видалити" style="padding:2px 10px;">−</button>';
+    if(d){ const sel=row.querySelector(".holes-d"); if(sel) sel.value = String(d); }
+    const recalc = ()=>{ try{ saveCalcState(); }catch(e){} try{ calculate(); }catch(e){} };
+    row.querySelector(".holes-d").addEventListener("change", recalc);
+    row.querySelector(".holes-q").addEventListener("input", recalc);
+    row.querySelector(".holes-remove").addEventListener("click", ()=>{
+      const list = document.getElementById("holes-list");
+      if(list && list.querySelectorAll(".holes-row").length > 1) row.remove();
+      else { const q2=row.querySelector(".holes-q"); if(q2) q2.value = 0; }
+      recalc();
+    });
+    return row;
+  }
+  function getHoleRows(){
+    return [...document.querySelectorAll("#holes-list .holes-row")].map(r=>({
+      d: safeInt(r.querySelector(".holes-d") && r.querySelector(".holes-d").value, 0),
+      q: safeInt(r.querySelector(".holes-q") && r.querySelector(".holes-q").value, 0)
+    }));
+  }
+  function renderHoleRows(rows){
+    const list = document.getElementById("holes-list");
+    if(!list) return;
+    list.innerHTML = "";
+    const arr = (rows && rows.length) ? rows : [{d:6,q:0}];
+    arr.forEach(h=> list.appendChild(holeRowEl(h.d||6, h.q||0)));
+  }
+  (function(){
+    const addBtn = document.getElementById("holes-add");
+    if(addBtn) addBtn.addEventListener("click", ()=>{ const list=document.getElementById("holes-list"); if(list) list.appendChild(holeRowEl(6,0)); });
+    if(document.getElementById("holes-list") && document.querySelectorAll("#holes-list .holes-row").length===0){
+      renderHoleRows(null);
+    }
+  })();
 
 document.querySelectorAll(".calc-input").forEach(i => {
     if(i.type === "checkbox" || i.type === "radio") {
