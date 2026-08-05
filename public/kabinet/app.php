@@ -2158,6 +2158,9 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
         <div class="price-row"><span class="label">Значення</span><input class="input" id="price_install" type="number" value="80"></div>
 
         <div class="price-row"><span class="label">Сенсор, грн</span><input class="input" id="price_sensor" type="number" value="500"></div>
+
+        <div class="price-section-title">Підйом на поверх</div>
+        <div class="price-row"><span class="label">За 1 дзеркало / 1 поверх, грн</span><input class="input" id="price_floor_lift" type="number" value="100"></div>
       </div>
     </div>
 
@@ -2497,6 +2500,15 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
             <div class="card-sub" style="margin-bottom:4px;">Знижка, %</div>
             <div class="field" style="max-width:140px;">
               <input class="input calc-input" id="discount_percent" type="number" min="0" max="100" value="0">
+            </div>
+          </div>
+
+          <div>
+            <div class="card-sub" style="margin-bottom:4px;">Підйом на поверх</div>
+            <div class="field" style="flex-direction:row;align-items:center;gap:8px;flex-wrap:wrap;max-width:340px;">
+              <label for="floor_num" style="margin:0;">Поверх №:</label>
+              <input class="input calc-input" id="floor_num" type="number" min="0" value="0" style="width:70px;">
+              <span id="floor_hint" style="font-size:12px;color:#9ca3af;"></span>
             </div>
           </div>
 
@@ -3193,6 +3205,7 @@ syncState();
     hole_b1: 45, hole_b2: 65, hole_b3: 85, hole_b4: 120,
     price_film_m2: 50, price_profile_m: 150, price_mount_point_pc: 80,
     price_led_per_m: 3500, price_complexity: 20, price_sensor: 500, price_delivery: 1500, price_install: 80,
+    price_floor_lift: 100,
     complexity_type: "fixed", delivery_type: "fixed", install_type: "percent", price_mode: "retail", ui_scale: 1
   };
 
@@ -3267,6 +3280,7 @@ syncState();
     document.getElementById("price_sensor").value = 500;
     document.getElementById("price_delivery").value = 1500;
     document.getElementById("price_install").value = 80;
+    document.getElementById("price_floor_lift").value = 100;
     syncState(); calculate(); calcWall(); calcPano();
   });
 
@@ -3299,7 +3313,8 @@ syncState();
       has_sensor: document.getElementById("has_sensor").checked,
       has_delivery: document.getElementById("has_delivery").checked,
       has_install: document.getElementById("has_install").checked,
-      discount_percent: document.getElementById("discount_percent").value
+      discount_percent: document.getElementById("discount_percent").value,
+      floor_num: document.getElementById("floor_num")?.value
     };
     
     localStorage.setItem(`reflectique_calc_${user.email}`, JSON.stringify(state));
@@ -3357,6 +3372,7 @@ syncState();
       document.getElementById("has_delivery").checked = state.has_delivery || false;
       document.getElementById("has_install").checked = state.has_install || false;
       document.getElementById("discount_percent").value = state.discount_percent || 0;
+      { const _fl = document.getElementById("floor_num"); if(_fl) _fl.value = state.floor_num || 0; }
       
       document.querySelectorAll(".color-btn").forEach(b=>b.classList.toggle("active", b.dataset.color===mirrorColor));
       updateShapePreview();
@@ -3651,8 +3667,17 @@ function updateShapePreview() {
       instCost = priceState.install_type==="percent" ? (priceOne * ((currentShape==="rect") ? 1 : qty)) * (priceState.price_install/100) : priceState.price_install;
     }
 
+    // Підйом на поверх: кількість дзеркал (з розкрою) × № поверху × ціна за 1 дзеркало/поверх
+    const floorNum = safeInt(document.getElementById("floor_num")?.value, 0);
+    const liftPerFloor = priceState.price_floor_lift || 0;
+    const liftCost = (floorNum>0 && qty>0) ? (qty * floorNum * liftPerFloor) : 0;
+    { const _fh = document.getElementById("floor_hint");
+      if(_fh) _fh.textContent = (floorNum>0)
+        ? `${qty} дзерк. × ${floorNum} пов. × ${liftPerFloor} = ${liftCost.toFixed(0)} грн`
+        : ""; }
+
     const qtyMult = (currentShape==="rect") ? 1 : qty;
-    const total = (priceOne * qtyMult) + delCost + instCost;
+    const total = (priceOne * qtyMult) + delCost + instCost + liftCost;
 
     document.getElementById("total_price").textContent = formatUAH(total);
     document.getElementById("result_area").textContent = area.toFixed(3)+" м²";
@@ -3747,6 +3772,7 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     if(discP) dDetailed.push(`Знижка ${discP}%: -${discVal.toFixed(2)} грн`);
     if(instCost) dDetailed.push(`Монтаж: ${instCost.toFixed(2)} грн`);
     if(delCost) dDetailed.push(`Доставка: ${delCost.toFixed(2)} грн`);
+    if(liftCost) dDetailed.push(`Підйом на ${floorNum} поверх (${qty} дзерк. × ${floorNum} × ${liftPerFloor}): ${liftCost.toFixed(2)} грн`);
     dDetailed.push(`РАЗОМ (${qty} шт): ${total.toFixed(2)} грн`);
 
     document.getElementById("details").innerHTML = dDetailed.join("<br>");
@@ -3781,6 +3807,7 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     if(discP) dSimple.push(`Знижка ${discP}%: -${discVal.toFixed(0)} грн`);
     if(instCost) dSimple.push(`Монтаж: ${instCost.toFixed(0)} грн`);
     if(delCost) dSimple.push(`Доставка: ${delCost.toFixed(0)} грн`);
+    if(liftCost) dSimple.push(`Підйом на ${floorNum} поверх (${qty} дзерк.): ${liftCost.toFixed(0)} грн`);
     dSimple.push(`РАЗОМ (${qty} шт): ${total.toFixed(0)} грн`);
 
     document.getElementById("details").setAttribute("data-simple", dSimple.join("<br>"));
@@ -3846,6 +3873,7 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
 
 	          d.push(`3. Монтаж: ${instCost.toFixed(2)} грн`);
 	          d.push(`4. Доставка: ${delCost.toFixed(2)} грн`);
+	          if(liftCost) d.push(`5. Підйом на ${floorNum} поверх (${qty} дзерк. × ${floorNum} × ${liftPerFloor}): ${liftCost.toFixed(2)} грн`);
 	          		          d.push(`<b>Все разом: ${total.toFixed(2)} грн</b>`);
 	        }
 
