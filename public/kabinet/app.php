@@ -10505,14 +10505,45 @@ function exportSingleNaradPNG(order){
   }
   textArea.addEventListener("input", updatePreview);
 
+  function errMsg(e){
+    if(!e) return "невідома помилка";
+    if(typeof e === "string") return e;
+    if(e.message) return e.message;
+    try{ return JSON.stringify(e); }catch(_){ return String(e); }
+  }
+  // Надійне читання фото (в т.ч. HEIC з айфона + правильна орієнтація)
+  function loadViaImg(file){
+    return new Promise(function(res, rej){
+      var img = new Image();
+      img.onload = function(){ res(img); };
+      img.onerror = function(){ rej(new Error("не вдалося відкрити фото (формат не підтримується)")); };
+      img.src = URL.createObjectURL(file);
+    });
+  }
+  function loadBitmap(file){
+    if(window.createImageBitmap){
+      return createImageBitmap(file, { imageOrientation: "from-image" })
+        .catch(function(){ return createImageBitmap(file); })
+        .catch(function(){ return loadViaImg(file); });
+    }
+    return loadViaImg(file);
+  }
+
   fileInput.addEventListener("change", function(){
     files = Array.prototype.slice.call(fileInput.files || []);
     thumbsEl.innerHTML = "";
     files.forEach(function(f){
-      var img = document.createElement("img");
-      img.style.cssText = "width:54px;height:54px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.15);";
-      img.src = URL.createObjectURL(f);
-      thumbsEl.appendChild(img);
+      var cv = document.createElement("canvas");
+      cv.width = 54; cv.height = 54;
+      cv.style.cssText = "width:54px;height:54px;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);";
+      thumbsEl.appendChild(cv);
+      loadBitmap(f).then(function(src){
+        var w = src.width||src.naturalWidth, h = src.height||src.naturalHeight;
+        var s = Math.max(54/w, 54/h), dw = w*s, dh = h*s;
+        cv.getContext("2d").drawImage(src, (54-dw)/2, (54-dh)/2, dw, dh);
+        if(src.close){ try{ src.close(); }catch(e){} }
+        if(src.src){ try{ URL.revokeObjectURL(src.src); }catch(e){} }
+      }).catch(function(){});
     });
     runBtn.disabled = files.length === 0;
   });
@@ -10532,26 +10563,23 @@ function exportSingleNaradPNG(order){
 
   // Підготовка фото: масштаб + сірий + розтяг контрасту (краще для розпізнавання)
   function preprocess(file){
-    return new Promise(function(resolve, reject){
-      var img = new Image();
-      img.onload = function(){
-        var w = img.naturalWidth, h = img.naturalHeight, big = Math.max(w, h);
-        var scale = big > 2000 ? 2000/big : (big < 1200 ? 1200/big : 1);
-        var tw = Math.round(w*scale), th = Math.round(h*scale);
-        var c = document.createElement("canvas"); c.width = tw; c.height = th;
-        var ctx = c.getContext("2d"); ctx.drawImage(img, 0, 0, tw, th);
-        try{
-          var id = ctx.getImageData(0, 0, tw, th), d = id.data, min = 255, max = 0, i, g;
-          for(i = 0; i < d.length; i += 4){ g = d[i]*0.299 + d[i+1]*0.587 + d[i+2]*0.114; d[i]=d[i+1]=d[i+2]=g; if(g<min)min=g; if(g>max)max=g; }
-          var range = Math.max(1, max - min);
-          for(i = 0; i < d.length; i += 4){ var v = (d[i]-min)/range*255; d[i]=d[i+1]=d[i+2]=v; }
-          ctx.putImageData(id, 0, 0);
-        }catch(e){ /* CORS/great sizes — лишаємо як є */ }
-        URL.revokeObjectURL(img.src);
-        resolve(c);
-      };
-      img.onerror = function(){ reject(new Error("Не вдалося відкрити фото")); };
-      img.src = URL.createObjectURL(file);
+    return loadBitmap(file).then(function(src){
+      var w = src.width||src.naturalWidth, h = src.height||src.naturalHeight, big = Math.max(w, h);
+      if(!big){ throw new Error("порожнє зображення"); }
+      var scale = big > 1500 ? 1500/big : 1;   // менше — легше для памʼяті телефона
+      var tw = Math.max(1, Math.round(w*scale)), th = Math.max(1, Math.round(h*scale));
+      var c = document.createElement("canvas"); c.width = tw; c.height = th;
+      var ctx = c.getContext("2d"); ctx.drawImage(src, 0, 0, tw, th);
+      if(src.close){ try{ src.close(); }catch(e){} }
+      if(src.src){ try{ URL.revokeObjectURL(src.src); }catch(e){} }
+      try{
+        var id = ctx.getImageData(0, 0, tw, th), d = id.data, min = 255, max = 0, i, g;
+        for(i = 0; i < d.length; i += 4){ g = d[i]*0.299 + d[i+1]*0.587 + d[i+2]*0.114; d[i]=d[i+1]=d[i+2]=g; if(g<min)min=g; if(g>max)max=g; }
+        var range = Math.max(1, max - min);
+        for(i = 0; i < d.length; i += 4){ var v = (d[i]-min)/range*255; d[i]=d[i+1]=d[i+2]=v; }
+        ctx.putImageData(id, 0, 0);
+      }catch(e){ /* лишаємо як є */ }
+      return c;
     });
   }
 
@@ -10572,14 +10600,17 @@ function exportSingleNaradPNG(order){
           }
         });
       })
-      .then(function(w){ worker = w; return worker.setParameters({ tessedit_char_whitelist: "0123456789xX×*/.,- ", tessedit_pageseg_mode: "6" }); })
+      .then(function(w){ worker = w; return worker.setParameters({ tessedit_char_whitelist: "0123456789xX*/.,- " }); })
       .then(function(){
         var chain = Promise.resolve();
         files.forEach(function(f, idx){
           chain = chain.then(function(){
             progText.textContent = "Розпізнаю фото " + (idx+1) + " з " + files.length + "…";
             progBar.style.width = "0%";
-            return preprocess(f).then(function(canvas){ return worker.recognize(canvas); }).then(function(r){ collected.push((r.data && r.data.text) || ""); });
+            return preprocess(f)
+              .then(function(canvas){ return worker.recognize(canvas); })
+              .then(function(r){ collected.push((r.data && r.data.text) || ""); })
+              .catch(function(e){ collected.push(""); previewEl.textContent = "⚠️ Фото " + (idx+1) + ": " + errMsg(e); });
           });
         });
         return chain;
@@ -10595,7 +10626,7 @@ function exportSingleNaradPNG(order){
       .catch(function(err){
         progWrap.style.display = "none";
         runBtn.disabled = false;
-        previewEl.textContent = "⚠️ " + (err && err.message ? err.message : "Помилка розпізнавання");
+        previewEl.textContent = "⚠️ Помилка розпізнавання: " + errMsg(err);
         try{ if(worker) worker.terminate(); }catch(e){}
       });
   });
