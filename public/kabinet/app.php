@@ -2601,6 +2601,13 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
               <button class="btn-chip" id="wall-toggle-install">Монтаж: OFF</button>
               <button class="btn-chip" id="wall-toggle-delivery">Доставка: OFF</button>
             </div>
+
+            <div class="card-sub" style="margin:12px 0 4px;">Підйом на поверх</div>
+            <div class="field" style="flex-direction:row;align-items:center;gap:8px;flex-wrap:wrap;max-width:340px;">
+              <label for="wall_floor_num" style="margin:0;">Поверх №:</label>
+              <input class="input" id="wall_floor_num" type="number" min="0" value="0" style="width:70px;">
+              <span id="wall_floor_hint" style="font-size:12px;color:#9ca3af;"></span>
+            </div>
           </div>
 
           <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
@@ -4170,7 +4177,16 @@ document.querySelectorAll(".calc-input").forEach(i => {
       extra += priceState.delivery_type==="percent" ? totalBase*(priceState.price_delivery/100) : priceState.price_delivery;
     }
 
-    const grandTotal = totalBase + extra;
+    // Підйом на поверх: кількість листів (розкрій) × № поверху × ціна за 1 дзеркало/поверх
+    const wallFloorNum = safeInt(document.getElementById("wall_floor_num")?.value, 0);
+    const wallLiftPer = priceState.price_floor_lift || 0;
+    const wallLiftCost = (wallFloorNum>0 && cols>0) ? (cols * wallFloorNum * wallLiftPer) : 0;
+    { const _wfh = document.getElementById("wall_floor_hint");
+      if(_wfh) _wfh.textContent = (wallFloorNum>0)
+        ? `${cols} лист. × ${wallFloorNum} пов. × ${wallLiftPer} = ${wallLiftCost.toFixed(0)} грн`
+        : ""; }
+
+    const grandTotal = totalBase + extra + wallLiftCost;
 
     document.getElementById("wall-total-price").textContent = formatUAH(grandTotal);
     { const _wa=document.getElementById("wall-area-info"); if(_wa) _wa.textContent = areaTotal.toFixed(2) + " м²"; }
@@ -4185,6 +4201,7 @@ document.querySelectorAll(".calc-input").forEach(i => {
     detailsArr.push(`Кріплення: ${mountCost.toFixed(0)} грн`);
     if(hasInst) detailsArr.push(`Монтаж: ${(extra - (hasDel ? (priceState.delivery_type==="percent" ? totalBase*(priceState.price_delivery/100) : priceState.price_delivery) : 0)).toFixed(0)} грн`);
     if(hasDel) detailsArr.push(`Доставка: ${(priceState.delivery_type==="percent" ? totalBase*(priceState.price_delivery/100) : priceState.price_delivery).toFixed(0)} грн`);
+    if(wallLiftCost) detailsArr.push(`Підйом на ${wallFloorNum} поверх (${cols} лист. × ${wallFloorNum} × ${wallLiftPer}): ${wallLiftCost.toFixed(0)} грн`);
     detailsArr.push(`Разом: ${grandTotal.toFixed(0)} грн`);
 
     document.getElementById("wall-details").innerHTML = detailsArr.join("<br>");
@@ -4330,7 +4347,8 @@ document.querySelectorAll(".calc-input").forEach(i => {
   }
 
   document.getElementById("btn-split-wall").addEventListener("click", calcWall);
-  ["wall_width","wall_height","max_sheet_w","wall_has_film"].forEach(id=>document.getElementById(id).addEventListener("change", calcWall));
+  ["wall_width","wall_height","max_sheet_w","wall_has_film","wall_floor_num"].forEach(id=>document.getElementById(id)?.addEventListener("change", calcWall));
+  document.getElementById("wall_floor_num")?.addEventListener("input", calcWall);
   document.querySelectorAll('input[name="wall_mount"]').forEach(r=>r.addEventListener("change", calcWall));
 
   // ===== Збереження попередньої сесії калькулятора Спорт-залів =====
@@ -4343,7 +4361,8 @@ document.querySelectorAll(".calc-input").forEach(i => {
         h: document.getElementById("wall_height")?.value,
         maxw: document.getElementById("max_sheet_w")?.value,
         film: !!document.getElementById("wall_has_film")?.checked,
-        mount: mount
+        mount: mount,
+        floor: document.getElementById("wall_floor_num")?.value
       }));
     }catch(e){}
   }
@@ -4356,10 +4375,11 @@ document.querySelectorAll(".calc-input").forEach(i => {
       if(s.maxw!=null && document.getElementById("max_sheet_w")) document.getElementById("max_sheet_w").value = s.maxw;
       const f = document.getElementById("wall_has_film"); if(f) f.checked = !!s.film;
       if(s.mount){ const r = document.querySelector('input[name="wall_mount"][value="'+s.mount+'"]'); if(r) r.checked = true; }
+      { const fl = document.getElementById("wall_floor_num"); if(fl && s.floor!=null) fl.value = s.floor; }
     }catch(e){}
   }
   // зберігати при будь-якій зміні
-  ["wall_width","wall_height","max_sheet_w","wall_has_film"].forEach(id=>document.getElementById(id)?.addEventListener("change", saveWallSession));
+  ["wall_width","wall_height","max_sheet_w","wall_has_film","wall_floor_num"].forEach(id=>document.getElementById(id)?.addEventListener("change", saveWallSession));
   document.querySelectorAll('input[name="wall_mount"]').forEach(r=>r.addEventListener("change", saveWallSession));
   document.getElementById("btn-split-wall")?.addEventListener("click", saveWallSession);
   // відновити попередню сесію на старті
