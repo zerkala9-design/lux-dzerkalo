@@ -2198,6 +2198,10 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 
         <div class="price-section-title">Підйом на поверх</div>
         <div class="price-row"><span class="label">За 1 дзеркало / 1 поверх, грн</span><input class="input" id="price_floor_lift" type="number" value="100"></div>
+
+        <div class="price-section-title">Пластини-кріплення</div>
+        <div class="price-row"><span class="label">Пластина 150-200 мм, грн</span><input class="input" id="price_plate_150_200" type="number" value="150"></div>
+        <div class="price-row"><span class="label">Пластина 200-250 мм, грн</span><input class="input" id="price_plate_200_250" type="number" value="200"></div>
       </div>
     </div>
 
@@ -2505,9 +2509,25 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
                 <input type="checkbox" class="calc-input" id="has_profile">
                 <label for="has_profile">Алюмінієвий профіль (верх+низ)</label>
               </div>
+              <div class="checkbox-row">
+                <input type="checkbox" class="calc-input" id="has_points_profile">
+                <label for="has_points_profile">Точкові зверху + профіль знизу</label>
+              </div>
               <div class="field" style="flex-direction:row;align-items:center;gap:8px;">
                 <label for="mounts_qty" style="margin:0;">Точкові кріплення, точок:</label>
                 <input class="input calc-input" id="mounts_qty" type="number" min="0" value="0" style="width:60px;">
+              </div>
+            </div>
+
+            <div class="card-sub" style="margin:10px 0 4px;">Пластини-кріплення, шт</div>
+            <div class="form-grid-2">
+              <div class="field" style="flex-direction:row;align-items:center;gap:8px;">
+                <label for="plate_150_200_qty" style="margin:0;">Пластина 150-200 мм:</label>
+                <input class="input calc-input" id="plate_150_200_qty" type="number" min="0" value="0" style="width:60px;">
+              </div>
+              <div class="field" style="flex-direction:row;align-items:center;gap:8px;">
+                <label for="plate_200_250_qty" style="margin:0;">Пластина 200-250 мм:</label>
+                <input class="input calc-input" id="plate_200_250_qty" type="number" min="0" value="0" style="width:60px;">
               </div>
             </div>
           </div>
@@ -3250,7 +3270,7 @@ syncState();
     hole_b1: 45, hole_b2: 65, hole_b3: 85, hole_b4: 120,
     price_film_m2: 50, price_profile_m: 150, price_mount_point_pc: 80,
     price_led_per_m: 3500, price_complexity: 20, price_sensor: 500, price_delivery: 1500, price_install: 80,
-    price_floor_lift: 100,
+    price_floor_lift: 100, price_plate_150_200: 150, price_plate_200_250: 200,
     complexity_type: "fixed", delivery_type: "fixed", install_type: "percent", price_mode: "retail", ui_scale: 1
   };
 
@@ -3326,6 +3346,8 @@ syncState();
     document.getElementById("price_delivery").value = 1500;
     document.getElementById("price_install").value = 80;
     document.getElementById("price_floor_lift").value = 100;
+    document.getElementById("price_plate_150_200").value = 150;
+    document.getElementById("price_plate_200_250").value = 200;
     syncState(); calculate(); calcWall(); calcPano();
   });
 
@@ -3359,7 +3381,10 @@ syncState();
       has_delivery: document.getElementById("has_delivery").checked,
       has_install: document.getElementById("has_install").checked,
       discount_percent: document.getElementById("discount_percent").value,
-      floor_num: document.getElementById("floor_num")?.value
+      floor_num: document.getElementById("floor_num")?.value,
+      has_points_profile: document.getElementById("has_points_profile")?.checked,
+      plate_150_200_qty: document.getElementById("plate_150_200_qty")?.value,
+      plate_200_250_qty: document.getElementById("plate_200_250_qty")?.value
     };
     
     localStorage.setItem(`reflectique_calc_${user.email}`, JSON.stringify(state));
@@ -3418,6 +3443,9 @@ syncState();
       document.getElementById("has_install").checked = state.has_install || false;
       document.getElementById("discount_percent").value = state.discount_percent || 0;
       { const _fl = document.getElementById("floor_num"); if(_fl) _fl.value = state.floor_num || 0; }
+      { const _pp = document.getElementById("has_points_profile"); if(_pp) _pp.checked = state.has_points_profile || false; }
+      { const _p1 = document.getElementById("plate_150_200_qty"); if(_p1) _p1.value = state.plate_150_200_qty || 0; }
+      { const _p2 = document.getElementById("plate_200_250_qty"); if(_p2) _p2.value = state.plate_200_250_qty || 0; }
       
       document.querySelectorAll(".color-btn").forEach(b=>b.classList.toggle("active", b.dataset.color===mirrorColor));
       updateShapePreview();
@@ -3690,6 +3718,20 @@ function updateShapePreview() {
 	    const mountKits = mountsQty / 4;
 	    let mountsCost = mountKits * priceState.price_mount_point_pc;
 
+    // Точкові зверху + профіль знизу (профіль лише знизу = ширина 1-ї позиції × ціна профілю)
+    const hasPointsProfile = !!document.getElementById("has_points_profile")?.checked;
+    let pointsProfileCost = 0;
+    if(hasPointsProfile && currentShape==="rect") {
+      const wPP = safeFloat((getRectItems()[0]?.w ?? 0))/1000;
+      pointsProfileCost = wPP * priceState.price_profile_m;
+    }
+    // Пластини-кріплення (2 види)
+    const plate1Qty = safeInt(document.getElementById("plate_150_200_qty")?.value, 0);
+    const plate2Qty = safeInt(document.getElementById("plate_200_250_qty")?.value, 0);
+    const plate1Cost = plate1Qty * (priceState.price_plate_150_200 || 0);
+    const plate2Cost = plate2Qty * (priceState.price_plate_200_250 || 0);
+    const platesCost = plate1Cost + plate2Cost;
+
     const baseCost = (area * glassPriceM2) + (perim * prPriceM) + (perim * facetPriceM) + holesCost + filmCost + ledCost + profileCost + mountsCost;
 
     let complexCost = 0;
@@ -3722,7 +3764,7 @@ function updateShapePreview() {
         : ""; }
 
     const qtyMult = (currentShape==="rect") ? 1 : qty;
-    const total = (priceOne * qtyMult) + delCost + instCost + liftCost;
+    const total = (priceOne * qtyMult) + delCost + instCost + liftCost + pointsProfileCost + platesCost;
 
     document.getElementById("total_price").textContent = formatUAH(total);
     document.getElementById("result_area").textContent = area.toFixed(3)+" м²";
@@ -3818,6 +3860,8 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     if(instCost) dDetailed.push(`Монтаж: ${instCost.toFixed(2)} грн`);
     if(delCost) dDetailed.push(`Доставка: ${delCost.toFixed(2)} грн`);
     if(liftCost) dDetailed.push(`Підйом на ${floorNum} поверх (${qty} дзерк. × ${floorNum} × ${liftPerFloor}): ${liftCost.toFixed(2)} грн`);
+    if(pointsProfileCost) dDetailed.push(`Точкові зверху + профіль знизу: ${pointsProfileCost.toFixed(2)} грн`);
+    if(platesCost) dDetailed.push(`Пластини-кріплення (${plate1Qty?("150-200×"+plate1Qty):""}${plate1Qty&&plate2Qty?", ":""}${plate2Qty?("200-250×"+plate2Qty):""}): ${platesCost.toFixed(2)} грн`);
     dDetailed.push(`РАЗОМ (${qty} шт): ${total.toFixed(2)} грн`);
 
     document.getElementById("details").innerHTML = dDetailed.join("<br>");
@@ -3853,6 +3897,8 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     if(instCost) dSimple.push(`Монтаж: ${instCost.toFixed(0)} грн`);
     if(delCost) dSimple.push(`Доставка: ${delCost.toFixed(0)} грн`);
     if(liftCost) dSimple.push(`Підйом на ${floorNum} поверх (${qty} дзерк.): ${liftCost.toFixed(0)} грн`);
+    if(pointsProfileCost) dSimple.push(`Точкові зверху + профіль знизу: ${pointsProfileCost.toFixed(0)} грн`);
+    if(platesCost) dSimple.push(`Пластини-кріплення (${plate1Qty?("150-200×"+plate1Qty):""}${plate1Qty&&plate2Qty?", ":""}${plate2Qty?("200-250×"+plate2Qty):""}): ${platesCost.toFixed(0)} грн`);
     dSimple.push(`РАЗОМ (${qty} шт): ${total.toFixed(0)} грн`);
 
     document.getElementById("details").setAttribute("data-simple", dSimple.join("<br>"));
@@ -3919,6 +3965,8 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
 	          d.push(`3. Монтаж: ${instCost.toFixed(2)} грн`);
 	          d.push(`4. Доставка: ${delCost.toFixed(2)} грн`);
 	          if(liftCost) d.push(`5. Підйом на ${floorNum} поверх (${qty} дзерк. × ${floorNum} × ${liftPerFloor}): ${liftCost.toFixed(2)} грн`);
+	          if(pointsProfileCost) d.push(`Точкові зверху + профіль знизу: ${pointsProfileCost.toFixed(2)} грн`);
+	          if(platesCost) d.push(`Пластини-кріплення (${plate1Qty?("150-200мм ×"+plate1Qty):""}${plate1Qty&&plate2Qty?", ":""}${plate2Qty?("200-250мм ×"+plate2Qty):""}): ${platesCost.toFixed(2)} грн`);
 	          		          d.push(`<b>Все разом: ${total.toFixed(2)} грн</b>`);
 	        }
 
