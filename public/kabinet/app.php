@@ -2202,6 +2202,9 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
         <div class="price-section-title">Пластини-кріплення</div>
         <div class="price-row"><span class="label">Пластина 150-200 мм, грн</span><input class="input" id="price_plate_150_200" type="number" value="150"></div>
         <div class="price-row"><span class="label">Пластина 200-250 мм, грн</span><input class="input" id="price_plate_200_250" type="number" value="200"></div>
+
+        <div class="price-section-title">Кругле дзеркало</div>
+        <div class="price-row"><span class="label">Обробка кола, грн/пог.м</span><input class="input" id="price_round_edge_m" type="number" value="260"></div>
       </div>
     </div>
 
@@ -3254,7 +3257,7 @@ syncState();
     hole_b1: 45, hole_b2: 65, hole_b3: 85, hole_b4: 120,
     price_film_m2: 50, price_profile_m: 150, price_mount_point_pc: 80,
     price_led_per_m: 3500, price_complexity: 20, price_sensor: 500, price_delivery: 1500, price_install: 80,
-    price_floor_lift: 100, price_plate_150_200: 150, price_plate_200_250: 200,
+    price_floor_lift: 100, price_plate_150_200: 150, price_plate_200_250: 200, price_round_edge_m: 260,
     complexity_type: "fixed", delivery_type: "fixed", install_type: "percent", price_mode: "retail", ui_scale: 1
   };
 
@@ -3332,6 +3335,7 @@ syncState();
     document.getElementById("price_floor_lift").value = 100;
     document.getElementById("price_plate_150_200").value = 150;
     document.getElementById("price_plate_200_250").value = 200;
+    document.getElementById("price_round_edge_m").value = 260;
     syncState(); calculate(); calcWall(); calcPano();
   });
 
@@ -3667,7 +3671,11 @@ function updateShapePreview() {
       const prKey = `pr_${thickness}${suffix}`;
       prPriceM = priceState[prKey] || 0;
     }
-    
+    // Круглі дзеркала: обробка периметра (кола) — фіксована ціна за пог. метр
+    if(currentShape==="circle" && edge==="PR"){
+      prPriceM = priceState.price_round_edge_m || prPriceM;
+    }
+
     const facetKey = `facet_${facet}${suffix}`;
     const facetPriceM = priceState[facetKey] || 0;
 
