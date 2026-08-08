@@ -608,6 +608,7 @@ body {
       border: 1px dashed rgba(148, 163, 184, 0.6);
       background: radial-gradient(circle at top, rgba(15, 118, 110, 0.3), rgba(15, 23, 42, 0.95));
       padding: 16px;
+      padding-top: 56px;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -648,20 +649,23 @@ body {
       position: absolute;
       top: 12px;
       right: 12px;
-      padding: 6px 10px;
+      padding: 9px 18px;
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      color: #e5e7eb;
-      font-size: 11px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: linear-gradient(90deg, #ffb35a, #ff7a00);
+      color: #1a1205;
+      font-size: 13px;
+      font-weight: 800;
+      border: 0;
       cursor: pointer;
       transition: all 0.2s;
+      box-shadow: 0 6px 18px rgba(255, 122, 0, 0.35);
       z-index: 10;
     }
     .screenshot-btn:hover {
-      background: rgba(251, 146, 60, 0.3);
-      border-color: rgba(251, 146, 60, 0.9);
+      filter: brightness(1.05);
+      transform: translateY(-1px);
     }
+    .screenshot-btn:active { transform: translateY(0); }
 
     /* ===== TABS CONTENT ===== */
     .view { display: none; }
@@ -2567,10 +2571,13 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 
         <!-- RIGHT RESULT -->
         <div class="preview-box" id="calc-preview-box">
-          <button class="screenshot-btn" id="btn-calc-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">Відправити</button>
+          <button class="screenshot-btn" id="btn-calc-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">📤 Відправити</button>
           
           <div class="mirror-preview-row">
-            <div id="mirror-sizes" style="min-width:120px;max-width:170px;font-weight:700;font-size:14px;line-height:1.55;color:#e5e7eb;">—</div>
+            <div style="position:relative;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;">
+              <div class="mirror-shape" id="mirror-shape"></div>
+              <div id="mirror-sizes" style="position:absolute;max-width:150px;text-align:center;background:rgba(2,6,23,.62);color:#fff;padding:4px 7px;border-radius:6px;font-weight:700;font-size:11px;line-height:1.35;">—</div>
+            </div>
             <div>
               <div class="card-sub">Загальна вартість</div>
               <div id="total_price" class="result-main">0 ₴</div>
@@ -2664,7 +2671,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 
         <!-- RIGHT RESULT -->
         <div id="wall-result-container" class="preview-box">
-           <button class="screenshot-btn" id="btn-wall-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">Відправити</button>
+           <button class="screenshot-btn" id="btn-wall-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">📤 Відправити</button>
            
            <div class="card-title-row">
              <div class="result-main" id="wall-total-price">0 ₴</div>
@@ -2756,7 +2763,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
         </div>
 
         <div id="pano-result-container" class="preview-box">
-          <button class="screenshot-btn" id="btn-pano-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">Відправити</button>
+          <button class="screenshot-btn" id="btn-pano-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">📤 Відправити</button>
           
           <div class="card-title-row">
             <div class="result-main" id="pano-total-price">0 ₴</div>
@@ -3527,7 +3534,7 @@ syncState();
 
 function updateShapePreview() {
     const s = document.getElementById("mirror-shape");
-    if(!s) return;   // прев'ю-малюнок прибрано — у результаті показуємо розміри (див. #mirror-sizes)
+    if(!s) return;
     let w = 90, h = 130;
     
     if(currentShape === "rect") {
@@ -3796,6 +3803,7 @@ function updateShapePreview() {
         _ms.innerHTML = html;
       }
     }
+    try{ updateShapePreview(); }catch(e){}
 
     // DETAILED version (shown in interface with multipliers)
     let dDetailed = [];
