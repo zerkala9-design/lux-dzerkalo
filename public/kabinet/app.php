@@ -608,7 +608,7 @@ body {
       border: 1px dashed rgba(148, 163, 184, 0.6);
       background: radial-gradient(circle at top, rgba(15, 118, 110, 0.3), rgba(15, 23, 42, 0.95));
       padding: 16px;
-      padding-top: 56px;
+      padding-top: 46px;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -625,10 +625,11 @@ body {
       box-shadow: 0 0 26px rgba(148, 163, 184, 0.7), inset 0 0 16px rgba(15, 23, 42, 0.9);
     }
     .result-main {
-      font-size: 26px;
-      font-weight: 700;
+      font-size: 40px;
+      font-weight: 800;
       color: #fed7aa;
       letter-spacing: -0.03em;
+      line-height: 1.05;
     }
     .result-secondary-row {
       display: flex;
@@ -649,23 +650,20 @@ body {
       position: absolute;
       top: 12px;
       right: 12px;
-      padding: 9px 18px;
+      padding: 6px 10px;
       border-radius: 999px;
-      background: linear-gradient(90deg, #ffb35a, #ff7a00);
-      color: #1a1205;
-      font-size: 13px;
-      font-weight: 800;
-      border: 0;
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      font-size: 11px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
       cursor: pointer;
       transition: all 0.2s;
-      box-shadow: 0 6px 18px rgba(255, 122, 0, 0.35);
       z-index: 10;
     }
     .screenshot-btn:hover {
-      filter: brightness(1.05);
-      transform: translateY(-1px);
+      background: rgba(251, 146, 60, 0.3);
+      border-color: rgba(251, 146, 60, 0.9);
     }
-    .screenshot-btn:active { transform: translateY(0); }
 
     /* ===== TABS CONTENT ===== */
     .view { display: none; }
@@ -2571,12 +2569,11 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 
         <!-- RIGHT RESULT -->
         <div class="preview-box" id="calc-preview-box">
-          <button class="screenshot-btn" id="btn-calc-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">📤 Відправити</button>
+          <button class="screenshot-btn" id="btn-calc-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">Відправити</button>
           
           <div class="mirror-preview-row">
-            <div style="position:relative;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;">
-              <div class="mirror-shape" id="mirror-shape"></div>
-              <div id="mirror-sizes" style="position:absolute;max-width:150px;text-align:center;background:rgba(2,6,23,.62);color:#fff;padding:4px 7px;border-radius:6px;font-weight:700;font-size:11px;line-height:1.35;">—</div>
+            <div class="mirror-shape" id="mirror-shape" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;padding:8px 6px;">
+              <div id="mirror-sizes" style="display:inline-block;color:#fff;font-weight:800;font-size:14px;line-height:1.6;white-space:nowrap;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.95),0 0 3px rgba(0,0,0,.85);">—</div>
             </div>
             <div>
               <div class="card-sub">Загальна вартість</div>
@@ -2671,7 +2668,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 
         <!-- RIGHT RESULT -->
         <div id="wall-result-container" class="preview-box">
-           <button class="screenshot-btn" id="btn-wall-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">📤 Відправити</button>
+           <button class="screenshot-btn" id="btn-wall-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">Відправити</button>
            
            <div class="card-title-row">
              <div class="result-main" id="wall-total-price">0 ₴</div>
@@ -2763,7 +2760,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
         </div>
 
         <div id="pano-result-container" class="preview-box">
-          <button class="screenshot-btn" id="btn-pano-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">📤 Відправити</button>
+          <button class="screenshot-btn" id="btn-pano-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">Відправити</button>
           
           <div class="card-title-row">
             <div class="result-main" id="pano-total-price">0 ₴</div>
@@ -3535,44 +3532,14 @@ syncState();
 function updateShapePreview() {
     const s = document.getElementById("mirror-shape");
     if(!s) return;
-    let w = 90, h = 130;
-    
-    if(currentShape === "rect") {
-      const firstRect = (getRectItems()[0]||{w:0,h:0,q:0});
-      const wMm = safeFloat(firstRect.w, 0);
-      const hMm = safeFloat(firstRect.h, 0);
-      const ratio = wMm / hMm;
-      if(ratio > 1) { w = 130; h = 130 / ratio; }
-      else { h = 130; w = 130 * ratio; }
-      s.style.borderRadius = "4px";
-      s.style.transform = "none";
-    } else if(currentShape === "circle") {
-      w = h = 90;
-      s.style.borderRadius = "50%";
-      s.style.transform = "none";
-    } else if(currentShape === "ellipse") {
-      const a = safeFloat(document.getElementById("ellipse_a").value, 1200);
-      const b = safeFloat(document.getElementById("ellipse_b").value, 800);
-      const ratio = a / b;
-      if(ratio > 1) { w = 120; h = 120 / ratio; }
-      else { h = 120; w = 120 * ratio; }
-      s.style.borderRadius = "50%";
-      s.style.transform = "none";
-    } else if(currentShape === "diamond") {
-      w = h = 90;
-      s.style.borderRadius = "2px";
-      s.style.transform = "rotate(45deg) scale(0.8)";
-    }
-    
-    s.style.width = w + "px";
-    s.style.height = h + "px";
-    
-    let bg = "radial-gradient(circle at top left,#4b5563,#1f2937)";
-    if(mirrorColor==="silver") bg="radial-gradient(circle at top left,#e5e7eb,#111827)";
-    if(mirrorColor==="bronze") bg="radial-gradient(circle at top left,#f97316,#111827)";
-    if(mirrorColor==="graphite") bg="radial-gradient(circle at top left,#6b7280,#020617)";
-    if(mirrorColor==="diamond") bg="radial-gradient(circle at top left,#e0f2fe,#0f172a)";
-    s.style.background = bg;
+    // Комірка підлаштовується під розміри-рядки всередині (авто-ширина/висота)
+    s.style.width = "auto";
+    s.style.height = "auto";
+    s.style.transform = "none";
+    s.style.borderRadius = (currentShape==="circle" || currentShape==="ellipse") ? "18px" : "6px";
+    // Усередині — той самий фон, що й загальний (лише рамка дзеркала)
+    s.style.background = "transparent";
+    s.style.boxShadow = "none";
   }
 
   function checkInventory(width, height, color, thickness) {
@@ -7491,7 +7458,7 @@ return c;
         '<div style="display:flex;gap:8px;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.1);">'
         + '<button id="rx-narad-back" style="background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:10px 14px;font-weight:800;font-size:15px;cursor:pointer;">← Замовлення</button>'
         + '<div style="display:flex;gap:8px;">'
-        + '<button id="rx-narad-send" style="background:rgba(255,122,0,.18);color:#ffb35a;border:1px solid rgba(255,122,0,.5);border-radius:12px;padding:10px 14px;font-weight:800;font-size:15px;cursor:pointer;">📤 Відправити</button>'
+        + '<button id="rx-narad-send" style="background:rgba(255,122,0,.18);color:#ffb35a;border:1px solid rgba(255,122,0,.5);border-radius:12px;padding:10px 14px;font-weight:800;font-size:15px;cursor:pointer;">Відправити</button>'
         + '<button id="rx-narad-print" style="background:linear-gradient(90deg,#ffb35a,#ff7a00);color:#1a1205;border:0;border-radius:12px;padding:10px 16px;font-weight:850;font-size:15px;cursor:pointer;">🖨 Друк</button>'
         + '</div></div>'
         + '<div id="rx-narad-scroll" style="flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:14px;text-align:center;"><img id="rx-narad-img" alt="Наряд" style="width:100%;max-width:900px;background:#fff;border-radius:6px;" /></div>';
