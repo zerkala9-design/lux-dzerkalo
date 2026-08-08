@@ -2365,6 +2365,10 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
     <button class="btn-secondary" type="button" id="ocr-open">📷 Розпізнати з фото</button>
     <button class="btn-secondary" type="button" id="calc-reset">⟲ Скинути до нулів</button>
   </div>
+  <div style="margin-top:10px;">
+    <textarea id="rect-paste" rows="2" placeholder="Або встав список розмірів (напр. 1000x2000-2 / 500х600-3) і натисни «Заповнити»" style="width:100%;padding:9px 11px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.25);color:#fff;font-size:13px;resize:vertical;outline:none;"></textarea>
+    <button class="btn-secondary" type="button" id="rect-paste-fill" style="margin-top:6px;padding:6px 12px;font-size:13px;">Заповнити розміри зі списку</button>
+  </div>
 </div>
 
             </div>
@@ -3724,6 +3728,10 @@ function updateShapePreview() {
       if(p.type === "200_250"){ plate2Qty += p.q; platesCost += p.q * (priceState.price_plate_200_250 || 0); }
       else { plate1Qty += p.q; platesCost += p.q * (priceState.price_plate_150_200 || 0); }
     });
+    // Рядки пластин для деталізації: просто «N шт — ціна» по кожному типу
+    const platesBreakdownLines = [];
+    if(plate1Qty>0) platesBreakdownLines.push(`Пластини 150-200 мм: ${plate1Qty} шт — ${(plate1Qty*(priceState.price_plate_150_200||0)).toFixed(0)} грн`);
+    if(plate2Qty>0) platesBreakdownLines.push(`Пластини 200-250 мм: ${plate2Qty} шт — ${(plate2Qty*(priceState.price_plate_200_250||0)).toFixed(0)} грн`);
 
     // Вартість дзеркала. Для круга: рахуємо як описаний квадрат (Ø1000 = 1 м²) + надбавка за порізку
     let glassCost = area * glassPriceM2;
@@ -3900,7 +3908,7 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     if(delCost) dSimple.push(`Доставка: ${delCost.toFixed(0)} грн`);
     if(liftCost) dSimple.push(`Підйом на ${floorNum} поверх (${qty} дзерк.): ${liftCost.toFixed(0)} грн`);
     if(pointsProfileCost) dSimple.push(`Точкові зверху + профіль знизу: ${pointsProfileCost.toFixed(0)} грн`);
-    if(platesCost) dSimple.push(`Пластини-кріплення (${plate1Qty?("150-200×"+plate1Qty):""}${plate1Qty&&plate2Qty?", ":""}${plate2Qty?("200-250×"+plate2Qty):""}): ${platesCost.toFixed(0)} грн`);
+    platesBreakdownLines.forEach(l=>dSimple.push(l));
     dSimple.push(`РАЗОМ (${qty} шт): ${total.toFixed(0)} грн`);
 
     document.getElementById("details").setAttribute("data-simple", dSimple.join("<br>"));
@@ -3959,6 +3967,7 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
 	            d.push(`2. Обробка: ${processing.length ? processing.join("; ") : "0.00 грн"}`);
 
 	            if(idx===0){ try{ var _hr=(typeof getHoleRows==="function"?getHoleRows():[]).filter(function(h){return h.q>0&&h.d>0;}); if(_hr.length&&holesCost){ d.push("Отвори ("+_hr.map(function(h){return "Ø"+h.d+"×"+h.q;}).join(", ")+"): "+holesCost.toFixed(2)+" грн"); } }catch(e){} }
+	            if(idx===0){ platesBreakdownLines.forEach(function(l){ d.push(l); }); }
 
 	            // як ти просив: лише тут показуємо "ціну за 1 шт" з урахуванням обробки
 	            d.push(`<b>Ціна 1 шт (з обробкою): ${unitTotal.toFixed(2)} грн</b>`);
@@ -3968,7 +3977,6 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
 	          d.push(`4. Доставка: ${delCost.toFixed(2)} грн`);
 	          if(liftCost) d.push(`5. Підйом на ${floorNum} поверх (${qty} дзерк. × ${floorNum} × ${liftPerFloor}): ${liftCost.toFixed(2)} грн`);
 	          if(pointsProfileCost) d.push(`Точкові зверху + профіль знизу: ${pointsProfileCost.toFixed(2)} грн`);
-	          if(platesCost) d.push(`Пластини-кріплення (${plate1Qty?("150-200мм ×"+plate1Qty):""}${plate1Qty&&plate2Qty?", ":""}${plate2Qty?("200-250мм ×"+plate2Qty):""}): ${platesCost.toFixed(2)} грн`);
 	          		          d.push(`<b>Все разом: ${total.toFixed(2)} грн</b>`);
 	        } else {
 	          // Круг / Еліпс / Ромб — простий прорахунок
@@ -3984,6 +3992,7 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
 	          if(prPriceM) d.push(`Поліровка (${perim.toFixed(3)} пог.м × ${prPriceM.toFixed(0)}): ${(perim*prPriceM).toFixed(2)} грн`);
 	          if(facetPriceM) d.push(`Фацет ${facet}мм: ${(perim*facetPriceM).toFixed(2)} грн`);
 	          if(holesCost) d.push(`Отвори: ${holesCost.toFixed(2)} грн`);
+	          platesBreakdownLines.forEach(function(l){ d.push(l); });
 	          if(hasFilm) d.push(`Плівка безпеки: ${filmCost.toFixed(2)} грн`);
 	          if(hasProfile) d.push(`Алюмінієвий профіль: ${profileCost.toFixed(2)} грн`);
 	          if(mountsCost) d.push(`Точкові кріплення (${mountsQty} точок): ${mountsCost.toFixed(2)} грн`);
@@ -4141,6 +4150,24 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     if(document.getElementById("plates-list") && document.querySelectorAll("#plates-list .plates-row").length===0){
       renderPlateRows(null);
     }
+  })();
+
+  // Вставка списку розмірів у прямокутний калькулятор
+  (function(){
+    const btn = document.getElementById("rect-paste-fill");
+    const ta  = document.getElementById("rect-paste");
+    if(!btn || !ta) return;
+    btn.addEventListener("click", ()=>{
+      const entries = (typeof parsePastedSizes === "function") ? parsePastedSizes(ta.value) : [];
+      if(!entries.length){ alert("Не бачу розмірів. Формат: 1000x2000-2, кожен з нового рядка або через /"); return; }
+      const tab = document.querySelector('.shape-tab[data-shape="rect"]');
+      if(tab && !tab.classList.contains("active")) tab.click();
+      if(typeof setRectItems === "function") setRectItems(entries.map(e=>({w:e.w,h:e.h,q:e.q})));
+      try{ calculate(); }catch(e){}
+      try{ syncState(); }catch(e){}
+      try{ saveCalcState(); }catch(e){}
+      ta.value = "";
+    });
   })();
 
 document.querySelectorAll(".calc-input").forEach(i => {
