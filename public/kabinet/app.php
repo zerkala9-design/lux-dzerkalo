@@ -2590,10 +2590,6 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
               <div class="result-label">Периметр</div>
               <div id="result_perim" class="result-value">0.000 м</div>
             </div>
-            <div>
-              <div class="result-label">Ціна за 1 шт</div>
-              <div id="result_price_one" class="result-value">0.00 ₴</div>
-            </div>
           </div>
 
           <div class="details-title">Деталізація розрахунку</div>
@@ -3751,7 +3747,7 @@ function updateShapePreview() {
     document.getElementById("total_price").textContent = formatUAH(total);
     document.getElementById("result_area").textContent = area.toFixed(3)+" м²";
     document.getElementById("result_perim").textContent = perim.toFixed(3)+" м";
-    document.getElementById("result_price_one").textContent = priceOne.toFixed(2)+" ₴";
+    { const _rpo = document.getElementById("result_price_one"); if(_rpo) _rpo.textContent = priceOne.toFixed(2)+" ₴"; }
 
     // У блоці результату замість малюнка показуємо розміри дзеркал
     { const _ms = document.getElementById("mirror-sizes");
@@ -3958,9 +3954,6 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
 
 	            if(idx===0){ try{ var _hr=(typeof getHoleRows==="function"?getHoleRows():[]).filter(function(h){return h.q>0&&h.d>0;}); if(_hr.length&&holesCost){ d.push("Отвори ("+_hr.map(function(h){return "Ø"+h.d+"×"+h.q;}).join(", ")+"): "+holesCost.toFixed(2)+" грн"); } }catch(e){} }
 	            if(idx===0){ platesBreakdownLines.forEach(function(l){ d.push(l); }); }
-
-	            // як ти просив: лише тут показуємо "ціну за 1 шт" з урахуванням обробки
-	            d.push(`<b>Ціна 1 шт (з обробкою): ${unitTotal.toFixed(2)} грн</b>`);
 	          });
 
 	          d.push(`3. Монтаж: ${instCost.toFixed(2)} грн`);
@@ -4250,12 +4243,12 @@ document.querySelectorAll(".calc-input").forEach(i => {
     const originalTotalSize = totalPrice.style.fontSize;
     const originalAreaSize = resultArea.style.fontSize;
     const originalPerimSize = resultPerim.style.fontSize;
-    const originalPriceOneSize = resultPriceOne.style.fontSize;
-    
+    const originalPriceOneSize = resultPriceOne ? resultPriceOne.style.fontSize : "";
+
     totalPrice.style.fontSize = "32px";
     resultArea.style.fontSize = "15px";
     resultPerim.style.fontSize = "15px";
-    resultPriceOne.style.fontSize = "15px";
+    if(resultPriceOne) resultPriceOne.style.fontSize = "15px";
     
     // Take screenshot
 	    html2canvas(el, { backgroundColor: "#0f172a", scale: 2 }).then(canvas => {
@@ -4269,7 +4262,7 @@ document.querySelectorAll(".calc-input").forEach(i => {
       totalPrice.style.fontSize = originalTotalSize;
 	      resultArea.style.fontSize = originalAreaSize;
 	      resultPerim.style.fontSize = originalPerimSize;
-	      resultPriceOne.style.fontSize = originalPriceOneSize;
+	      if(resultPriceOne) resultPriceOne.style.fontSize = originalPriceOneSize;
 
 	      saveCanvasToGallery(canvas, filename);
 	    });
