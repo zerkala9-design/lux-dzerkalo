@@ -2336,7 +2336,6 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
     <div class="card">
       <div class="card-title-row">
         <div class="card-title">Детальний калькулятор дзеркал</div>
-        <div class="card-sub">Поштучний розрахунок</div>
       </div>
 
       <!-- SHAPE TABS -->
@@ -2352,7 +2351,6 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
         <div style="display:flex;flex-direction:column;gap:12px;">
           <!-- RECTANGULAR -->
           <div id="shape-rect-inputs">
-            <div class="card-sub" style="margin-bottom:4px;">Розміри (мм) та кількість</div>
             <div class="form-grid-3">
               
 <div class="field" style="grid-column:1/-1;">
@@ -2363,14 +2361,8 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
     <button class="btn-secondary" type="button" id="ocr-open">📷 Розпізнати з фото</button>
     <button class="btn-secondary" type="button" id="calc-reset">⟲ Скинути до нулів</button>
   </div>
-  <div style="margin-top:8px;color:#9ca3af;font-size:11px;line-height:1.35;">
-    Можна додавати необмежену кількість позицій. Підрахунок робиться сумарно.
-  </div>
 </div>
 
-            </div>
-            <div id="area-info" class="card-sub" style="margin-top:4px;">
-              Площа, м²: 1.000  |  Периметр, м: 4.000
             </div>
           </div>
 
@@ -2520,13 +2512,13 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
             </div>
 
             <div class="card-sub" style="margin:10px 0 4px;">Пластини-кріплення, шт</div>
-            <div class="form-grid-2">
-              <div class="field" style="flex-direction:row;align-items:center;gap:8px;">
-                <label for="plate_150_200_qty" style="margin:0;">Пластина 150-200 мм:</label>
+            <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <label for="plate_150_200_qty" style="margin:0;">150-200 мм:</label>
                 <input class="input calc-input" id="plate_150_200_qty" type="number" min="0" value="0" style="width:60px;">
               </div>
-              <div class="field" style="flex-direction:row;align-items:center;gap:8px;">
-                <label for="plate_200_250_qty" style="margin:0;">Пластина 200-250 мм:</label>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <label for="plate_200_250_qty" style="margin:0;">200-250 мм:</label>
                 <input class="input calc-input" id="plate_200_250_qty" type="number" min="0" value="0" style="width:60px;">
               </div>
             </div>
@@ -3647,8 +3639,8 @@ function updateShapePreview() {
       perim = totalP;
       width = safeFloat(first.w,0);
       height = safeFloat(first.h,0);
-      document.getElementById("area-info").textContent =
-        `Площа (сумарно), м²: ${area.toFixed(3)}  |  Периметр (сумарно), м: ${perim.toFixed(3)}  |  Кількість (сумарно): ${qty}`;
+      { const _ai = document.getElementById("area-info");
+        if(_ai) _ai.textContent = `Площа (сумарно), м²: ${area.toFixed(3)}  |  Периметр (сумарно), м: ${perim.toFixed(3)}  |  Кількість (сумарно): ${qty}`; }
     } else if(currentShape==="circle") {
       const d=safeFloat(document.getElementById("circle_diameter").value)/1000;
       area=Math.PI*(d/2)**2; perim=Math.PI*d;
