@@ -2365,10 +2365,6 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
     <button class="btn-secondary" type="button" id="ocr-open">📷 Розпізнати з фото</button>
     <button class="btn-secondary" type="button" id="calc-reset">⟲ Скинути до нулів</button>
   </div>
-  <div style="margin-top:10px;">
-    <textarea id="rect-paste" rows="2" placeholder="Або встав список розмірів (напр. 1000x2000-2 / 500х600-3) і натисни «Заповнити»" style="width:100%;padding:9px 11px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.25);color:#fff;font-size:13px;resize:vertical;outline:none;"></textarea>
-    <button class="btn-secondary" type="button" id="rect-paste-fill" style="margin-top:6px;padding:6px 12px;font-size:13px;">Заповнити розміри зі списку</button>
-  </div>
 </div>
 
             </div>
@@ -2574,7 +2570,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
           <button class="screenshot-btn" id="btn-calc-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">Відправити</button>
           
           <div class="mirror-preview-row">
-            <div class="mirror-shape" id="mirror-shape"></div>
+            <div id="mirror-sizes" style="min-width:120px;max-width:170px;font-weight:700;font-size:14px;line-height:1.55;color:#e5e7eb;">—</div>
             <div>
               <div class="card-sub">Загальна вартість</div>
               <div id="total_price" class="result-main">0 ₴</div>
@@ -3531,6 +3527,7 @@ syncState();
 
 function updateShapePreview() {
     const s = document.getElementById("mirror-shape");
+    if(!s) return;   // прев'ю-малюнок прибрано — у результаті показуємо розміри (див. #mirror-sizes)
     let w = 90, h = 130;
     
     if(currentShape === "rect") {
@@ -3781,6 +3778,24 @@ function updateShapePreview() {
     document.getElementById("result_area").textContent = area.toFixed(3)+" м²";
     document.getElementById("result_perim").textContent = perim.toFixed(3)+" м";
     document.getElementById("result_price_one").textContent = priceOne.toFixed(2)+" ₴";
+
+    // У блоці результату замість малюнка показуємо розміри дзеркал
+    { const _ms = document.getElementById("mirror-sizes");
+      if(_ms){
+        let html = "—";
+        if(currentShape==="rect"){
+          const its = getRectItems().filter(it=> safeFloat(it.w,0)>0 && safeFloat(it.h,0)>0 && safeInt(it.q,0)>0);
+          if(its.length) html = its.map(it=> `${safeFloat(it.w,0)}×${safeFloat(it.h,0)} мм — ${safeInt(it.q,0)} шт`).join("<br>");
+        } else if(currentShape==="circle"){
+          html = `Ø${Math.round(width)} мм — ${qty} шт`;
+        } else if(currentShape==="ellipse"){
+          html = `${Math.round(width)}×${Math.round(height)} мм (еліпс) — ${qty} шт`;
+        } else if(currentShape==="diamond"){
+          html = `${Math.round(width)}×${Math.round(height)} мм (ромб) — ${qty} шт`;
+        }
+        _ms.innerHTML = html;
+      }
+    }
 
     // DETAILED version (shown in interface with multipliers)
     let dDetailed = [];
@@ -4152,23 +4167,6 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     }
   })();
 
-  // Вставка списку розмірів у прямокутний калькулятор
-  (function(){
-    const btn = document.getElementById("rect-paste-fill");
-    const ta  = document.getElementById("rect-paste");
-    if(!btn || !ta) return;
-    btn.addEventListener("click", ()=>{
-      const entries = (typeof parsePastedSizes === "function") ? parsePastedSizes(ta.value) : [];
-      if(!entries.length){ alert("Не бачу розмірів. Формат: 1000x2000-2, кожен з нового рядка або через /"); return; }
-      const tab = document.querySelector('.shape-tab[data-shape="rect"]');
-      if(tab && !tab.classList.contains("active")) tab.click();
-      if(typeof setRectItems === "function") setRectItems(entries.map(e=>({w:e.w,h:e.h,q:e.q})));
-      try{ calculate(); }catch(e){}
-      try{ syncState(); }catch(e){}
-      try{ saveCalcState(); }catch(e){}
-      ta.value = "";
-    });
-  })();
 
 document.querySelectorAll(".calc-input").forEach(i => {
     if(i.type === "checkbox" || i.type === "radio") {
