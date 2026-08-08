@@ -3639,7 +3639,7 @@ function updateShapePreview() {
         if(_ai) _ai.textContent = `Площа (сумарно), м²: ${area.toFixed(3)}  |  Периметр (сумарно), м: ${perim.toFixed(3)}  |  Кількість (сумарно): ${qty}`; }
     } else if(currentShape==="circle") {
       const d=safeFloat(document.getElementById("circle_diameter").value)/1000;
-      area=Math.PI*(d/2)**2; perim=Math.PI*d;
+      area=d*d; perim=Math.PI*d;   // площа = описаний квадрат (як рахуємо ціну круга)
       width = height = d * 1000;
       document.getElementById("circle-area-info").textContent = `Площа: ${area.toFixed(3)} м² | Довжина: ${perim.toFixed(3)} м`;
     } else if(currentShape==="ellipse") {
@@ -4234,9 +4234,10 @@ document.querySelectorAll(".calc-input").forEach(i => {
     if(detailsEl) {
       originalHTML = detailsEl.innerHTML;
       originalFontSize = detailsEl.style.fontSize;
-      // Знімок містить ту саму ДЕТАЛЬНУ деталізацію, що й на екрані калькулятора
-      // (з формулами, «Ціна 1 шт (з обробкою)», Монтаж/Доставка, «Все разом»),
-      // а не спрощену версію. Лише трохи збільшуємо шрифт для читабельності.
+      // У відправленому знімку показуємо СПРОЩЕНУ версію — лише ціни без формул
+      // (напр. «Дзеркало: … грн», «Полірування: … грн»).
+      const simple = detailsEl.getAttribute("data-simple");
+      if(simple) detailsEl.innerHTML = simple;
       detailsEl.style.fontSize = "14px";
     }
     
