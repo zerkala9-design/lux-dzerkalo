@@ -2205,6 +2205,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 
         <div class="price-section-title">Кругле дзеркало</div>
         <div class="price-row"><span class="label">Обробка кола, грн/пог.м</span><input class="input" id="price_round_edge_m" type="number" value="260"></div>
+        <div class="price-row"><span class="label">Надбавка за порізку кола, %</span><input class="input" id="price_round_cut_pct" type="number" value="35"></div>
       </div>
     </div>
 
@@ -3257,7 +3258,7 @@ syncState();
     hole_b1: 45, hole_b2: 65, hole_b3: 85, hole_b4: 120,
     price_film_m2: 50, price_profile_m: 150, price_mount_point_pc: 80,
     price_led_per_m: 3500, price_complexity: 20, price_sensor: 500, price_delivery: 1500, price_install: 80,
-    price_floor_lift: 100, price_plate_150_200: 150, price_plate_200_250: 200, price_round_edge_m: 260,
+    price_floor_lift: 100, price_plate_150_200: 150, price_plate_200_250: 200, price_round_edge_m: 260, price_round_cut_pct: 35,
     complexity_type: "fixed", delivery_type: "fixed", install_type: "percent", price_mode: "retail", ui_scale: 1
   };
 
@@ -3336,6 +3337,7 @@ syncState();
     document.getElementById("price_plate_150_200").value = 150;
     document.getElementById("price_plate_200_250").value = 200;
     document.getElementById("price_round_edge_m").value = 260;
+    document.getElementById("price_round_cut_pct").value = 35;
     syncState(); calculate(); calcWall(); calcPano();
   });
 
@@ -3723,7 +3725,17 @@ function updateShapePreview() {
       else { plate1Qty += p.q; platesCost += p.q * (priceState.price_plate_150_200 || 0); }
     });
 
-    const baseCost = (area * glassPriceM2) + (perim * prPriceM) + (perim * facetPriceM) + holesCost + filmCost + ledCost + profileCost + mountsCost;
+    // Вартість дзеркала. Для круга: рахуємо як описаний квадрат (Ø1000 = 1 м²) + надбавка за порізку
+    let glassCost = area * glassPriceM2;
+    let roundSquareArea = 0, roundCutPct = 0;
+    if(currentShape==="circle"){
+      const dm = width/1000;                       // діаметр у метрах
+      roundSquareArea = dm * dm;                    // площа описаного квадрата
+      roundCutPct = priceState.price_round_cut_pct || 0;
+      glassCost = roundSquareArea * glassPriceM2 * (1 + roundCutPct/100);
+    }
+
+    const baseCost = glassCost + (perim * prPriceM) + (perim * facetPriceM) + holesCost + filmCost + ledCost + profileCost + mountsCost;
 
     let complexCost = 0;
     if(document.getElementById("has_complexity").checked) {
@@ -3860,8 +3872,7 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     // SIMPLIFIED version for screenshot (stored in data attribute)
     let dSimple = [];
     if(mirrorColor) {
-      const glassTotal = area * glassPriceM2;
-      dSimple.push(`Дзеркало ${mirrorColor} ${thickness}мм: ${glassTotal.toFixed(0)} грн`);
+      dSimple.push(`Дзеркало ${mirrorColor} ${thickness}мм: ${glassCost.toFixed(0)} грн`);
     } else {
       dSimple.push("⚠️ Колір не вибрано");
     }
@@ -3959,6 +3970,32 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
 	          if(pointsProfileCost) d.push(`Точкові зверху + профіль знизу: ${pointsProfileCost.toFixed(2)} грн`);
 	          if(platesCost) d.push(`Пластини-кріплення (${plate1Qty?("150-200мм ×"+plate1Qty):""}${plate1Qty&&plate2Qty?", ":""}${plate2Qty?("200-250мм ×"+plate2Qty):""}): ${platesCost.toFixed(2)} грн`);
 	          		          d.push(`<b>Все разом: ${total.toFixed(2)} грн</b>`);
+	        } else {
+	          // Круг / Еліпс / Ромб — простий прорахунок
+	          if(mirrorColor){
+	            if(currentShape==="circle"){
+	              d.push(`Дзеркало ${mirrorColor} ${thickness}мм (${roundSquareArea.toFixed(3)} м² +${roundCutPct}% порізка): ${glassCost.toFixed(2)} грн`);
+	            } else {
+	              d.push(`Дзеркало ${mirrorColor} ${thickness}мм: ${glassCost.toFixed(2)} грн`);
+	            }
+	          } else {
+	            d.push(`⚠️ Колір не вибрано`);
+	          }
+	          if(prPriceM) d.push(`Поліровка (${perim.toFixed(3)} пог.м × ${prPriceM.toFixed(0)}): ${(perim*prPriceM).toFixed(2)} грн`);
+	          if(facetPriceM) d.push(`Фацет ${facet}мм: ${(perim*facetPriceM).toFixed(2)} грн`);
+	          if(holesCost) d.push(`Отвори: ${holesCost.toFixed(2)} грн`);
+	          if(hasFilm) d.push(`Плівка безпеки: ${filmCost.toFixed(2)} грн`);
+	          if(hasProfile) d.push(`Алюмінієвий профіль: ${profileCost.toFixed(2)} грн`);
+	          if(mountsCost) d.push(`Точкові кріплення (${mountsQty} точок): ${mountsCost.toFixed(2)} грн`);
+	          if(hasLed) d.push(`LED: ${ledCost.toFixed(2)} грн`);
+	          if(complexCost) d.push(`Складність: ${complexCost.toFixed(2)} грн`);
+	          if(sensorCost) d.push(`Сенсор: ${sensorCost.toFixed(2)} грн`);
+	          if(discP) d.push(`Знижка ${discP}%: -${discVal.toFixed(2)} грн`);
+	          d.push(`<b>Ціна 1 шт: ${priceOne.toFixed(2)} грн</b>`);
+	          if(instCost) d.push(`Монтаж: ${instCost.toFixed(2)} грн`);
+	          if(delCost) d.push(`Доставка: ${delCost.toFixed(2)} грн`);
+	          if(liftCost) d.push(`Підйом на ${floorNum} поверх (${qty} дзерк. × ${floorNum} × ${liftPerFloor}): ${liftCost.toFixed(2)} грн`);
+	          d.push(`<b>Все разом (${qty} шт): ${total.toFixed(2)} грн</b>`);
 	        }
 
         detailsEl.innerHTML = d.length ? d.join("<br>") : 'Натисни "Перерахувати".';
