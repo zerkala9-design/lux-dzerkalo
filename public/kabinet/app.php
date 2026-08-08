@@ -2419,7 +2419,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
           </div>
 
           <div>
-            <div class="card-sub" style="margin-bottom:4px;">Колір дзеркала</div>
+            <div class="card-sub" style="margin-bottom:8px;font-weight:800;color:#f1f5f9;font-size:15px;">Колір дзеркала</div>
             <div style="display:flex;flex-wrap:wrap;gap:6px;">
               <button class="btn-chip color-btn calc-input" data-color="silver" style="background:#9ca3af;color:#020617;">Срібло</button>
               <button class="btn-chip color-btn calc-input" data-color="bronze" style="background:#92400e;">Бронза</button>
@@ -2511,17 +2511,9 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
               </div>
             </div>
 
-            <div class="card-sub" style="margin:10px 0 4px;">Пластини-кріплення, шт</div>
-            <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-              <div style="display:flex;align-items:center;gap:6px;">
-                <label for="plate_150_200_qty" style="margin:0;">150-200 мм:</label>
-                <input class="input calc-input" id="plate_150_200_qty" type="number" min="0" value="0" style="width:60px;">
-              </div>
-              <div style="display:flex;align-items:center;gap:6px;">
-                <label for="plate_200_250_qty" style="margin:0;">200-250 мм:</label>
-                <input class="input calc-input" id="plate_200_250_qty" type="number" min="0" value="0" style="width:60px;">
-              </div>
-            </div>
+            <div class="card-sub" style="margin:10px 0 4px;">Пластини-кріплення</div>
+            <div id="plates-list"></div>
+            <button class="btn-secondary" id="plates-add" type="button" style="margin-top:2px;padding:6px 12px;font-size:13px;">+ Додати пластину</button>
           </div>
 
           <div>
@@ -3375,8 +3367,7 @@ syncState();
       discount_percent: document.getElementById("discount_percent").value,
       floor_num: document.getElementById("floor_num")?.value,
       has_points_profile: document.getElementById("has_points_profile")?.checked,
-      plate_150_200_qty: document.getElementById("plate_150_200_qty")?.value,
-      plate_200_250_qty: document.getElementById("plate_200_250_qty")?.value
+      plates: (typeof getPlateRows === "function" ? getPlateRows() : [])
     };
     
     localStorage.setItem(`reflectique_calc_${user.email}`, JSON.stringify(state));
@@ -3436,8 +3427,7 @@ syncState();
       document.getElementById("discount_percent").value = state.discount_percent || 0;
       { const _fl = document.getElementById("floor_num"); if(_fl) _fl.value = state.floor_num || 0; }
       { const _pp = document.getElementById("has_points_profile"); if(_pp) _pp.checked = state.has_points_profile || false; }
-      { const _p1 = document.getElementById("plate_150_200_qty"); if(_p1) _p1.value = state.plate_150_200_qty || 0; }
-      { const _p2 = document.getElementById("plate_200_250_qty"); if(_p2) _p2.value = state.plate_200_250_qty || 0; }
+      if(typeof renderPlateRows === "function") renderPlateRows(state.plates);
       
       document.querySelectorAll(".color-btn").forEach(b=>b.classList.toggle("active", b.dataset.color===mirrorColor));
       updateShapePreview();
@@ -3717,12 +3707,13 @@ function updateShapePreview() {
       const wPP = safeFloat((getRectItems()[0]?.w ?? 0))/1000;
       pointsProfileCost = wPP * priceState.price_profile_m;
     }
-    // Пластини-кріплення (2 види)
-    const plate1Qty = safeInt(document.getElementById("plate_150_200_qty")?.value, 0);
-    const plate2Qty = safeInt(document.getElementById("plate_200_250_qty")?.value, 0);
-    const plate1Cost = plate1Qty * (priceState.price_plate_150_200 || 0);
-    const plate2Cost = plate2Qty * (priceState.price_plate_200_250 || 0);
-    const platesCost = plate1Cost + plate2Cost;
+    // Пластини-кріплення (як отвори: кілька рядків, 2 типи)
+    let platesCost = 0, plate1Qty = 0, plate2Qty = 0;
+    (typeof getPlateRows === "function" ? getPlateRows() : []).forEach(p=>{
+      if(!(p.q > 0)) return;
+      if(p.type === "200_250"){ plate2Qty += p.q; platesCost += p.q * (priceState.price_plate_200_250 || 0); }
+      else { plate1Qty += p.q; platesCost += p.q * (priceState.price_plate_150_200 || 0); }
+    });
 
     const baseCost = (area * glassPriceM2) + (perim * prPriceM) + (perim * facetPriceM) + holesCost + filmCost + ledCost + profileCost + mountsCost;
 
@@ -4058,6 +4049,52 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     if(addBtn) addBtn.addEventListener("click", ()=>{ const list=document.getElementById("holes-list"); if(list) list.appendChild(holeRowEl(6,0)); });
     if(document.getElementById("holes-list") && document.querySelectorAll("#holes-list .holes-row").length===0){
       renderHoleRows(null);
+    }
+  })();
+
+  // ===== Пластини-кріплення: як отвори (тип + кількість, кілька рядків) =====
+  const PLATE_OPTIONS_HTML =
+    '<option value="150_200">Пластина 150-200 мм</option>'+
+    '<option value="200_250">Пластина 200-250 мм</option>';
+  function plateRowEl(type, q){
+    const row = document.createElement("div");
+    row.className = "plates-row";
+    row.style.cssText = "display:flex;gap:8px;align-items:center;margin-bottom:8px;";
+    row.innerHTML =
+      '<select class="input plates-t" style="flex:1;min-width:0;">'+PLATE_OPTIONS_HTML+'</select>'+
+      '<input class="input plates-q" type="number" min="0" value="'+(q||0)+'" style="width:76px;">'+
+      '<span style="color:#9ca3af;font-size:14px;">шт</span>'+
+      '<button type="button" class="btn-secondary plates-remove" title="Видалити" style="padding:2px 10px;">−</button>';
+    if(type){ const sel=row.querySelector(".plates-t"); if(sel) sel.value = String(type); }
+    const recalc = ()=>{ try{ saveCalcState(); }catch(e){} try{ calculate(); }catch(e){} };
+    row.querySelector(".plates-t").addEventListener("change", recalc);
+    row.querySelector(".plates-q").addEventListener("input", recalc);
+    row.querySelector(".plates-remove").addEventListener("click", ()=>{
+      const list = document.getElementById("plates-list");
+      if(list && list.querySelectorAll(".plates-row").length > 1) row.remove();
+      else { const q2=row.querySelector(".plates-q"); if(q2) q2.value = 0; }
+      recalc();
+    });
+    return row;
+  }
+  function getPlateRows(){
+    return [...document.querySelectorAll("#plates-list .plates-row")].map(r=>({
+      type: (r.querySelector(".plates-t") && r.querySelector(".plates-t").value) || "150_200",
+      q: safeInt(r.querySelector(".plates-q") && r.querySelector(".plates-q").value, 0)
+    }));
+  }
+  function renderPlateRows(rows){
+    const list = document.getElementById("plates-list");
+    if(!list) return;
+    list.innerHTML = "";
+    const arr = (rows && rows.length) ? rows : [{type:"150_200",q:0}];
+    arr.forEach(p=> list.appendChild(plateRowEl(p.type||"150_200", p.q||0)));
+  }
+  (function(){
+    const addBtn = document.getElementById("plates-add");
+    if(addBtn) addBtn.addEventListener("click", ()=>{ const list=document.getElementById("plates-list"); if(list) list.appendChild(plateRowEl("150_200",0)); });
+    if(document.getElementById("plates-list") && document.querySelectorAll("#plates-list .plates-row").length===0){
+      renderPlateRows(null);
     }
   })();
 
