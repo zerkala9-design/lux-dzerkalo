@@ -3820,7 +3820,6 @@ let idx = 1;
           + (hasProf ? (2*(w+h))*priceState.price_profile_m : 0)
           + sharedPerUnit
         );
-        dDetailed.push(`<b>Ціна 1 шт (з обробкою): ${unitPrice.toFixed(2)} грн</b>`);
 dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сумарно для позиції): ${a.toFixed(3)}м² / ${p.toFixed(3)}м</span>`);
         dDetailed.push(`<span style="color:#475569;">—</span>`);
         idx++;
