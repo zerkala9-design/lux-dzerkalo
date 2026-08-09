@@ -10,7 +10,7 @@ const articles = (await getArticlesByLang(lang)).filter((a) => !isNoindexArticle
 const base = localizePath('/', lang);
 ---
 
-<BaseLayout title={t('articles.title')} description={t('articles.intro')}>
+<BaseLayout title={t('articles.metaTitle')} description={t('articles.intro')}>
   <section class="page-head">
     <div class="container">
       <nav class="crumbs"><a href={base}>{t('nav.home')}</a> / <span>{t('articles.title')}</span></nav>
