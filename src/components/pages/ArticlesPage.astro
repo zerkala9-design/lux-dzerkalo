@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CallbackForm from '../CallbackForm.astro';
 import { getLangFromUrl, useTranslations, localizePath } from '../../i18n/ui';
@@ -8,6 +9,20 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const articles = (await getArticlesByLang(lang)).filter((a) => !isNoindexArticle(a));
 const base = localizePath('/', lang);
+
+// Прев'ю карток: перше фото з тіла статті (gallery або products).
+const imgModules = {
+  ...import.meta.glob<{ default: ImageMetadata }>('../../assets/gallery/*.{jpg,jpeg,png,webp}', { eager: true }),
+  ...import.meta.glob<{ default: ImageMetadata }>('../../assets/products/*.{jpg,jpeg,png,webp}', { eager: true }),
+};
+const imgByName = new Map<string, ImageMetadata>();
+for (const [p, m] of Object.entries(imgModules)) {
+  imgByName.set(p.split('/assets/')[1], m.default); // gallery/NAME.jpg | products/NAME.jpg
+}
+function thumbFor(body: string | undefined): ImageMetadata | undefined {
+  const m = (body ?? '').match(/!\[[^\]]*\]\((?:\.\.\/)+assets\/((?:gallery|products)\/[^)\s]+)\)/);
+  return m ? imgByName.get(m[1]) : undefined;
+}
 ---
 
 <BaseLayout title={t('articles.metaTitle')} description={t('articles.intro')}>
@@ -22,13 +37,30 @@ const base = localizePath('/', lang);
   <section class="section">
     <div class="container">
       <div class="art-grid">
-        {articles.map((a) => (
-          <a class="art-card" href={localizePath(`/statti/${articleSlug(a)}/`, lang)}>
-            <h2>{a.data.title}</h2>
-            <p>{a.data.summary}</p>
-            <span class="link-arrow">{t('articles.readMore')}</span>
-          </a>
-        ))}
+        {articles.map((a) => {
+          const thumb = thumbFor(a.body);
+          return (
+            <a class="art-card" href={localizePath(`/statti/${articleSlug(a)}/`, lang)}>
+              {thumb && (
+                <Image
+                  class="art-card__img"
+                  src={thumb}
+                  alt={a.data.title}
+                  width={480}
+                  height={288}
+                  widths={[300, 480, 600]}
+                  sizes="(max-width: 720px) 92vw, (max-width: 1000px) 45vw, 360px"
+                  loading="lazy"
+                />
+              )}
+              <div class="art-card__body">
+                <h2>{a.data.title}</h2>
+                <p>{a.data.summary}</p>
+                <span class="link-arrow">{t('articles.readMore')}</span>
+              </div>
+            </a>
+          );
+        })}
       </div>
     </div>
   </section>
@@ -42,8 +74,10 @@ const base = localizePath('/', lang);
   .crumbs a { color: var(--ink-soft); }
   .page-head p { color: var(--ink-soft); max-width: 60ch; font-size: 1.08rem; }
   .art-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-  .art-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 26px 26px 24px; color: var(--ink); display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; }
+  .art-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; color: var(--ink); display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; }
   .art-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: transparent; }
+  .art-card__img { width: 100%; aspect-ratio: 5 / 3; object-fit: cover; display: block; background: var(--bg-soft); }
+  .art-card__body { padding: 22px 24px 22px; display: flex; flex-direction: column; flex: 1; }
   .art-card h2 { font-size: 1.25rem; margin-bottom: 0.5rem; }
   .art-card p { color: var(--ink-soft); font-size: 0.96rem; flex: 1; margin-bottom: 1rem; }
   @media (max-width: 1000px) { .art-grid { grid-template-columns: repeat(2, 1fr); } }
