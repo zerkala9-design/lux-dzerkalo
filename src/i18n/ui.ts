@@ -105,14 +105,17 @@ export const ui = {
     'product.alsoCategory': 'Також з цієї категорії',
 
     'services.title': 'Послуги',
+    'services.metaTitle': 'Послуги: виготовлення, заміри, монтаж дзеркал у Києві',
     'services.intro': 'Повний цикл робіт з дзеркалом та склом — від замірів до монтажу «під ключ».',
     'services.faqEyebrow': 'Питання та відповіді',
     'services.faqHeading': 'Часті запитання',
 
     'gallery.title': 'Галерея робіт',
+    'gallery.metaTitle': 'Галерея робіт: приклади дзеркал і монтажу на замовлення',
     'gallery.intro': 'Реальні приклади дзеркал та дзеркальних композицій, виготовлених і встановлених нашою командою.',
 
     'contacts.title': 'Контакти',
+    'contacts.metaTitle': 'Контакти — телефон, адреса та графік роботи, Київ',
     'contacts.intro': 'Зателефонуйте, напишіть або залиште заявку — відповімо та проконсультуємо.',
     'contacts.phones': 'Телефони', 'contacts.email': 'Email', 'contacts.address': 'Адреса', 'contacts.hours': 'Графік роботи',
     'contacts.viber': 'Написати у Viber',
@@ -200,14 +203,17 @@ export const ui = {
     'product.alsoCategory': 'Также из этой категории',
 
     'services.title': 'Услуги',
+    'services.metaTitle': 'Услуги: изготовление, замеры, монтаж зеркал в Киеве',
     'services.intro': 'Полный цикл работ с зеркалом и стеклом — от замеров до монтажа «под ключ».',
     'services.faqEyebrow': 'Вопросы и ответы',
     'services.faqHeading': 'Частые вопросы',
 
     'gallery.title': 'Галерея работ',
+    'gallery.metaTitle': 'Галерея работ: примеры зеркал и монтажа на заказ',
     'gallery.intro': 'Реальные примеры зеркал и зеркальных композиций, изготовленных и установленных нашей командой.',
 
     'contacts.title': 'Контакты',
+    'contacts.metaTitle': 'Контакты — телефон, адрес и график работы, Киев',
     'contacts.intro': 'Позвоните, напишите или оставьте заявку — ответим и проконсультируем.',
     'contacts.phones': 'Телефоны', 'contacts.email': 'Email', 'contacts.address': 'Адрес', 'contacts.hours': 'График работы',
     'contacts.viber': 'Написать в Viber',

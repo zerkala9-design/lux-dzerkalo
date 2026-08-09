@@ -17,7 +17,7 @@ const images = Object.entries(modules)
   .map(([, m]) => m.default);
 ---
 
-<BaseLayout title={t('gallery.title')} description={t('gallery.intro')}>
+<BaseLayout title={t('gallery.metaTitle')} description={t('gallery.intro')}>
   <section class="page-head">
     <div class="container">
       <nav class="crumbs"><a href={base}>{t('nav.home')}</a> / <span>{t('gallery.title')}</span></nav>
