@@ -3800,6 +3800,11 @@ function updateShapePreview() {
       var _floorOn = safeInt(document.getElementById("floor_num") && document.getElementById("floor_num").value, 0) > 0;
       var _tog = function(id,on){ var e=document.getElementById(id); if(e) e.checked = !!on; };
       _tog("chk-mounts", _mountsOn); _tog("chk-discount", _discOn); _tog("chk-floor", _floorOn);
+      // Рядки отворів/пластин: галочка стоїть лише коли кількість > 0
+      [].forEach.call(document.querySelectorAll("#holes-list .holes-row"), function(r){
+        var c=r.querySelector(".holes-active"), q=r.querySelector(".holes-q"); if(c&&q) c.checked = safeInt(q.value,0)>0; });
+      [].forEach.call(document.querySelectorAll("#plates-list .plates-row"), function(r){
+        var c=r.querySelector(".plates-active"), q=r.querySelector(".plates-q"); if(c&&q) c.checked = safeInt(q.value,0)>0; });
     }catch(e){}
 
     // DETAILED version (shown in interface with multipliers)
@@ -4085,19 +4090,17 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     row.className = "holes-row";
     row.style.cssText = "display:flex;gap:8px;align-items:center;margin-bottom:8px;";
     row.innerHTML =
-      '<input type="checkbox" class="holes-active row-check" checked title="Прибрати рядок">'+
+      '<input type="checkbox" class="holes-active row-check"'+((q>0)?' checked':'')+'>'+
       '<select class="input holes-d" style="flex:1;min-width:0;">'+HOLE_OPTIONS_HTML+'</select>'+
       '<input class="input holes-q" type="number" min="0" value="'+(q||0)+'" style="width:76px;">'+
       '<span style="color:#9ca3af;font-size:14px;">шт</span>';
     if(d){ const sel=row.querySelector(".holes-d"); if(sel) sel.value = String(d); }
     const recalc = ()=>{ try{ saveCalcState(); }catch(e){} try{ calculate(); }catch(e){} };
+    const qEl = row.querySelector(".holes-q");
     row.querySelector(".holes-d").addEventListener("change", recalc);
-    row.querySelector(".holes-q").addEventListener("input", recalc);
+    qEl.addEventListener("input", recalc);
     row.querySelector(".holes-active").addEventListener("change", function(){
-      if(this.checked) return;               // знята галочка = прибрати рядок
-      const list = document.getElementById("holes-list");
-      if(list && list.querySelectorAll(".holes-row").length > 1){ row.remove(); }
-      else { const q2=row.querySelector(".holes-q"); if(q2) q2.value = 0; this.checked = true; }
+      if(!this.checked){ qEl.value = 0; }    // знята галочка = обнулити рядок
       recalc();
     });
     return row;
@@ -4132,19 +4135,17 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     row.className = "plates-row";
     row.style.cssText = "display:flex;gap:8px;align-items:center;margin-bottom:8px;";
     row.innerHTML =
-      '<input type="checkbox" class="plates-active row-check" checked title="Прибрати рядок">'+
+      '<input type="checkbox" class="plates-active row-check"'+((q>0)?' checked':'')+'>'+
       '<select class="input plates-t" style="flex:1;min-width:0;">'+PLATE_OPTIONS_HTML+'</select>'+
       '<input class="input plates-q" type="number" min="0" value="'+(q||0)+'" style="width:76px;">'+
       '<span style="color:#9ca3af;font-size:14px;">шт</span>';
     if(type){ const sel=row.querySelector(".plates-t"); if(sel) sel.value = String(type); }
     const recalc = ()=>{ try{ saveCalcState(); }catch(e){} try{ calculate(); }catch(e){} };
+    const qEl = row.querySelector(".plates-q");
     row.querySelector(".plates-t").addEventListener("change", recalc);
-    row.querySelector(".plates-q").addEventListener("input", recalc);
+    qEl.addEventListener("input", recalc);
     row.querySelector(".plates-active").addEventListener("change", function(){
-      if(this.checked) return;               // знята галочка = прибрати рядок
-      const list = document.getElementById("plates-list");
-      if(list && list.querySelectorAll(".plates-row").length > 1){ row.remove(); }
-      else { const q2=row.querySelector(".plates-q"); if(q2) q2.value = 0; this.checked = true; }
+      if(!this.checked){ qEl.value = 0; }    // знята галочка = обнулити рядок
       recalc();
     });
     return row;
