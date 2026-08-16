@@ -767,13 +767,13 @@ body {
 /* Shape tabs */
     .shape-tabs { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
     .shape-tab{
-  padding: calc(7px * var(--ui-scale)) calc(10px * var(--ui-scale));
+  padding: calc(11px * var(--ui-scale)) calc(18px * var(--ui-scale));
   border-radius: calc(999px * var(--ui-scale));
   border:1px solid rgba(148,163,184,0.22);
   background: rgba(15,23,42,0.55);
   color:#e5e7eb;
-  font-weight:600;
-  font-size: calc(11px * var(--ui-scale));
+  font-weight:700;
+  font-size: calc(14px * var(--ui-scale));
   cursor:pointer;
 }
 
