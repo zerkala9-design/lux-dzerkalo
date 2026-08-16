@@ -667,6 +667,7 @@ body {
 
     /* Індикатор активної опції — такий самий чекбокс, як у «Додаткові послуги» */
     .opt-mirror{ width:14px; height:14px; accent-color:#fb923c; margin-right:7px; vertical-align:-2px; pointer-events:none; flex-shrink:0; }
+    .row-check{ width:16px; height:16px; accent-color:#fb923c; flex-shrink:0; cursor:pointer; }
 
     /* ===== TABS CONTENT ===== */
     .view { display: none; }
@@ -2548,14 +2549,14 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
           </div>
 
           <div>
-            <div class="card-sub" style="margin-bottom:4px;">Знижка, %</div>
+            <div class="card-sub" style="margin-bottom:4px;"><input type="checkbox" id="chk-discount" class="opt-mirror" tabindex="-1" aria-hidden="true">Знижка, %</div>
             <div class="field" style="max-width:140px;">
               <input class="input calc-input" id="discount_percent" type="number" min="0" max="100" value="0">
             </div>
           </div>
 
           <div>
-            <div class="card-sub" style="margin-bottom:4px;">Підйом на поверх</div>
+            <div class="card-sub" style="margin-bottom:4px;"><input type="checkbox" id="chk-floor" class="opt-mirror" tabindex="-1" aria-hidden="true">Підйом на поверх</div>
             <div class="field" style="flex-direction:row;align-items:center;gap:8px;flex-wrap:wrap;max-width:340px;">
               <label for="floor_num" style="margin:0;">Поверх №:</label>
               <input class="input calc-input" id="floor_num" type="number" min="0" value="0" style="width:70px;">
@@ -3794,8 +3795,11 @@ function updateShapePreview() {
       var _holesOn = (typeof getHoleRows==="function"?getHoleRows():[]).some(function(h){return h.q>0 && h.d>0;});
       var _platesOn = (typeof getPlateRows==="function"?getPlateRows():[]).some(function(p){return p.q>0;});
       var _mountsOn = safeInt(document.getElementById("mounts_qty") && document.getElementById("mounts_qty").value, 0) > 0;
+      var _discOn = safeFloat(document.getElementById("discount_percent") && document.getElementById("discount_percent").value, 0) > 0;
+      var _floorOn = safeInt(document.getElementById("floor_num") && document.getElementById("floor_num").value, 0) > 0;
       var _tog = function(id,on){ var e=document.getElementById(id); if(e) e.checked = !!on; };
       _tog("chk-holes", _holesOn); _tog("chk-plates", _platesOn); _tog("chk-mounts", _mountsOn);
+      _tog("chk-discount", _discOn); _tog("chk-floor", _floorOn);
     }catch(e){}
 
     // DETAILED version (shown in interface with multipliers)
@@ -4081,18 +4085,19 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     row.className = "holes-row";
     row.style.cssText = "display:flex;gap:8px;align-items:center;margin-bottom:8px;";
     row.innerHTML =
+      '<input type="checkbox" class="holes-active row-check" checked title="Прибрати рядок">'+
       '<select class="input holes-d" style="flex:1;min-width:0;">'+HOLE_OPTIONS_HTML+'</select>'+
       '<input class="input holes-q" type="number" min="0" value="'+(q||0)+'" style="width:76px;">'+
-      '<span style="color:#9ca3af;font-size:14px;">шт</span>'+
-      '<button type="button" class="btn-secondary holes-remove" title="Видалити" style="padding:2px 10px;">−</button>';
+      '<span style="color:#9ca3af;font-size:14px;">шт</span>';
     if(d){ const sel=row.querySelector(".holes-d"); if(sel) sel.value = String(d); }
     const recalc = ()=>{ try{ saveCalcState(); }catch(e){} try{ calculate(); }catch(e){} };
     row.querySelector(".holes-d").addEventListener("change", recalc);
     row.querySelector(".holes-q").addEventListener("input", recalc);
-    row.querySelector(".holes-remove").addEventListener("click", ()=>{
+    row.querySelector(".holes-active").addEventListener("change", function(){
+      if(this.checked) return;               // знята галочка = прибрати рядок
       const list = document.getElementById("holes-list");
-      if(list && list.querySelectorAll(".holes-row").length > 1) row.remove();
-      else { const q2=row.querySelector(".holes-q"); if(q2) q2.value = 0; }
+      if(list && list.querySelectorAll(".holes-row").length > 1){ row.remove(); }
+      else { const q2=row.querySelector(".holes-q"); if(q2) q2.value = 0; this.checked = true; }
       recalc();
     });
     return row;
@@ -4127,18 +4132,19 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     row.className = "plates-row";
     row.style.cssText = "display:flex;gap:8px;align-items:center;margin-bottom:8px;";
     row.innerHTML =
+      '<input type="checkbox" class="plates-active row-check" checked title="Прибрати рядок">'+
       '<select class="input plates-t" style="flex:1;min-width:0;">'+PLATE_OPTIONS_HTML+'</select>'+
       '<input class="input plates-q" type="number" min="0" value="'+(q||0)+'" style="width:76px;">'+
-      '<span style="color:#9ca3af;font-size:14px;">шт</span>'+
-      '<button type="button" class="btn-secondary plates-remove" title="Видалити" style="padding:2px 10px;">−</button>';
+      '<span style="color:#9ca3af;font-size:14px;">шт</span>';
     if(type){ const sel=row.querySelector(".plates-t"); if(sel) sel.value = String(type); }
     const recalc = ()=>{ try{ saveCalcState(); }catch(e){} try{ calculate(); }catch(e){} };
     row.querySelector(".plates-t").addEventListener("change", recalc);
     row.querySelector(".plates-q").addEventListener("input", recalc);
-    row.querySelector(".plates-remove").addEventListener("click", ()=>{
+    row.querySelector(".plates-active").addEventListener("change", function(){
+      if(this.checked) return;               // знята галочка = прибрати рядок
       const list = document.getElementById("plates-list");
-      if(list && list.querySelectorAll(".plates-row").length > 1) row.remove();
-      else { const q2=row.querySelector(".plates-q"); if(q2) q2.value = 0; }
+      if(list && list.querySelectorAll(".plates-row").length > 1){ row.remove(); }
+      else { const q2=row.querySelector(".plates-q"); if(q2) q2.value = 0; this.checked = true; }
       recalc();
     });
     return row;
