@@ -3540,12 +3540,12 @@ function updateShapePreview() {
       s.style.padding = "10px";
       if(txt){ txt.style.whiteSpace = "normal"; txt.style.maxWidth = "116px"; }
     } else if(currentShape==="ellipse"){
-      // Овал — рамка у формі овала (текст у 2 рядки, щоб форма була пропорційна)
+      // Овал — вертикальна рамка у формі овала, щоб ціна стала збоку (як у круга)
       s.style.borderRadius = "50%";
-      s.style.width = "auto";
-      s.style.height = "auto";
-      s.style.padding = "30px 46px";
-      if(txt){ txt.style.whiteSpace = "normal"; txt.style.maxWidth = "150px"; }
+      s.style.width = "132px";
+      s.style.height = "174px";
+      s.style.padding = "10px";
+      if(txt){ txt.style.whiteSpace = "normal"; txt.style.maxWidth = "104px"; }
     } else {
       // Прямокутне / ромб — комірка підлаштовується під рядки
       s.style.borderRadius = "6px";
@@ -3778,7 +3778,7 @@ function updateShapePreview() {
         } else if(currentShape==="circle"){
           html = `Ø${Math.round(width)} мм — ${qty} шт`;
         } else if(currentShape==="ellipse"){
-          html = `${Math.round(width)}×${Math.round(height)} мм — ${qty} шт`;
+          html = `${Math.round(width)}×${Math.round(height)}<br>мм`;
         } else if(currentShape==="diamond"){
           html = `${Math.round(width)}×${Math.round(height)} мм (ромб) — ${qty} шт`;
         }
