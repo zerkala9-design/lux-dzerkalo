@@ -765,22 +765,25 @@ body {
     #view-wall .grid-two{ grid-template-columns: 1fr; }
     #view-wall #wall-result-container{ max-width: none; }
 /* Shape tabs */
-    .shape-tabs { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .shape-tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: nowrap; }
     .shape-tab{
-  padding: calc(11px * var(--ui-scale)) calc(18px * var(--ui-scale));
+  white-space:nowrap;
+  padding: calc(10px * var(--ui-scale)) calc(14px * var(--ui-scale));
   border-radius: calc(999px * var(--ui-scale));
   border:1px solid rgba(148,163,184,0.22);
   background: rgba(15,23,42,0.55);
   color:#e5e7eb;
   font-weight:700;
-  font-size: calc(14px * var(--ui-scale));
+  font-size: calc(13px * var(--ui-scale));
   cursor:pointer;
+  transition: all .15s;
 }
 
     .shape-tab.active {
-      background: rgba(248, 171, 94, 0.16);
-      border-color: rgba(249, 115, 22, 0.9);
-      color: #fed7aa;
+      background: linear-gradient(90deg,#ffb35a,#ff7a00);
+      border-color: #ff7a00;
+      color: #1a1205;
+      box-shadow: 0 4px 14px rgba(255,122,0,.4);
     }
 
     /* Settings modal */
