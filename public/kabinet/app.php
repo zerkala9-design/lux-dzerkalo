@@ -2348,7 +2348,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
       <div class="shape-tabs">
         <button class="shape-tab active" data-shape="rect">Прямокутне</button>
         <button class="shape-tab" data-shape="circle">Круг</button>
-        <button class="shape-tab" data-shape="ellipse">Еліпс</button>
+        <button class="shape-tab" data-shape="ellipse">Овал</button>
         <button class="shape-tab" data-shape="diamond">Ромб</button>
       </div>
 
@@ -2388,14 +2388,14 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
             <div id="circle-area-info" class="card-sub" style="margin-top:4px;"></div>
           </div>
           <div id="shape-ellipse-inputs" style="display:none;">
-            <div class="card-sub" style="margin-bottom:4px;">Осі еліпса (мм) та кількість</div>
+            <div class="card-sub" style="margin-bottom:4px;">Розміри овала (мм) та кількість</div>
             <div class="form-grid-3">
               <div class="field">
-                <label for="ellipse_a">Велика вісь, мм</label>
+                <label for="ellipse_a">Ширина, мм</label>
                 <input class="input calc-input" id="ellipse_a" type="number" min="1" value="1200">
               </div>
               <div class="field">
-                <label for="ellipse_b">Мала вісь, мм</label>
+                <label for="ellipse_b">Висота, мм</label>
                 <input class="input calc-input" id="ellipse_b" type="number" min="1" value="800">
               </div>
               <div class="field">
@@ -3528,14 +3528,32 @@ syncState();
 function updateShapePreview() {
     const s = document.getElementById("mirror-shape");
     if(!s) return;
-    // Комірка підлаштовується під розміри-рядки всередині (авто-ширина/висота)
-    s.style.width = "auto";
-    s.style.height = "auto";
+    const txt = document.getElementById("mirror-sizes");
     s.style.transform = "none";
-    s.style.borderRadius = (currentShape==="circle" || currentShape==="ellipse") ? "18px" : "6px";
-    // Усередині — той самий фон, що й загальний (лише рамка дзеркала)
-    s.style.background = "transparent";
+    s.style.background = "transparent";   // усередині — той самий фон, що й загальний
     s.style.boxShadow = "none";
+    if(currentShape==="circle"){
+      // Справжній круг із розміром усередині
+      s.style.borderRadius = "50%";
+      s.style.width = "156px";
+      s.style.height = "156px";
+      s.style.padding = "10px";
+      if(txt){ txt.style.whiteSpace = "normal"; txt.style.maxWidth = "116px"; }
+    } else if(currentShape==="ellipse"){
+      // Овал — рамка у формі овала
+      s.style.borderRadius = "50%";
+      s.style.width = "auto";
+      s.style.height = "auto";
+      s.style.padding = "16px 34px";
+      if(txt){ txt.style.whiteSpace = "nowrap"; txt.style.maxWidth = "none"; }
+    } else {
+      // Прямокутне / ромб — комірка підлаштовується під рядки
+      s.style.borderRadius = "6px";
+      s.style.width = "auto";
+      s.style.height = "auto";
+      s.style.padding = "8px 6px";
+      if(txt){ txt.style.whiteSpace = "nowrap"; txt.style.maxWidth = "none"; }
+    }
   }
 
   function checkInventory(width, height, color, thickness) {
@@ -3616,9 +3634,11 @@ function updateShapePreview() {
     } else if(currentShape==="ellipse") {
       const a=safeFloat(document.getElementById("ellipse_a").value)/1000;
       const b=safeFloat(document.getElementById("ellipse_b").value)/1000;
-      area=Math.PI*a*b/4; perim=Math.PI*(3*(a+b)-Math.sqrt((3*a+b)*(a+3*b)))/2;
-      width = a * 1000; height = b * 1000;
-      document.getElementById("ellipse-area-info").textContent = `Площа: ${area.toFixed(3)} м² | Периметр: ~${perim.toFixed(3)} м`;
+      // Овал: площа = описаний прямокутник (як у круга), периметр — реальна крива
+      area = a*b;
+      perim = Math.PI*(3*(a+b)-Math.sqrt((3*a+b)*(a+3*b)))/2;
+      width = a*1000; height = b*1000;
+      { const _ei=document.getElementById("ellipse-area-info"); if(_ei) _ei.textContent = `Площа: ${area.toFixed(3)} м² | Периметр: ~${perim.toFixed(3)} м`; }
     } else if(currentShape==="diamond") {
       const d1=safeFloat(document.getElementById("diamond_d1").value)/1000;
       const d2=safeFloat(document.getElementById("diamond_d2").value)/1000;
@@ -3644,8 +3664,8 @@ function updateShapePreview() {
       const prKey = `pr_${thickness}${suffix}`;
       prPriceM = priceState[prKey] || 0;
     }
-    // Круглі дзеркала: обробка периметра (кола) — фіксована ціна за пог. метр
-    if(currentShape==="circle" && edge==="PR"){
+    // Круг та овал: криволінійна обробка периметра — фіксована ціна за пог. метр
+    if((currentShape==="circle" || currentShape==="ellipse") && edge==="PR"){
       prPriceM = priceState.price_round_edge_m || prPriceM;
     }
 
@@ -3700,12 +3720,11 @@ function updateShapePreview() {
     if(plate1Qty>0) platesBreakdownLines.push(`Пластини 150-200 мм: ${plate1Qty} шт — ${(plate1Qty*(priceState.price_plate_150_200||0)).toFixed(0)} грн`);
     if(plate2Qty>0) platesBreakdownLines.push(`Пластини 200-250 мм: ${plate2Qty} шт — ${(plate2Qty*(priceState.price_plate_200_250||0)).toFixed(0)} грн`);
 
-    // Вартість дзеркала. Для круга: рахуємо як описаний квадрат (Ø1000 = 1 м²) + надбавка за порізку
+    // Вартість дзеркала. Круг/овал: рахуємо як описаний прямокутник + надбавка за порізку
     let glassCost = area * glassPriceM2;
     let roundSquareArea = 0, roundCutPct = 0;
-    if(currentShape==="circle"){
-      const dm = width/1000;                       // діаметр у метрах
-      roundSquareArea = dm * dm;                    // площа описаного квадрата
+    if(currentShape==="circle" || currentShape==="ellipse"){
+      roundSquareArea = (width/1000) * (height/1000);   // площа описаного прямокутника
       roundCutPct = priceState.price_round_cut_pct || 0;
       glassCost = roundSquareArea * glassPriceM2 * (1 + roundCutPct/100);
     }
@@ -3759,7 +3778,7 @@ function updateShapePreview() {
         } else if(currentShape==="circle"){
           html = `Ø${Math.round(width)} мм — ${qty} шт`;
         } else if(currentShape==="ellipse"){
-          html = `${Math.round(width)}×${Math.round(height)} мм (еліпс) — ${qty} шт`;
+          html = `${Math.round(width)}×${Math.round(height)} мм (овал) — ${qty} шт`;
         } else if(currentShape==="diamond"){
           html = `${Math.round(width)}×${Math.round(height)} мм (ромб) — ${qty} шт`;
         }
@@ -3963,7 +3982,7 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
 	        } else {
 	          // Круг / Еліпс / Ромб — простий прорахунок
 	          if(mirrorColor){
-	            if(currentShape==="circle"){
+	            if(currentShape==="circle" || currentShape==="ellipse"){
 	              d.push(`Дзеркало ${mirrorColor} ${thickness}мм (${roundSquareArea.toFixed(3)} м² +${roundCutPct}% порізка): ${glassCost.toFixed(2)} грн`);
 	            } else {
 	              d.push(`Дзеркало ${mirrorColor} ${thickness}мм: ${glassCost.toFixed(2)} грн`);
