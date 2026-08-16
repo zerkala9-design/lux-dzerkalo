@@ -2491,7 +2491,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
           </div>
 
           <div>
-            <div class="card-sub" style="margin-bottom:4px;"><input type="checkbox" id="chk-holes" class="opt-mirror" tabindex="-1" aria-hidden="true">Отвори</div>
+            <div class="card-sub" style="margin-bottom:4px;">Отвори</div>
             <div id="holes-list"></div>
             <button class="btn-secondary" id="holes-add" type="button" style="margin-top:2px;padding:6px 12px;font-size:13px;">+ Додати отвір</button>
           </div>
@@ -2516,12 +2516,13 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
                 <label for="has_points_profile">Точкові зверху + профіль знизу</label>
               </div>
               <div class="field" style="flex-direction:row;align-items:center;gap:8px;">
-                <label for="mounts_qty" style="margin:0;"><input type="checkbox" id="chk-mounts" class="opt-mirror" tabindex="-1" aria-hidden="true">Точкові кріплення, точок:</label>
+                <input type="checkbox" id="chk-mounts" class="row-check">
+                <label for="mounts_qty" style="margin:0;">Точкові кріплення, точок:</label>
                 <input class="input calc-input" id="mounts_qty" type="number" min="0" value="0" style="width:60px;">
               </div>
             </div>
 
-            <div class="card-sub" style="margin:10px 0 4px;"><input type="checkbox" id="chk-plates" class="opt-mirror" tabindex="-1" aria-hidden="true">Пластини-кріплення</div>
+            <div class="card-sub" style="margin:10px 0 4px;">Пластини-кріплення</div>
             <div id="plates-list"></div>
             <button class="btn-secondary" id="plates-add" type="button" style="margin-top:2px;padding:6px 12px;font-size:13px;">+ Додати пластину</button>
           </div>
@@ -2549,15 +2550,17 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
           </div>
 
           <div>
-            <div class="card-sub" style="margin-bottom:4px;"><input type="checkbox" id="chk-discount" class="opt-mirror" tabindex="-1" aria-hidden="true">Знижка, %</div>
-            <div class="field" style="max-width:140px;">
-              <input class="input calc-input" id="discount_percent" type="number" min="0" max="100" value="0">
+            <div class="card-sub" style="margin-bottom:4px;">Знижка, %</div>
+            <div class="field" style="flex-direction:row;align-items:center;gap:8px;max-width:180px;">
+              <input type="checkbox" id="chk-discount" class="row-check">
+              <input class="input calc-input" id="discount_percent" type="number" min="0" max="100" value="0" style="flex:1;">
             </div>
           </div>
 
           <div>
-            <div class="card-sub" style="margin-bottom:4px;"><input type="checkbox" id="chk-floor" class="opt-mirror" tabindex="-1" aria-hidden="true">Підйом на поверх</div>
-            <div class="field" style="flex-direction:row;align-items:center;gap:8px;flex-wrap:wrap;max-width:340px;">
+            <div class="card-sub" style="margin-bottom:4px;">Підйом на поверх</div>
+            <div class="field" style="flex-direction:row;align-items:center;gap:8px;flex-wrap:wrap;max-width:360px;">
+              <input type="checkbox" id="chk-floor" class="row-check">
               <label for="floor_num" style="margin:0;">Поверх №:</label>
               <input class="input calc-input" id="floor_num" type="number" min="0" value="0" style="width:70px;">
               <span id="floor_hint" style="font-size:12px;color:#9ca3af;"></span>
@@ -3790,16 +3793,13 @@ function updateShapePreview() {
       }
     }
     try{ updateShapePreview(); }catch(e){}
-    // Галочки активних опцій (Отвори / Пластини / Точкові кріплення)
+    // Галочки-індикатори опцій (є значення → стоїть галочка)
     try{
-      var _holesOn = (typeof getHoleRows==="function"?getHoleRows():[]).some(function(h){return h.q>0 && h.d>0;});
-      var _platesOn = (typeof getPlateRows==="function"?getPlateRows():[]).some(function(p){return p.q>0;});
       var _mountsOn = safeInt(document.getElementById("mounts_qty") && document.getElementById("mounts_qty").value, 0) > 0;
       var _discOn = safeFloat(document.getElementById("discount_percent") && document.getElementById("discount_percent").value, 0) > 0;
       var _floorOn = safeInt(document.getElementById("floor_num") && document.getElementById("floor_num").value, 0) > 0;
       var _tog = function(id,on){ var e=document.getElementById(id); if(e) e.checked = !!on; };
-      _tog("chk-holes", _holesOn); _tog("chk-plates", _platesOn); _tog("chk-mounts", _mountsOn);
-      _tog("chk-discount", _discOn); _tog("chk-floor", _floorOn);
+      _tog("chk-mounts", _mountsOn); _tog("chk-discount", _discOn); _tog("chk-floor", _floorOn);
     }catch(e){}
 
     // DETAILED version (shown in interface with multipliers)
@@ -4170,6 +4170,21 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     }
   })();
 
+
+  // Галочки-перемикачі опцій: знята галочка → обнуляє значення
+  (function(){
+    var bind = function(chkId, inputId){
+      var chk=document.getElementById(chkId), inp=document.getElementById(inputId);
+      if(!chk || !inp) return;
+      chk.addEventListener("change", function(){
+        if(!this.checked){ inp.value = 0; }
+        try{ saveCalcState(); }catch(e){} try{ calculate(); }catch(e){}
+      });
+    };
+    bind("chk-mounts","mounts_qty");
+    bind("chk-discount","discount_percent");
+    bind("chk-floor","floor_num");
+  })();
 
 document.querySelectorAll(".calc-input").forEach(i => {
     if(i.type === "checkbox" || i.type === "radio") {
