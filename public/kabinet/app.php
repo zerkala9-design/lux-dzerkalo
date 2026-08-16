@@ -665,6 +665,10 @@ body {
       border-color: rgba(251, 146, 60, 0.9);
     }
 
+    /* Індикатор активної опції (галочка при значенні > 0) */
+    .opt-check{ display:none; color:#22c55e; font-weight:800; margin-left:7px; font-size:14px; }
+    .opt-check.on{ display:inline; }
+
     /* ===== TABS CONTENT ===== */
     .view { display: none; }
     .view.active { display: block; }
@@ -2487,7 +2491,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
           </div>
 
           <div>
-            <div class="card-sub" style="margin-bottom:4px;">Отвори</div>
+            <div class="card-sub" style="margin-bottom:4px;">Отвори<span id="chk-holes" class="opt-check">✓</span></div>
             <div id="holes-list"></div>
             <button class="btn-secondary" id="holes-add" type="button" style="margin-top:2px;padding:6px 12px;font-size:13px;">+ Додати отвір</button>
           </div>
@@ -2512,12 +2516,12 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
                 <label for="has_points_profile">Точкові зверху + профіль знизу</label>
               </div>
               <div class="field" style="flex-direction:row;align-items:center;gap:8px;">
-                <label for="mounts_qty" style="margin:0;">Точкові кріплення, точок:</label>
+                <label for="mounts_qty" style="margin:0;">Точкові кріплення, точок:<span id="chk-mounts" class="opt-check">✓</span></label>
                 <input class="input calc-input" id="mounts_qty" type="number" min="0" value="0" style="width:60px;">
               </div>
             </div>
 
-            <div class="card-sub" style="margin:10px 0 4px;">Пластини-кріплення</div>
+            <div class="card-sub" style="margin:10px 0 4px;">Пластини-кріплення<span id="chk-plates" class="opt-check">✓</span></div>
             <div id="plates-list"></div>
             <button class="btn-secondary" id="plates-add" type="button" style="margin-top:2px;padding:6px 12px;font-size:13px;">+ Додати пластину</button>
           </div>
@@ -3786,6 +3790,14 @@ function updateShapePreview() {
       }
     }
     try{ updateShapePreview(); }catch(e){}
+    // Галочки активних опцій (Отвори / Пластини / Точкові кріплення)
+    try{
+      var _holesOn = (typeof getHoleRows==="function"?getHoleRows():[]).some(function(h){return h.q>0 && h.d>0;});
+      var _platesOn = (typeof getPlateRows==="function"?getPlateRows():[]).some(function(p){return p.q>0;});
+      var _mountsOn = safeInt(document.getElementById("mounts_qty") && document.getElementById("mounts_qty").value, 0) > 0;
+      var _tog = function(id,on){ var e=document.getElementById(id); if(e) e.classList.toggle("on", !!on); };
+      _tog("chk-holes", _holesOn); _tog("chk-plates", _platesOn); _tog("chk-mounts", _mountsOn);
+    }catch(e){}
 
     // DETAILED version (shown in interface with multipliers)
     let dDetailed = [];
