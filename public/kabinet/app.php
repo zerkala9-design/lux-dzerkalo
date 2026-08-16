@@ -2410,21 +2410,18 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
             <div id="ellipse-area-info" class="card-sub" style="margin-top:4px;"></div>
           </div>
           <div id="shape-diamond-inputs" style="display:none;">
-            <div class="card-sub" style="margin-bottom:4px;">Розміри ромба — діагоналі (мм) та кількість</div>
-            <div class="form-grid-3">
+            <div class="card-sub" style="margin-bottom:4px;">Розміри ромба — діагоналі (мм)</div>
+            <div class="form-grid-2">
               <div class="field">
-                <label for="diamond_d1">Ширина діагоналі, мм</label>
+                <label for="diamond_d1" style="font-weight:800;color:#f1f5f9;font-size:14px;">Ширина діагоналі, мм</label>
                 <input class="input calc-input" id="diamond_d1" type="number" min="1" value="300">
               </div>
               <div class="field">
-                <label for="diamond_d2">Висота діагоналі, мм</label>
+                <label for="diamond_d2" style="font-weight:800;color:#f1f5f9;font-size:14px;">Висота діагоналі, мм</label>
                 <input class="input calc-input" id="diamond_d2" type="number" min="1" value="400">
               </div>
-              <div class="field">
-                <label for="diamond_qty">Кількість, шт</label>
-                <input class="input calc-input" id="diamond_qty" type="number" min="1" value="1">
-              </div>
             </div>
+            <input type="hidden" id="diamond_qty" value="1">
 
             <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-top:14px;">
               <svg id="romb-svg" viewBox="0 0 250 230" style="width:210px;max-width:100%;height:auto;flex-shrink:0;" aria-label="Ромб"></svg>
@@ -3560,10 +3557,10 @@ syncState();
     var side = Math.sqrt((w/2)*(w/2) + (h/2)*(h/2));
     var height = side>0 ? (w*h)/(2*side) : 0;
     var off = Math.sqrt(Math.max(0, side*side - height*height));
-    var set = function(id,v){ var e=document.getElementById(id); if(e) e.textContent = Math.round(v); };
+    var set = function(id,v){ var e=document.getElementById(id); if(e) e.textContent = v.toFixed(2); };
     set("romb-side", side); set("romb-height", height); set("romb-off", off);
     var ai = document.getElementById("diamond-area-info");
-    if(ai) ai.textContent = "Розмір: " + Math.round(w) + " × " + Math.round(h) + " мм · " + q + " шт";
+    if(ai) ai.textContent = "Розмір: " + Math.round(w) + " × " + Math.round(h) + " мм";
     // діаграма
     var svg = document.getElementById("romb-svg");
     if(svg){
