@@ -2410,24 +2410,49 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
             <div id="ellipse-area-info" class="card-sub" style="margin-top:4px;"></div>
           </div>
           <div id="shape-diamond-inputs" style="display:none;">
-            <div class="card-sub" style="margin-bottom:4px;">Діагоналі ромба (мм) та кількість</div>
+            <div class="card-sub" style="margin-bottom:4px;">Розміри ромба — діагоналі (мм) та кількість</div>
             <div class="form-grid-3">
               <div class="field">
-                <label for="diamond_d1">Діагональ 1, мм</label>
-                <input class="input calc-input" id="diamond_d1" type="number" min="1" value="1200">
+                <label for="diamond_d1">Ширина діагоналі, мм</label>
+                <input class="input calc-input" id="diamond_d1" type="number" min="1" value="300">
               </div>
               <div class="field">
-                <label for="diamond_d2">Діагональ 2, мм</label>
-                <input class="input calc-input" id="diamond_d2" type="number" min="1" value="800">
+                <label for="diamond_d2">Висота діагоналі, мм</label>
+                <input class="input calc-input" id="diamond_d2" type="number" min="1" value="400">
               </div>
               <div class="field">
                 <label for="diamond_qty">Кількість, шт</label>
                 <input class="input calc-input" id="diamond_qty" type="number" min="1" value="1">
               </div>
             </div>
-            <div id="diamond-area-info" class="card-sub" style="margin-top:4px;"></div>
+
+            <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-top:14px;">
+              <svg id="romb-svg" viewBox="0 0 250 230" style="width:210px;max-width:100%;height:auto;flex-shrink:0;" aria-label="Ромб"></svg>
+              <div style="flex:1;min-width:220px;">
+                <div class="card-sub" style="margin-bottom:8px;font-weight:800;color:#f1f5f9;">Дані для ЧПУ (на 1 ромб)</div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+                  <div style="background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 8px;text-align:center;">
+                    <div style="font-size:10.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;">Сторона</div>
+                    <div style="font-size:22px;font-weight:800;color:#ffb35a;font-variant-numeric:tabular-nums;"><span id="romb-side">0</span></div>
+                    <div style="font-size:10px;color:#9ca3af;">мм</div>
+                  </div>
+                  <div style="background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 8px;text-align:center;">
+                    <div style="font-size:10.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;">Висота</div>
+                    <div style="font-size:22px;font-weight:800;color:#ffb35a;font-variant-numeric:tabular-nums;"><span id="romb-height">0</span></div>
+                    <div style="font-size:10px;color:#9ca3af;">мм</div>
+                  </div>
+                  <div style="background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 8px;text-align:center;">
+                    <div style="font-size:10.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;">Зміщення</div>
+                    <div style="font-size:22px;font-weight:800;color:#ffb35a;font-variant-numeric:tabular-nums;"><span id="romb-off">0</span></div>
+                    <div style="font-size:10px;color:#9ca3af;">мм</div>
+                  </div>
+                </div>
+                <div id="diamond-area-info" class="card-sub" style="margin-top:8px;"></div>
+              </div>
+            </div>
           </div>
 
+          <div id="pricing-block">
           <div>
             <div class="card-sub" style="margin-bottom:8px;font-weight:800;color:#f1f5f9;font-size:15px;">Колір дзеркала</div>
             <div style="display:flex;flex-wrap:wrap;gap:6px;">
@@ -2571,6 +2596,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
             <button class="btn-primary" id="btn-calc">Перерахувати</button>
             <button class="btn-secondary" id="btn-save-order">Зберегти замовлення</button>
           </div>
+          </div><!-- end pricing-block -->
 
         </div>
 
@@ -3411,8 +3437,8 @@ syncState();
       document.getElementById("ellipse_a").value = state.ellipse_a || 1200;
       document.getElementById("ellipse_b").value = state.ellipse_b || 800;
       document.getElementById("ellipse_qty").value = state.ellipse_qty || 1;
-      document.getElementById("diamond_d1").value = state.diamond_d1 || 1200;
-      document.getElementById("diamond_d2").value = state.diamond_d2 || 800;
+      document.getElementById("diamond_d1").value = state.diamond_d1 || 300;
+      document.getElementById("diamond_d2").value = state.diamond_d2 || 400;
       document.getElementById("diamond_qty").value = state.diamond_qty || 1;
       
       if(state.thickness) {
@@ -3509,11 +3535,58 @@ syncState();
       ["rect","circle","ellipse","diamond"].forEach(s => {
         document.getElementById(`shape-${s}-inputs`).style.display = s===currentShape?"block":"none";
       });
-      updateShapePreview(); 
+      applyShapeMode();
+      updateShapePreview();
       saveCalcState();
       calculate();
     });
   });
+
+  // Ромб = суто інструмент розкрою для ЧПУ (без ціни/опцій)
+  function applyShapeMode(){
+    var isRomb = (currentShape === "diamond");
+    var pb = document.getElementById("pricing-block");
+    var res = document.getElementById("calc-preview-box");
+    if(pb) pb.style.display = isRomb ? "none" : "";
+    if(res) res.style.display = isRomb ? "none" : "";
+    if(isRomb) computeRomb();
+  }
+
+  // Розрахунок даних ЧПУ для ромба + діаграма зі стрілками
+  function computeRomb(){
+    var w = safeFloat(document.getElementById("diamond_d1") && document.getElementById("diamond_d1").value, 0);
+    var h = safeFloat(document.getElementById("diamond_d2") && document.getElementById("diamond_d2").value, 0);
+    var q = safeInt(document.getElementById("diamond_qty") && document.getElementById("diamond_qty").value, 0);
+    var side = Math.sqrt((w/2)*(w/2) + (h/2)*(h/2));
+    var height = side>0 ? (w*h)/(2*side) : 0;
+    var off = Math.sqrt(Math.max(0, side*side - height*height));
+    var set = function(id,v){ var e=document.getElementById(id); if(e) e.textContent = Math.round(v); };
+    set("romb-side", side); set("romb-height", height); set("romb-off", off);
+    var ai = document.getElementById("diamond-area-info");
+    if(ai) ai.textContent = "Розмір: " + Math.round(w) + " × " + Math.round(h) + " мм · " + q + " шт";
+    // діаграма
+    var svg = document.getElementById("romb-svg");
+    if(svg){
+      var VB=250, VH=230, pad=48;
+      var sc = Math.min((VB-pad*2)/(w||1), (VH-pad*2)/(h||1));
+      var pw=(w||1)*sc, ph=(h||1)*sc, cx=VB/2, cy=VH/2;
+      var top=[cx,cy-ph/2], right=[cx+pw/2,cy], bottom=[cx,cy+ph/2], left=[cx-pw/2,cy];
+      var pts = top[0].toFixed(1)+","+top[1].toFixed(1)+" "+right[0].toFixed(1)+","+right[1].toFixed(1)+" "+bottom[0].toFixed(1)+","+bottom[1].toFixed(1)+" "+left[0].toFixed(1)+","+left[1].toFixed(1);
+      var s = '';
+      s += '<polygon points="'+pts+'" fill="rgba(148,163,184,0.16)" stroke="#cbd5e1" stroke-width="2"/>';
+      s += '<line x1="'+left[0]+'" y1="'+left[1]+'" x2="'+right[0]+'" y2="'+right[1]+'" stroke="rgba(255,122,0,.55)" stroke-width="1.3" stroke-dasharray="5 4"/>';
+      s += '<line x1="'+top[0]+'" y1="'+top[1]+'" x2="'+bottom[0]+'" y2="'+bottom[1]+'" stroke="rgba(255,122,0,.55)" stroke-width="1.3" stroke-dasharray="5 4"/>';
+      var ay=cy+ph/2+20;
+      s += '<line x1="'+left[0]+'" y1="'+ay+'" x2="'+right[0]+'" y2="'+ay+'" stroke="#ffb35a" stroke-width="1.5"/>';
+      s += '<line x1="'+left[0]+'" y1="'+(ay-4)+'" x2="'+left[0]+'" y2="'+(ay+4)+'" stroke="#ffb35a" stroke-width="1.5"/><line x1="'+right[0]+'" y1="'+(ay-4)+'" x2="'+right[0]+'" y2="'+(ay+4)+'" stroke="#ffb35a" stroke-width="1.5"/>';
+      s += '<text x="'+cx+'" y="'+(ay+15)+'" fill="#ffb35a" font-size="11" font-weight="700" text-anchor="middle">Ширина '+Math.round(w)+'</text>';
+      var ax=cx+pw/2+22;
+      s += '<line x1="'+ax+'" y1="'+top[1]+'" x2="'+ax+'" y2="'+bottom[1]+'" stroke="#ffb35a" stroke-width="1.5"/>';
+      s += '<line x1="'+(ax-4)+'" y1="'+top[1]+'" x2="'+(ax+4)+'" y2="'+top[1]+'" stroke="#ffb35a" stroke-width="1.5"/><line x1="'+(ax-4)+'" y1="'+bottom[1]+'" x2="'+(ax+4)+'" y2="'+bottom[1]+'" stroke="#ffb35a" stroke-width="1.5"/>';
+      s += '<text x="'+(ax+13)+'" y="'+cy+'" fill="#ffb35a" font-size="11" font-weight="700" text-anchor="middle" transform="rotate(90 '+(ax+13)+' '+cy+')">Висота '+Math.round(h)+'</text>';
+      svg.innerHTML = s;
+    }
+  }
 
   document.querySelectorAll(".color-btn").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -3605,6 +3678,7 @@ function updateShapePreview() {
 
   function calculate() {
     syncState();
+    if(currentShape==="diamond"){ try{ computeRomb(); }catch(e){} return; }   // ромб = лише дані ЧПУ
     const qty = currentShape==="rect" ? (getRectItems().reduce((sum,it)=> sum + ((safeFloat(it.w,0)>0 && safeFloat(it.h,0)>0) ? (it.q||0) : 0), 0)) :
                 currentShape==="circle" ? safeInt(document.getElementById("circle_qty").value, 1) :
                 currentShape==="ellipse" ? safeInt(document.getElementById("ellipse_qty").value, 1) :
@@ -6516,6 +6590,7 @@ return c;
   applyUiScale(uiScaleEl ? uiScaleEl.value : 1);
   syncState();
   loadCalcState();
+  applyShapeMode();
   updateShapePreview();
   calculate();
   calcWall();
