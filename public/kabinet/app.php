@@ -3540,12 +3540,12 @@ function updateShapePreview() {
       s.style.padding = "10px";
       if(txt){ txt.style.whiteSpace = "normal"; txt.style.maxWidth = "116px"; }
     } else if(currentShape==="ellipse"){
-      // Овал — рамка у формі овала
+      // Овал — рамка у формі овала (текст у 2 рядки, щоб форма була пропорційна)
       s.style.borderRadius = "50%";
       s.style.width = "auto";
       s.style.height = "auto";
-      s.style.padding = "16px 34px";
-      if(txt){ txt.style.whiteSpace = "nowrap"; txt.style.maxWidth = "none"; }
+      s.style.padding = "30px 46px";
+      if(txt){ txt.style.whiteSpace = "normal"; txt.style.maxWidth = "150px"; }
     } else {
       // Прямокутне / ромб — комірка підлаштовується під рядки
       s.style.borderRadius = "6px";
@@ -3778,7 +3778,7 @@ function updateShapePreview() {
         } else if(currentShape==="circle"){
           html = `Ø${Math.round(width)} мм — ${qty} шт`;
         } else if(currentShape==="ellipse"){
-          html = `${Math.round(width)}×${Math.round(height)} мм (овал) — ${qty} шт`;
+          html = `${Math.round(width)}×${Math.round(height)} мм — ${qty} шт`;
         } else if(currentShape==="diamond"){
           html = `${Math.round(width)}×${Math.round(height)} мм (ромб) — ${qty} шт`;
         }
