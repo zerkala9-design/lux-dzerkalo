@@ -2427,21 +2427,18 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
               <svg id="romb-svg" viewBox="0 0 250 230" style="width:210px;max-width:100%;height:auto;flex-shrink:0;" aria-label="Ромб"></svg>
               <div style="flex:1;min-width:220px;">
                 <div class="card-sub" style="margin-bottom:8px;font-weight:800;color:#f1f5f9;">Дані для ЧПУ (на 1 ромб)</div>
-                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
-                  <div style="background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 8px;text-align:center;">
-                    <div style="font-size:10.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;">Сторона</div>
-                    <div style="font-size:22px;font-weight:800;color:#ffb35a;font-variant-numeric:tabular-nums;"><span id="romb-side">0</span></div>
-                    <div style="font-size:10px;color:#9ca3af;">мм</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:11px 15px;">
+                    <span style="color:#e5e7eb;font-weight:700;font-size:14px;">1. Сторона</span>
+                    <span style="font-size:21px;font-weight:800;color:#ffb35a;font-variant-numeric:tabular-nums;"><span id="romb-side">0</span> <span style="font-size:12px;color:#9ca3af;">мм</span></span>
                   </div>
-                  <div style="background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 8px;text-align:center;">
-                    <div style="font-size:10.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;">Висота</div>
-                    <div style="font-size:22px;font-weight:800;color:#ffb35a;font-variant-numeric:tabular-nums;"><span id="romb-height">0</span></div>
-                    <div style="font-size:10px;color:#9ca3af;">мм</div>
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:11px 15px;">
+                    <span style="color:#e5e7eb;font-weight:700;font-size:14px;">2. Висота</span>
+                    <span style="font-size:21px;font-weight:800;color:#ffb35a;font-variant-numeric:tabular-nums;"><span id="romb-height">0</span> <span style="font-size:12px;color:#9ca3af;">мм</span></span>
                   </div>
-                  <div style="background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 8px;text-align:center;">
-                    <div style="font-size:10.5px;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;">Зміщення</div>
-                    <div style="font-size:22px;font-weight:800;color:#ffb35a;font-variant-numeric:tabular-nums;"><span id="romb-off">0</span></div>
-                    <div style="font-size:10px;color:#9ca3af;">мм</div>
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:11px 15px;">
+                    <span style="color:#e5e7eb;font-weight:700;font-size:14px;">3. Зміщення</span>
+                    <span style="font-size:21px;font-weight:800;color:#ffb35a;font-variant-numeric:tabular-nums;"><span id="romb-off">0</span> <span style="font-size:12px;color:#9ca3af;">мм</span></span>
                   </div>
                 </div>
                 <div id="diamond-area-info" class="card-sub" style="margin-top:8px;"></div>
