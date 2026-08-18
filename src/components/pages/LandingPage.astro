@@ -2,6 +2,7 @@
 import { Image, getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CallbackForm from '../CallbackForm.astro';
+import GymHook from '../GymHook.astro';
 import Faq from '../Faq.astro';
 import { site } from '../../data/site';
 import { landings } from '../../data/landings';
@@ -95,6 +96,8 @@ const breadcrumbsLd = {
           <figcaption>{imgAlt}</figcaption>
         </figure>
       )}
+
+      {id === 'sportzalPk' && <GymHook />}
 
       {c.sections.map((s) => (
         <div class="landing-sec">

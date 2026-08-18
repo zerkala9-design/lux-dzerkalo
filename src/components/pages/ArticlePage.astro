@@ -2,6 +2,7 @@
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CallbackForm from '../CallbackForm.astro';
+import GymHook from '../GymHook.astro';
 import { site } from '../../data/site';
 import { getLangFromUrl, useTranslations, localizePath } from '../../i18n/ui';
 import { getArticlesByLang, articleSlug, articleHasTwin, isNoindexArticle, type Article } from '../../lib/articles';
@@ -10,6 +11,15 @@ interface Props { article: Article; }
 const { article } = Astro.props;
 const { data } = article;
 const lang = getLangFromUrl(Astro.url);
+
+// USP-«гачок» для всіх сторінок про зали/студії
+const gymArticles = new Set([
+  'dzerkala-dlya-zaliv-i-studiy', 'dzerkala-dlya-sportzalu-rozmiry-montazh', 'dzerkalna-stina-u-fitnes-klub',
+  'dzerkala-dlya-tantsyuvalnoyi-studiyi', 'dzerkala-dlya-yohy', 'dzerkala-dlya-streychyngu', 'dzerkala-dlya-boksu',
+  'dzerkala-dlya-pul-dansu', 'dzerkala-dlya-krosfitu', 'dzerkala-dlya-pilatesu', 'dzerkala-dlya-himnastyky',
+  'dzerkala-dlya-reabilitatsiyi', 'dzerkala-dlya-domashnoho-sportzalu', 'bezpechnyy-montazh-velykykh-dzerkal',
+]);
+const isGym = gymArticles.has(articleSlug(article));
 const t = useTranslations(lang);
 const { Content } = await render(article);
 const base = localizePath('/', lang);
@@ -48,6 +58,7 @@ const articleLd = {
     <div class="container article-wrap">
       <article class="article">
         <h1>{data.title}</h1>
+        {isGym && <GymHook />}
         <div class="article__body">
           <Content />
         </div>

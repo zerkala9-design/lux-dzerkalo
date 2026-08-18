@@ -1,0 +1,78 @@
+---
+import { getLangFromUrl } from '../i18n/ui';
+const lang = getLangFromUrl(Astro.url);
+
+const t = lang === 'ru'
+  ? {
+      title: 'Зеркала, специализированные для залов',
+      items: [
+        ['Травмобезопасная плёнка', 'при ударе мячом или снарядом стекло не разлетается на осколки'],
+        ['Влагозащита', 'стойкое к влаге, поту и перепадам температур покрытие'],
+        ['Без искажений', 'ровное стекло 4–6 мм даёт точное отражение без «волн»'],
+        ['Надёжное крепление', 'профессиональный монтаж больших полотен нашей бригадой'],
+      ],
+    }
+  : {
+      title: 'Дзеркала, спеціалізовані для залів',
+      items: [
+        ['Травмобезпечна плівка', 'при ударі м’ячем чи снарядом скло не розлітається на уламки'],
+        ['Вологозахист', 'стійке до вологи, поту й перепадів температур покриття'],
+        ['Без викривлень', 'рівне скло 4–6 мм дає точне відображення без «хвиль»'],
+        ['Надійне кріплення', 'професійний монтаж великих полотен нашою бригадою'],
+      ],
+    };
+---
+
+<aside class="gym-hook" aria-label={t.title}>
+  <p class="gym-hook__title">{t.title}</p>
+  <ul class="gym-hook__grid">
+    {t.items.map(([term, desc]) => (
+      <li>
+        <span class="gym-hook__term">{term}</span>
+        <span class="gym-hook__desc">{desc}</span>
+      </li>
+    ))}
+  </ul>
+</aside>
+
+<style>
+  .gym-hook {
+    margin: 1.4rem 0 1.8rem;
+    padding: 20px 22px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent-dark);
+    border-radius: var(--radius);
+  }
+  .gym-hook__title {
+    font-family: var(--serif);
+    font-size: 1.15rem;
+    color: var(--ink);
+    margin: 0 0 14px;
+    font-weight: 600;
+  }
+  .gym-hook__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 22px;
+  }
+  .gym-hook__grid li {
+    position: relative;
+    padding-left: 24px;
+    line-height: 1.4;
+  }
+  .gym-hook__grid li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--accent-dark);
+    font-weight: 700;
+  }
+  .gym-hook__term { display: block; color: var(--ink); font-weight: 600; font-size: 0.98rem; }
+  .gym-hook__desc { display: block; color: var(--ink-soft); font-size: 0.9rem; }
+  @media (max-width: 620px) { .gym-hook__grid { grid-template-columns: 1fr; } }
+</style>

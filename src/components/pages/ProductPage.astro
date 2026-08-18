@@ -4,6 +4,7 @@ import { Image, getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProductCard from '../ProductCard.astro';
 import CallbackForm from '../CallbackForm.astro';
+import GymHook from '../GymHook.astro';
 import { site } from '../../data/site';
 import { getCategory, catTitle } from '../../data/categories';
 import { getLangFromUrl, useTranslations, localizePath } from '../../i18n/ui';
@@ -128,6 +129,8 @@ const breadcrumbsLd = {
             {data.features.map((f) => <li>{f}</li>)}
           </ul>
         )}
+
+        {data.category === 'sportzal' && <GymHook />}
 
         <div class="product__actions">
           <a href="#zayavka" class="btn btn--primary">{t('product.order')}</a>
