@@ -23,7 +23,7 @@ header("X-Robots-Tag: noindex, nofollow");
 <head>
   <meta charset="UTF-8" />
   <title>Lux Dzerkalo · Кабінет</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="robots" content="noindex, nofollow" />
   <link rel="apple-touch-icon" href="/kabinet/apple-touch-icon.png" />
   <link rel="icon" type="image/png" href="/kabinet/apple-touch-icon.png" />
@@ -3235,6 +3235,23 @@ syncState();
   const views = document.querySelectorAll(".view");
   const topbarTitle = document.getElementById("topbar-title");
   
+  // Щипок для масштабування дозволяємо лише на «Розкрої» — там треба роздивитись схему.
+  // У решті розділів лишається як було: масштаб зафіксовано, щоб не збивалась верстка.
+  const VIEWPORT_LOCKED = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
+  const VIEWPORT_ZOOMABLE = "width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes";
+  function setViewportForView(view){
+    const meta = document.querySelector('meta[name="viewport"]');
+    if(!meta) return;
+    const want = (view === "geometry") ? VIEWPORT_ZOOMABLE : VIEWPORT_LOCKED;
+    if(meta.getAttribute("content") === want) return;
+    meta.setAttribute("content", want);
+    if(want === VIEWPORT_LOCKED){
+      // повертаємо сторінку до 1:1, інакше вона лишиться наближеною після виходу з розкрою
+      meta.setAttribute("content", "width=device-width, initial-scale=1.0");
+      setTimeout(()=>meta.setAttribute("content", VIEWPORT_LOCKED), 0);
+    }
+  }
+
   navButtons.forEach(btn => {
     btn.addEventListener("click", () => {
       navButtons.forEach(b => b.classList.remove("active"));
@@ -3242,6 +3259,7 @@ syncState();
       views.forEach(v => v.classList.remove("active"));
       document.getElementById("view-"+btn.dataset.view).classList.add("active");
       topbarTitle.textContent = btn.dataset.title || btn.textContent.trim();
+      setViewportForView(btn.dataset.view);
     });
   });
 
