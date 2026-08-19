@@ -23,7 +23,7 @@ header("X-Robots-Tag: noindex, nofollow");
 <head>
   <meta charset="UTF-8" />
   <title>Lux Dzerkalo · Кабінет</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
   <meta name="robots" content="noindex, nofollow" />
   <link rel="apple-touch-icon" href="/kabinet/apple-touch-icon.png" />
   <link rel="icon" type="image/png" href="/kabinet/apple-touch-icon.png" />
@@ -1126,15 +1126,8 @@ body {
 .rz-sheetbox{ margin-bottom:14px; }
 .rz-sheetbox .rz-cap{ font-size:12.5px; font-weight:700; color:#e5e7eb; margin-bottom:6px; }
 .rz-sheetbox .rz-cap span{ color:#9aa3b5; font-weight:500; }
-.rz-svgwrap{ overflow:auto; -webkit-overflow-scrolling:touch; border:1px solid rgba(255,255,255,.10); }
-.rz-sheetbox svg{ width:calc(100% * var(--rz-zoom,1)); height:auto; display:block;
-  background:rgba(255,255,255,.03); border:none; border-radius:0; }
-.rz-zoombar{ display:flex; align-items:center; gap:9px; margin:10px 0 8px; flex-wrap:wrap; }
-.rz-zoom-label{ font-size:12px; color:#9aa3b5; }
-.rz-zoombar input[type=range]{ flex:1; min-width:120px; min-height:auto; accent-color:#ff7a2f; }
-.rz-zoom-btn{ width:32px; height:32px; border-radius:9px; border:1px solid rgba(255,255,255,.12);
-  background:rgba(255,255,255,.06); color:#e5e7eb; font-size:17px; font-weight:800; cursor:pointer; line-height:1; }
-.rz-zoom-val{ min-width:48px; text-align:right; font-size:12px; color:#cbd5e1; font-variant-numeric:tabular-nums; }
+.rz-sheetbox svg{ width:100%; height:auto; display:block; background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.10); border-radius:0; touch-action:pinch-zoom; }
 .rz-leftlist{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
 .rz-tag{ border-radius:8px; padding:3px 9px; font-size:11.5px; font-weight:700; font-variant-numeric:tabular-nums; }
 .rz-tag.ok{ background:rgba(34,197,94,.14); border:1px solid rgba(34,197,94,.45); color:#86efac; }
@@ -1162,8 +1155,6 @@ body {
   #rz-result-container .result-main, #rz-result-container .card-sub{ color:#000 !important; }
   .rz-sheetbox{ page-break-inside:avoid; break-inside:avoid; }
   .rz-sheetbox .rz-cap, .rz-sheetbox .rz-cap span{ color:#000 !important; }
-  .rz-zoombar{ display:none !important; }
-  .rz-svgwrap{ overflow:visible !important; border:none !important; }
   .rz-sheetbox svg{ width:100% !important; background:#fff !important; border:1px solid #000 !important; }
   svg .rz-sheet-outline{ stroke:#000 !important; fill:#fff !important; }
   svg .rz-pc{ stroke:#000 !important; stroke-width:1 !important; fill:#fff !important; }
@@ -2836,13 +2827,6 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
             </div>
           </div>
           <div id="rz-warn" class="rz-warn" style="display:none;"></div>
-          <div class="rz-zoombar no-print">
-            <span class="rz-zoom-label">Зум схеми</span>
-            <button class="rz-zoom-btn" id="rz-zoom-out" type="button">−</button>
-            <input id="rz-zoom" type="range" min="1" max="4" step="0.25" value="1">
-            <button class="rz-zoom-btn" id="rz-zoom-in" type="button">+</button>
-            <span class="rz-zoom-val" id="rz-zoom-val">100%</span>
-          </div>
           <div id="rz-sheets"></div>
         </div>
       </div>
@@ -6919,8 +6903,7 @@ return c;
       list+='</div>';
       if(!rems.length && !wastes.length) list="";
 
-      wrap.innerHTML='<div class="rz-cap">Лист '+(idx+1)+' <span>· '+sh.w+'×'+sh.h+' мм · деталей: '+s.rects.length+remTxt+'</span></div>'+
-                     '<div class="rz-svgwrap">'+svg+'</div>'+list;
+      wrap.innerHTML='<div class="rz-cap">Лист '+(idx+1)+' <span>· '+sh.w+'×'+sh.h+' мм · деталей: '+s.rects.length+remTxt+'</span></div>'+svg+list;
       box.appendChild(wrap);
     });
   }
@@ -6977,27 +6960,6 @@ return c;
     });
     rzEl("btn-calc-rz").addEventListener("click", rzDraw);
     rzEl("btn-rz-print").addEventListener("click", function(){ window.print(); });
-
-    // Зум схеми: SVG стає ширшим за контейнер, контейнер прокручується.
-    var rzZoom = rzEl("rz-zoom");
-    function rzApplyZoom(){
-      var z = parseFloat(rzZoom.value) || 1;
-      rzEl("rz-sheets").style.setProperty("--rz-zoom", z);
-      rzEl("rz-zoom-val").textContent = Math.round(z*100) + "%";
-      try{ localStorage.setItem("rz_zoom", String(z)); }catch(e){}
-    }
-    function rzNudgeZoom(d){
-      var z = Math.min(4, Math.max(1, (parseFloat(rzZoom.value)||1) + d));
-      rzZoom.value = String(z); rzApplyZoom();
-    }
-    rzZoom.addEventListener("input", rzApplyZoom);
-    rzEl("rz-zoom-in").addEventListener("click", function(){ rzNudgeZoom(0.25); });
-    rzEl("rz-zoom-out").addEventListener("click", function(){ rzNudgeZoom(-0.25); });
-    try{
-      var savedZoom = parseFloat(localStorage.getItem("rz_zoom"));
-      if(savedZoom >= 1 && savedZoom <= 4) rzZoom.value = String(savedZoom);
-    }catch(e){}
-    rzApplyZoom();
     rzEl("btn-rz-save-rem").addEventListener("click", function(){
       var all=[]; rzSheetRemnants.forEach(function(r){ all=all.concat(r); });
       if(!all.length){ alert("Придатних залишків немає — усе, що лишилось, вужче за "+RZ_USABLE_MIN+" мм."); return; }
