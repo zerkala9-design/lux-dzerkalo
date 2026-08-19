@@ -1126,8 +1126,18 @@ body {
 .rz-sheetbox{ margin-bottom:14px; }
 .rz-sheetbox .rz-cap{ font-size:12.5px; font-weight:700; color:#e5e7eb; margin-bottom:6px; }
 .rz-sheetbox .rz-cap span{ color:#9aa3b5; font-weight:500; }
-.rz-sheetbox svg{ width:100%; height:auto; display:block; background:rgba(255,255,255,.03);
-  border:1px solid rgba(255,255,255,.10); border-radius:0; touch-action:pinch-zoom; }
+/* Рамка зі своїм зумом: щипок масштабує тільки лист, сторінка лишається 1:1 */
+.rz-svgwrap{ position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.03); touch-action:pan-y; }
+.rz-svgwrap.zoomed{ touch-action:none; cursor:grab; }
+.rz-svgwrap.zoomed:active{ cursor:grabbing; }
+.rz-sheetbox svg{ width:100%; height:auto; display:block; background:none; border:none;
+  border-radius:0; transform-origin:0 0; will-change:transform; }
+.rz-zoombadge{ position:absolute; right:8px; bottom:8px; z-index:2; display:none;
+  padding:5px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.18);
+  background:rgba(0,0,0,.55); color:#e5e7eb; font-size:11.5px; font-weight:700;
+  font-variant-numeric:tabular-nums; cursor:pointer; user-select:none; }
+.rz-svgwrap.zoomed .rz-zoombadge{ display:block; }
 .rz-leftlist{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
 .rz-tag{ border-radius:8px; padding:3px 9px; font-size:11.5px; font-weight:700; font-variant-numeric:tabular-nums; }
 .rz-tag.ok{ background:rgba(34,197,94,.14); border:1px solid rgba(34,197,94,.45); color:#86efac; }
@@ -1155,7 +1165,10 @@ body {
   #rz-result-container .result-main, #rz-result-container .card-sub{ color:#000 !important; }
   .rz-sheetbox{ page-break-inside:avoid; break-inside:avoid; }
   .rz-sheetbox .rz-cap, .rz-sheetbox .rz-cap span{ color:#000 !important; }
-  .rz-sheetbox svg{ width:100% !important; background:#fff !important; border:1px solid #000 !important; }
+  .rz-svgwrap{ overflow:visible !important; border:none !important; background:none !important; }
+  .rz-zoombadge{ display:none !important; }
+  .rz-sheetbox svg{ width:100% !important; transform:none !important;
+    background:#fff !important; border:1px solid #000 !important; }
   svg .rz-sheet-outline{ stroke:#000 !important; fill:#fff !important; }
   svg .rz-pc{ stroke:#000 !important; stroke-width:1 !important; fill:#fff !important; }
   svg .rz-label{ fill:#000 !important; }
@@ -3235,23 +3248,6 @@ syncState();
   const views = document.querySelectorAll(".view");
   const topbarTitle = document.getElementById("topbar-title");
   
-  // Щипок для масштабування дозволяємо лише на «Розкрої» — там треба роздивитись схему.
-  // У решті розділів лишається як було: масштаб зафіксовано, щоб не збивалась верстка.
-  const VIEWPORT_LOCKED = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
-  const VIEWPORT_ZOOMABLE = "width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes";
-  function setViewportForView(view){
-    const meta = document.querySelector('meta[name="viewport"]');
-    if(!meta) return;
-    const want = (view === "geometry") ? VIEWPORT_ZOOMABLE : VIEWPORT_LOCKED;
-    if(meta.getAttribute("content") === want) return;
-    meta.setAttribute("content", want);
-    if(want === VIEWPORT_LOCKED){
-      // повертаємо сторінку до 1:1, інакше вона лишиться наближеною після виходу з розкрою
-      meta.setAttribute("content", "width=device-width, initial-scale=1.0");
-      setTimeout(()=>meta.setAttribute("content", VIEWPORT_LOCKED), 0);
-    }
-  }
-
   navButtons.forEach(btn => {
     btn.addEventListener("click", () => {
       navButtons.forEach(b => b.classList.remove("active"));
@@ -3259,7 +3255,6 @@ syncState();
       views.forEach(v => v.classList.remove("active"));
       document.getElementById("view-"+btn.dataset.view).classList.add("active");
       topbarTitle.textContent = btn.dataset.title || btn.textContent.trim();
-      setViewportForView(btn.dataset.view);
     });
   });
 
@@ -6921,9 +6916,123 @@ return c;
       list+='</div>';
       if(!rems.length && !wastes.length) list="";
 
-      wrap.innerHTML='<div class="rz-cap">Лист '+(idx+1)+' <span>· '+sh.w+'×'+sh.h+' мм · деталей: '+s.rects.length+remTxt+'</span></div>'+svg+list;
+      wrap.innerHTML='<div class="rz-cap">Лист '+(idx+1)+' <span>· '+sh.w+'×'+sh.h+' мм · деталей: '+s.rects.length+remTxt+'</span></div>'+
+                     '<div class="rz-svgwrap">'+svg+'<div class="rz-zoombadge">1.0× · скинути</div></div>'+list;
       box.appendChild(wrap);
+      rzBindPinch(wrap.querySelector(".rz-svgwrap"));
     });
+  }
+
+  // Щипок/колесо масштабує лише сам лист усередині рамки — сторінка не рухається.
+  function rzBindPinch(wrap){
+    if(!wrap) return;
+    var svgEl = wrap.querySelector("svg");
+    var badge = wrap.querySelector(".rz-zoombadge");
+    if(!svgEl) return;
+    var s=1, tx=0, ty=0;
+    var pts=new Map(), start=null, lastTap=0;
+    var wasPinch=false, movedFar=false, downAt=null;
+    var MINS=1, MAXS=8;
+
+    function clamp(){
+      var W=wrap.clientWidth, H=wrap.clientHeight, cw=W*s, ch=H*s;
+      tx = cw<=W ? (W-cw)/2 : Math.min(0, Math.max(W-cw, tx));
+      ty = ch<=H ? (H-ch)/2 : Math.min(0, Math.max(H-ch, ty));
+    }
+    function apply(){
+      clamp();
+      svgEl.style.transform = "translate("+tx.toFixed(2)+"px,"+ty.toFixed(2)+"px) scale("+s.toFixed(4)+")";
+      wrap.classList.toggle("zoomed", s>1.01);
+      if(badge) badge.textContent = s.toFixed(1)+"× · скинути";
+    }
+    function reset(){ s=1; tx=0; ty=0; apply(); }
+    function zoomAt(newS, cx, cy){
+      newS = Math.min(MAXS, Math.max(MINS, newS));
+      // точка під пальцем/курсором лишається на місці
+      var k = newS/s;
+      tx = cx - k*(cx-tx);
+      ty = cy - k*(cy-ty);
+      s = newS;
+      apply();
+    }
+    function local(e){
+      var r=wrap.getBoundingClientRect();
+      return {x:e.clientX-r.left, y:e.clientY-r.top};
+    }
+
+    wrap.addEventListener("pointerdown", function(e){
+      pts.set(e.pointerId, local(e));
+      if(pts.size===1){ downAt=local(e); movedFar=false; wasPinch=false; }
+      if(pts.size===2){
+        wasPinch=true;
+        var a=[...pts.values()];
+        start={ d:Math.hypot(a[0].x-a[1].x, a[0].y-a[1].y),
+                m:{x:(a[0].x+a[1].x)/2, y:(a[0].y+a[1].y)/2}, s:s, tx:tx, ty:ty };
+      } else if(pts.size===1 && s>1.01){
+        start={ pan:local(e), tx:tx, ty:ty };
+        try{ wrap.setPointerCapture(e.pointerId); }catch(err){}
+      }
+    });
+    wrap.addEventListener("pointermove", function(e){
+      if(!pts.has(e.pointerId)) return;
+      pts.set(e.pointerId, local(e));
+      if(pts.size===2 && start && start.d){
+        var a=[...pts.values()];
+        var d=Math.hypot(a[0].x-a[1].x, a[0].y-a[1].y);
+        var m={x:(a[0].x+a[1].x)/2, y:(a[0].y+a[1].y)/2};
+        var ns=Math.min(MAXS, Math.max(MINS, start.s*(d/start.d)));
+        // точка листа під центром щипка лишається під ним і їде разом із пальцями
+        s=ns;
+        tx = m.x - ns*((start.m.x-start.tx)/start.s);
+        ty = m.y - ns*((start.m.y-start.ty)/start.s);
+        apply();
+        e.preventDefault();
+      } else if(pts.size===1 && start && start.pan){
+        var p=local(e);
+        tx = start.tx + (p.x-start.pan.x);
+        ty = start.ty + (p.y-start.pan.y);
+        apply();
+        e.preventDefault();
+      }
+      if(downAt){
+        var q=local(e);
+        if(Math.hypot(q.x-downAt.x, q.y-downAt.y) > 8) movedFar=true;
+      }
+    });
+    function up(e){
+      var wasSolo = pts.size===1;
+      pts.delete(e.pointerId);
+      start = (pts.size===1 && s>1.01) ? {pan:[...pts.values()][0], tx:tx, ty:ty} : null;
+
+      // подвійний тап — туди-сюди між 1× і 2.5×. Рахуємо тільки чистий одиночний тап:
+      // зняття двох пальців після щипка не повинно скидати масштаб.
+      if(pts.size===0){
+        if(wasSolo && !wasPinch && !movedFar){
+          var t=Date.now();
+          if(t-lastTap < 300){
+            var p=local(e);
+            if(s>1.01) reset(); else zoomAt(2.5, p.x, p.y);
+            lastTap=0;
+          } else lastTap=t;
+        } else {
+          lastTap=0;
+        }
+        wasPinch=false; movedFar=false; downAt=null;
+      }
+    }
+    wrap.addEventListener("pointerup", up);
+    wrap.addEventListener("pointercancel", up);
+    if(badge) badge.addEventListener("click", function(e){ e.stopPropagation(); reset(); });
+
+    // на комп'ютері — колесо миші
+    wrap.addEventListener("wheel", function(e){
+      if(Math.abs(e.deltaY)<1) return;
+      var p=local(e);
+      zoomAt(s * (e.deltaY<0 ? 1.15 : 1/1.15), p.x, p.y);
+      e.preventDefault();
+    }, {passive:false});
+
+    apply();
   }
 
   /* --- База залишків --- */
