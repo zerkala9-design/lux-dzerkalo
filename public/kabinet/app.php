@@ -1120,6 +1120,8 @@ body {
 
 /* ===== ДОКУМЕНТИ (рахунки / накладні / КП) — у власному iframe ===== */
 .doc-card{ padding-bottom:12px; }
+.doc-open{ color:#ffb24a; text-decoration:none; font-weight:700; white-space:nowrap; }
+.doc-open:hover{ text-decoration:underline; }
 .doc-frame{ width:100%; height:calc(100vh - 210px); min-height:520px; border:1px solid rgba(255,255,255,.10);
   border-radius:12px; background:#eef2f8; display:block; margin-top:10px; }
 @media (max-width:760px){ .doc-frame{ height:calc(100vh - 190px); min-height:460px; } }
@@ -2897,7 +2899,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
     <div class="card doc-card">
       <div class="card-title-row">
         <div class="card-title">Рахунки та накладні</div>
-        <div class="card-sub">Рахунок на оплату · Видаткова накладна · Комерційна пропозиція</div>
+        <div class="card-sub"><a class="doc-open" href="docs.php" target="_blank" rel="noopener">Відкрити в новій вкладці ↗</a></div>
       </div>
       <iframe class="doc-frame" id="frame-docs" data-src="docs.php" title="Рахунки та накладні"></iframe>
     </div>
@@ -2908,7 +2910,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
     <div class="card doc-card">
       <div class="card-title-row">
         <div class="card-title">Комерційна пропозиція</div>
-        <div class="card-sub">Бланк з логотипом та реквізитами</div>
+        <div class="card-sub"><a class="doc-open" href="kp.php" target="_blank" rel="noopener">Відкрити в новій вкладці ↗</a></div>
       </div>
       <iframe class="doc-frame" id="frame-kp" data-src="kp.php" title="Комерційна пропозиція"></iframe>
     </div>
