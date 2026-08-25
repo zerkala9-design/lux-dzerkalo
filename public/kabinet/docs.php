@@ -683,7 +683,7 @@ document.addEventListener('click',e=>{
 /* ---------- doc type ---------- */
 $('seg').addEventListener('click',e=>{
   if(e.target.tagName!=='BUTTON')return;
-  if(e.target.dataset.type==='offer'){location.href='propozytsiya.html';return;} // Lux-пропозиція — окрема сторінка
+  if(e.target.dataset.type==='offer'){location.href='propozytsiya.php';return;} // Lux-пропозиція — окрема сторінка
   [...e.currentTarget.children].forEach(b=>b.classList.toggle('active',b===e.target));
   docType=e.target.dataset.type;render();
 });

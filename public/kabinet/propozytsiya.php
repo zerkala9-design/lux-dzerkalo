@@ -150,7 +150,7 @@ header("X-Robots-Tag: noindex, nofollow");
 <body>
 <div class="wrap">
   <div class="noprint">
-    <a class="back" href="index.html">← До рахунків та накладних</a>
+    <a class="back" href="docs.php">← До рахунків та накладних</a>
     <h1>Комерційна пропозиція <span style="color:var(--gold)">Lux Dzerkalo</span></h1>
     <p class="lead">Заповніть форму — пропозиція формується нижче. «Завантажити PDF» зберігає файл; дані зберігаються у вашому браузері.</p>
 

@@ -290,6 +290,9 @@ body {
       box-shadow: 0 0 10px rgba(255, 140, 66, 0.8);
       opacity: 1;
     }
+    /* пункт-посилання: відкривається в новій вкладці, тому ніколи не «активний» */
+    a.nav-ext { text-decoration: none; cursor: pointer; }
+    .nav-ext-mark { margin-left: auto; opacity: .45; font-size: 11px; }
 
     .sidebar-footer {
       padding: 8px 14px;
@@ -1117,14 +1120,6 @@ body {
   .pano-opt-svg{height:260px}
 }
 
-
-/* ===== ДОКУМЕНТИ (рахунки / накладні / КП) — у власному iframe ===== */
-.doc-card{ padding-bottom:12px; }
-.doc-open{ color:#ffb24a; text-decoration:none; font-weight:700; white-space:nowrap; }
-.doc-open:hover{ text-decoration:underline; }
-.doc-frame{ width:100%; height:calc(100vh - 210px); min-height:520px; border:1px solid rgba(255,255,255,.10);
-  border-radius:12px; background:#eef2f8; display:block; margin-top:10px; }
-@media (max-width:760px){ .doc-frame{ height:calc(100vh - 190px); min-height:460px; } }
 
 /* ===== РОЗКРІЙ ДЗЕРКАЛ ===== */
 #view-geometry .grid-two{ grid-template-columns: 1fr !important; }
@@ -2379,12 +2374,9 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
       <button class="nav-btn" data-view="orders" data-title="Замовлення">
         <span class="nav-btn-dot"></span> Замовлення
       </button>
-      <button class="nav-btn" data-view="docs" data-title="Рахунки та накладні">
-        <span class="nav-btn-dot"></span> Рахунки та накладні
-      </button>
-      <button class="nav-btn" data-view="kp" data-title="Комерційна пропозиція">
-        <span class="nav-btn-dot"></span> Комерційна пропозиція
-      </button>
+      <a class="nav-btn nav-ext" href="docs.php" target="_blank" rel="noopener">
+        <span class="nav-btn-dot"></span> Рахунки та накладні <span class="nav-ext-mark">↗</span>
+      </a>
 
       <div class="nav-group-title">Аналітика</div>
       <button class="nav-btn" data-view="analytics" data-title="Аналітика">
@@ -2892,30 +2884,6 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
     </div>
   </div>
 
-  <!-- VIEW: РАХУНКИ ТА НАКЛАДНІ -->
-  <!-- Окремі документи у власному iframe: у них свої глобальні стилі (body, input, .btn),
-       які інакше поламали б верстку кабінету. -->
-  <div class="view" id="view-docs">
-    <div class="card doc-card">
-      <div class="card-title-row">
-        <div class="card-title">Рахунки та накладні</div>
-        <div class="card-sub"><a class="doc-open" href="docs.php" target="_blank" rel="noopener">Відкрити в новій вкладці ↗</a></div>
-      </div>
-      <iframe class="doc-frame" id="frame-docs" data-src="docs.php" title="Рахунки та накладні"></iframe>
-    </div>
-  </div>
-
-  <!-- VIEW: КОМЕРЦІЙНА ПРОПОЗИЦІЯ -->
-  <div class="view" id="view-kp">
-    <div class="card doc-card">
-      <div class="card-title-row">
-        <div class="card-title">Комерційна пропозиція</div>
-        <div class="card-sub"><a class="doc-open" href="kp.php" target="_blank" rel="noopener">Відкрити в новій вкладці ↗</a></div>
-      </div>
-      <iframe class="doc-frame" id="frame-kp" data-src="kp.php" title="Комерційна пропозиція"></iframe>
-    </div>
-  </div>
-
   <!-- VIEW: ANALYTICS -->
   <div class="view" id="view-analytics">
     <div class="card">
@@ -3288,15 +3256,13 @@ syncState();
   
   navButtons.forEach(btn => {
     btn.addEventListener("click", () => {
+      // пункти-посилання (відкриваються в новій вкладці) не перемикають розділ
+      if(!btn.dataset.view) return;
       navButtons.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       views.forEach(v => v.classList.remove("active"));
       document.getElementById("view-"+btn.dataset.view).classList.add("active");
       topbarTitle.textContent = btn.dataset.title || btn.textContent.trim();
-      // Документи важкі (з вбудованим PDF-движком), тож вантажимо їх лише при першому відкритті.
-      document.querySelectorAll("#view-"+btn.dataset.view+" iframe[data-src]").forEach(f=>{
-        if(!f.getAttribute("src")) f.setAttribute("src", f.dataset.src);
-      });
     });
   });
 
