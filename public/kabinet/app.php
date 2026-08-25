@@ -1118,6 +1118,12 @@ body {
 }
 
 
+/* ===== ДОКУМЕНТИ (рахунки / накладні / КП) — у власному iframe ===== */
+.doc-card{ padding-bottom:12px; }
+.doc-frame{ width:100%; height:calc(100vh - 210px); min-height:520px; border:1px solid rgba(255,255,255,.10);
+  border-radius:12px; background:#eef2f8; display:block; margin-top:10px; }
+@media (max-width:760px){ .doc-frame{ height:calc(100vh - 190px); min-height:460px; } }
+
 /* ===== РОЗКРІЙ ДЗЕРКАЛ ===== */
 #view-geometry .grid-two{ grid-template-columns: 1fr !important; }
 .rz-chk{ display:flex; align-items:center; gap:9px; font-size:13px; color:#e5e7eb; cursor:pointer; }
@@ -2371,6 +2377,12 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
       <button class="nav-btn" data-view="orders" data-title="Замовлення">
         <span class="nav-btn-dot"></span> Замовлення
       </button>
+      <button class="nav-btn" data-view="docs" data-title="Рахунки та накладні">
+        <span class="nav-btn-dot"></span> Рахунки та накладні
+      </button>
+      <button class="nav-btn" data-view="kp" data-title="Комерційна пропозиція">
+        <span class="nav-btn-dot"></span> Комерційна пропозиція
+      </button>
 
       <div class="nav-group-title">Аналітика</div>
       <button class="nav-btn" data-view="analytics" data-title="Аналітика">
@@ -2878,6 +2890,30 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
     </div>
   </div>
 
+  <!-- VIEW: РАХУНКИ ТА НАКЛАДНІ -->
+  <!-- Окремі документи у власному iframe: у них свої глобальні стилі (body, input, .btn),
+       які інакше поламали б верстку кабінету. -->
+  <div class="view" id="view-docs">
+    <div class="card doc-card">
+      <div class="card-title-row">
+        <div class="card-title">Рахунки та накладні</div>
+        <div class="card-sub">Рахунок на оплату · Видаткова накладна · Комерційна пропозиція</div>
+      </div>
+      <iframe class="doc-frame" id="frame-docs" data-src="docs.php" title="Рахунки та накладні"></iframe>
+    </div>
+  </div>
+
+  <!-- VIEW: КОМЕРЦІЙНА ПРОПОЗИЦІЯ -->
+  <div class="view" id="view-kp">
+    <div class="card doc-card">
+      <div class="card-title-row">
+        <div class="card-title">Комерційна пропозиція</div>
+        <div class="card-sub">Бланк з логотипом та реквізитами</div>
+      </div>
+      <iframe class="doc-frame" id="frame-kp" data-src="kp.php" title="Комерційна пропозиція"></iframe>
+    </div>
+  </div>
+
   <!-- VIEW: ANALYTICS -->
   <div class="view" id="view-analytics">
     <div class="card">
@@ -3255,6 +3291,10 @@ syncState();
       views.forEach(v => v.classList.remove("active"));
       document.getElementById("view-"+btn.dataset.view).classList.add("active");
       topbarTitle.textContent = btn.dataset.title || btn.textContent.trim();
+      // Документи важкі (з вбудованим PDF-движком), тож вантажимо їх лише при першому відкритті.
+      document.querySelectorAll("#view-"+btn.dataset.view+" iframe[data-src]").forEach(f=>{
+        if(!f.getAttribute("src")) f.setAttribute("src", f.dataset.src);
+      });
     });
   });
 
