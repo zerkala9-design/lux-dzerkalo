@@ -813,6 +813,7 @@ async function downloadPDF(){
   const paper=document.querySelector('.paper');
   if(!window.html2canvas||!window.jspdf){alert('Бібліотеки PDF не завантажились. Файли html2canvas.min.js та jspdf.umd.min.js мають лежати поруч з index.html.');return;}
   btn.disabled=true;btn.textContent='Формую PDF…';
+  try{ window.__fitOff && window.__fitOff(); }catch(e){}
   const prevW=paper.style.width;
   paper.style.width='794px';                     // фіксована ширина A4 → стабільний PDF
   try{
@@ -836,6 +837,7 @@ async function downloadPDF(){
     pdf.save(docFileName()+'.pdf');
   }catch(e){alert('Не вдалося сформувати PDF: '+e.message);}
   paper.style.width=prevW;
+  try{ window.__fitOn && window.__fitOn(); }catch(e){}
   btn.disabled=false;btn.textContent=lbl;
 }
 $('download').onclick=downloadPDF;
@@ -947,6 +949,52 @@ $('docDate').value=new Date().toISOString().slice(0,10);
 loadSup();
 render();
 renderArchive();
+
+/* ---- Мобільний перегляд ----------------------------------------------------
+   Аркуш має фіксовану ширину A4 (794px). На вузькому екрані замість того, щоб
+   ламати верстку, показуємо його цілком — пропорційно зменшеним. Так перегляд
+   виглядає точно як майбутній PDF. На друк і на час формування PDF масштаб
+   знімаємо, інакше він потрапив би у файл.                                    */
+(function(){
+  var A4 = 794;
+  var wrap  = document.querySelector('.docwrap');
+  var paper = document.querySelector('.paper');
+  if(!wrap || !paper) return;
+  var on = false;
+
+  function reset(){
+    paper.style.transform = '';
+    paper.style.transformOrigin = '';
+    paper.style.width = '';
+    wrap.style.height = '';
+    wrap.style.overflow = '';
+    on = false;
+  }
+  function fit(){
+    reset();
+    var avail = wrap.clientWidth;
+    if(avail >= A4) return;                  // на широкому екрані нічого не міняємо
+    var k = avail / A4;
+    paper.style.width = A4 + 'px';
+    paper.style.transformOrigin = 'top left';
+    paper.style.transform = 'scale(' + k + ')';
+    wrap.style.height = Math.ceil(paper.offsetHeight * k) + 'px';
+    wrap.style.overflow = 'hidden';
+    on = true;
+  }
+  // під час друку / формування PDF масштаб має бути знятий
+  window.__fitOff = function(){ if(on) reset(); };
+  window.__fitOn  = fit;
+
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function(){ setTimeout(fit, 150); });
+  window.addEventListener('beforeprint', function(){ reset(); });
+  window.addEventListener('afterprint',  function(){ setTimeout(fit, 50); });
+  // перегляд перемальовується на кожну зміну в формі
+  new MutationObserver(function(){ if(!on) { fit(); return; } clearTimeout(fit._t); fit._t = setTimeout(fit, 30); })
+    .observe(paper, {childList:true, subtree:true, characterData:true});
+  fit();
+})();
 </script>
 </body>
 </html>
