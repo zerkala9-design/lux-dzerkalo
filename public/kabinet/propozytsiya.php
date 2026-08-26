@@ -141,9 +141,9 @@ header("X-Robots-Tag: noindex, nofollow");
     .noprint{display:none!important}
     .wrap{max-width:none;padding:0;margin:0}
     .docwrap{margin:0;max-width:none}
-    .paper{border:none;box-shadow:none;border-radius:0;padding:0;aspect-ratio:auto;width:auto;min-height:0}
+    .paper{border:none;box-shadow:none;border-radius:0;padding:12mm;aspect-ratio:auto;width:auto;min-height:0}
     .kp{break-inside:avoid}
-    @page{size:A4;margin:12mm}
+    @page{size:A4;margin:0}
   }
 </style>
 </head>

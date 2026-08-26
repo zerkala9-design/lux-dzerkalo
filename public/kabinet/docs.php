@@ -136,9 +136,9 @@ header("X-Robots-Tag: noindex, nofollow");
     .wrap{max-width:none;padding:0;margin:0}
     .docwrap{margin:0;max-width:none}
     .doc-h{display:none}
-    .paper{border:none;box-shadow:none;border-radius:0;padding:0;aspect-ratio:auto;width:auto;min-height:0}
+    .paper{border:none;box-shadow:none;border-radius:0;padding:14mm;aspect-ratio:auto;width:auto;min-height:0}
     .doc{break-inside:avoid}
-    @page{size:A4;margin:14mm}
+    @page{size:A4;margin:0}
   }
 </style>
 </head>
@@ -920,7 +920,12 @@ const DEFAULT_SUPPLIER=`ФОП Бричков Мерабі Русланович
 p/p UA503220010000026009310087225
 Банк АТ "УНІВЕРСАЛ БАНК", МФО 322001,
 код за ДРФО 3092914339,
+тел 0995283637
+Вадима гетьмана 27
 Не є платником податку на прибуток на загальних підставах`;
+/* Реквізити оновлено — один раз скидаємо старий збережений варіант,
+   інакше він і далі перекривав би нові дані. */
+try{ if(localStorage.getItem('supplier_v')!=='2'){ localStorage.removeItem('supplier'); localStorage.setItem('supplier_v','2'); } }catch(e){}
 $('saveSup').onclick=()=>{localStorage.setItem('supplier',$('supplier').value);flash($('saveSup'),'✓ Збережено');};
 function loadSup(){
   const v=localStorage.getItem('supplier');
