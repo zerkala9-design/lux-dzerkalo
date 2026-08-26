@@ -913,8 +913,19 @@ $('archiveList').addEventListener('click',async e=>{
 });
 
 /* ---------- persistence ---------- */
+/* Постачальник у нас завжди той самий, тож поле заповнене одразу.
+   Якщо колись збережеш свій варіант кнопкою нижче — підтягнеться він. */
+const DEFAULT_SUPPLIER=`ФОП Бричков Мерабі Русланович
+тел.: 099 5283637,
+p/p UA503220010000026009310087225
+Банк АТ "УНІВЕРСАЛ БАНК", МФО 322001,
+код за ДРФО 3092914339,
+Не є платником податку на прибуток на загальних підставах`;
 $('saveSup').onclick=()=>{localStorage.setItem('supplier',$('supplier').value);flash($('saveSup'),'✓ Збережено');};
-function loadSup(){const v=localStorage.getItem('supplier');if(v)$('supplier').value=v;}
+function loadSup(){
+  const v=localStorage.getItem('supplier');
+  $('supplier').value=(v&&v.trim())?v:DEFAULT_SUPPLIER;
+}
 function flash(b,t){const o=b.textContent;b.textContent=t;setTimeout(()=>b.textContent=o,1400);}
 
 $('clear').onclick=()=>{
