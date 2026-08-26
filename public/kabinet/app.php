@@ -2421,6 +2421,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
         <button class="shape-tab" data-shape="ellipse">Овал</button>
         <button class="shape-tab" data-shape="diamond">Ромб</button>
       </div>
+      <div id="max-size-note" style="display:none;color:#fca5a5;font-size:12.5px;margin:8px 0 0;line-height:1.4;"></div>
 
       <div class="grid-two">
         <!-- LEFT FORM -->
@@ -3722,8 +3723,41 @@ function updateShapePreview() {
     }
   }
 
+  // Максимальний розмір одного дзеркала — лист 1800×3100 мм.
+  // Деталь влазить, якщо коротша сторона ≤ 1800, а довша ≤ 3100.
+  const MAX_MIN=1800, MAX_MAX=3100;
+  function fitsSheet(w,h){ w=+w||0; h=+h||0; if(w<=0||h<=0) return true; return Math.min(w,h)<=MAX_MIN+1e-6 && Math.max(w,h)<=MAX_MAX+1e-6; }
+  function checkMaxSizes(){
+    const bad=[];
+    document.querySelectorAll("#rect-items .rect-item-row").forEach(r=>{
+      const wi=r.querySelector(".rect-w"), hi=r.querySelector(".rect-h");
+      const ok=fitsSheet(wi&&wi.value, hi&&hi.value);
+      [wi,hi].forEach(i=>{ if(i) i.style.borderColor = ok?"":"#ef4444"; });
+      if(!ok) bad.push(Math.round(+wi.value)+"×"+Math.round(+hi.value));
+    });
+    const ea=document.getElementById("ellipse_a"), eb=document.getElementById("ellipse_b");
+    if(ea&&eb&&currentShape==="ellipse"){
+      const ok=fitsSheet(ea.value, eb.value);
+      [ea,eb].forEach(i=>{ i.style.borderColor = ok?"":"#ef4444"; });
+      if(!ok) bad.push(Math.round(+ea.value)+"×"+Math.round(+eb.value));
+    }
+    const cd=document.getElementById("circle_diameter");
+    if(cd&&currentShape==="circle"){
+      const d=+cd.value||0, ok=(d<=0)||(d<=MAX_MAX+1e-6);
+      cd.style.borderColor = ok?"":"#ef4444";
+      if(!ok) bad.push("Ø"+Math.round(d));
+    }
+    const note=document.getElementById("max-size-note");
+    if(note){
+      if(bad.length){ note.style.display="block"; note.textContent="⚠️ Більше за макс. лист 1800×3100 мм: "+bad.join(", ")+" мм"; }
+      else note.style.display="none";
+    }
+    return bad.length===0;
+  }
+
   function calculate() {
     syncState();
+    try{ checkMaxSizes(); }catch(e){}
     if(currentShape==="diamond"){ try{ computeRomb(); }catch(e){} return; }   // ромб = лише дані ЧПУ
     const qty = currentShape==="rect" ? (getRectItems().reduce((sum,it)=> sum + ((safeFloat(it.w,0)>0 && safeFloat(it.h,0)>0) ? (it.q||0) : 0), 0)) :
                 currentShape==="circle" ? safeInt(document.getElementById("circle_qty").value, 1) :

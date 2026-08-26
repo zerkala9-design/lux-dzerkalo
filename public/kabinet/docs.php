@@ -962,6 +962,22 @@ UA483052990000026008046223448
 /* ---------- init ---------- */
 $('docDate').value=new Date().toISOString().slice(0,10);
 loadSup();
+/* Дані, передані з комерційної пропозиції («Створити рахунок») */
+(function(){
+  let raw; try{ raw=localStorage.getItem('lux_kp_to_invoice'); }catch(e){}
+  if(!raw) return;
+  try{ localStorage.removeItem('lux_kp_to_invoice'); }catch(e){}
+  let d; try{ d=JSON.parse(raw); }catch(e){ return; }
+  if(!d) return;
+  // режим «Рахунок на оплату»
+  docType='invoice';
+  [...$('seg').children].forEach(b=>b.classList.toggle('active', b.dataset.type==='invoice'));
+  if(d.buyer) $('recipient').value=d.buyer;
+  if(d.items && d.items.length){
+    $('items').innerHTML='';
+    d.items.forEach(it=>$('items').appendChild(makeRow(it.name||'', it.unit||'шт', it.qty!=null?String(it.qty):'1', it.price!=null?String(it.price):'0')));
+  }
+})();
 render();
 renderArchive();
 

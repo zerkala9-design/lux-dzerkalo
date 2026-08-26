@@ -110,7 +110,7 @@ header("X-Robots-Tag: noindex, nofollow");
   .kp-supplier .sn{font-weight:700;color:#1c1c1c;font-size:13.5px}
   .kp-supplier .lnk{color:var(--gold);font-weight:700}
   .kp-rule{height:2px;background:var(--gold);margin:14px 0 6px;border-radius:2px}
-  .kp-title{text-align:center;font-size:30px;font-weight:800;letter-spacing:3px;margin:14px 0 4px;color:#1c1c1c}
+  .kp-title{text-align:center;font-size:22px;font-weight:800;letter-spacing:2px;margin:12px 0 4px;color:#1c1c1c}
   .kp-sub{text-align:center;color:#444;font-size:14px;margin-bottom:14px}
   .kp-buyer{margin:8px 0}
   .kp-fill{display:inline-block;border-bottom:1px solid #333;min-width:62%}
@@ -213,6 +213,7 @@ header("X-Robots-Tag: noindex, nofollow");
       <button class="btn btn-blue" id="download">⬇ Завантажити PDF</button>
       <div class="actions">
         <button class="btn btn-ghost" id="print">🖨 Друкувати</button>
+        <button class="btn btn-ghost" id="toInvoice">🧾 Створити рахунок</button>
         <button class="btn btn-ghost" id="archiveBtn">🗄 Зберегти в архів</button>
         <button class="btn btn-ghost" id="saveComp">💾 Запамʼятати реквізити</button>
         <button class="btn btn-ghost" id="demo">Приклад</button>
@@ -828,6 +829,20 @@ function collectDoc(){
   DOC_KEYS.forEach(k=>o[k]=$(k).value); return o;
 }
 $('archiveBtn').onclick=()=>{const a=getArchive();a.unshift(collectDoc());setArchive(a);renderArchive();flash($('archiveBtn'),'✓ Додано в архів');};
+/* Створити рахунок із цієї пропозиції: передаємо покупця й позиції у генератор рахунків. */
+$('toInvoice').onclick=()=>{
+  const payload={
+    buyer:$('buyer').value.trim(),
+    items:[...$('items').rows].map(tr=>({
+      name:tr.querySelector('.i-name').value,
+      qty:tr.querySelector('.i-qty').value,
+      unit:tr.querySelector('.i-unit').value,
+      price:tr.querySelector('.i-price').value
+    })).filter(it=>(it.name||'').trim()||num(it.price))
+  };
+  try{ localStorage.setItem('lux_kp_to_invoice', JSON.stringify(payload)); }catch(e){}
+  location.href='docs.php';
+};
 function loadEntry(id){
   const d=getArchive().find(x=>x.id===id);if(!d)return;
   DOC_KEYS.forEach(k=>$(k).value=d[k]||'');
