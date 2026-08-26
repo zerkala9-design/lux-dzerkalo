@@ -106,27 +106,27 @@ header("X-Robots-Tag: noindex, nofollow");
   .docwrap{margin:28px auto 0;max-width:794px}          /* A4 ширина @96dpi */
   .doc-h{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
   .paper{background:#fff;border:1px solid var(--line);border-radius:6px;padding:41px 44px;
-         color:#000;font-size:17px;box-shadow:0 4px 24px rgba(30,50,90,.08);
+         color:#000;font-size:14px;box-shadow:0 4px 24px rgba(30,50,90,.08);
          aspect-ratio:210/297}                          /* форма аркуша A4, поля ~11мм */
   .doc .hdr{width:100%;border-collapse:collapse;margin-bottom:2px}
-  .doc .hdr td{vertical-align:top;padding:0 0 3px;font-size:17px}
+  .doc .hdr td{vertical-align:top;padding:0 0 3px;font-size:14px}
   .doc .hdr td.lbl{font-weight:700;white-space:nowrap;width:160px;padding-right:12px}
   .doc .hdr td.val{white-space:pre-wrap;line-height:1.45}
-  .doc .title{text-align:center;font-size:25px;font-weight:700;margin:26px 0 16px}
+  .doc .title{text-align:center;font-size:19px;font-weight:700;margin:14px 0 10px}
   .doc table.dt{width:100%;border-collapse:collapse;margin:8px 0}
   .doc table.dt th,.doc table.dt td{border:1px solid #000;padding:6px 7px;vertical-align:middle}
-  .doc table.dt th{font-weight:700;text-align:center;background:#fff;font-size:13px}
-  .doc table.dt td{font-size:17px}
+  .doc table.dt th{font-weight:700;text-align:center;background:#eceff3;font-size:12px}
+  .doc table.dt td{font-size:14px}
   .doc table.dt td.n{text-align:center;white-space:nowrap}   /* цифри по центру колонок */
   .doc table.dt td.c{text-align:center}
   /* підсумки в тій самій таблиці — колонки рівно під колонкою «Сума» */
   .doc table.dt td.tl{border:none;text-align:right;font-weight:700;white-space:nowrap}
   .doc table.dt td.tv{text-align:center;white-space:nowrap}
-  .doc .sumw{margin:14px 0 2px;font-size:17px}
+  .doc .sumw{margin:12px 0 2px;font-size:14px}
   .doc .sumw .w{font-weight:700}
-  .doc .vat{font-size:17px;margin-bottom:6px}
-  .doc .extra{white-space:pre-wrap;margin:10px 0;font-size:17px}
-  .doc .signs{margin-top:46px;font-size:17px}
+  .doc .vat{font-size:14px;margin-bottom:6px}
+  .doc .extra{white-space:pre-wrap;margin:10px 0;font-size:14px}
+  .doc .signs{margin-top:40px;font-size:14px}
   .doc .signs.two{display:flex;justify-content:space-between;gap:30px}
   .doc .signs.one{padding-left:45%}
 
@@ -920,12 +920,11 @@ const DEFAULT_SUPPLIER=`ФОП Бричков Мерабі Русланович
 p/p UA503220010000026009310087225
 Банк АТ "УНІВЕРСАЛ БАНК", МФО 322001,
 код за ДРФО 3092914339,
-тел 0995283637
-Вадима гетьмана 27
+Київ вул. Вадима Гетьмана 27
 Не є платником податку на прибуток на загальних підставах`;
 /* Реквізити оновлено — один раз скидаємо старий збережений варіант,
    інакше він і далі перекривав би нові дані. */
-try{ if(localStorage.getItem('supplier_v')!=='2'){ localStorage.removeItem('supplier'); localStorage.setItem('supplier_v','2'); } }catch(e){}
+try{ if(localStorage.getItem('supplier_v')!=='3'){ localStorage.removeItem('supplier'); localStorage.setItem('supplier_v','3'); } }catch(e){}
 $('saveSup').onclick=()=>{localStorage.setItem('supplier',$('supplier').value);flash($('saveSup'),'✓ Збережено');};
 function loadSup(){
   const v=localStorage.getItem('supplier');
