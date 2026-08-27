@@ -67,6 +67,20 @@ header("X-Robots-Tag: noindex, nofollow");
   .itab input{padding:10px;border-radius:8px}
   .itab .num input{text-align:center}
   .itab td.sum{text-align:center;font-weight:600;white-space:nowrap;color:#333}
+  @media(max-width:600px){
+    .itab{table-layout:fixed}
+    .itab th,.itab td{padding:6px 3px;overflow:hidden}
+    .itab input{padding:8px 4px;font-size:13px}
+    .itab th:nth-child(1),.itab td:nth-child(1){width:4% !important}
+    .itab th:nth-child(2),.itab td:nth-child(2){width:34% !important}
+    .itab th:nth-child(3),.itab td:nth-child(3){width:13% !important;font-size:11px}
+    .itab th:nth-child(4),.itab td:nth-child(4){width:14% !important;font-size:11px}
+    .itab th:nth-child(5),.itab td:nth-child(5){width:15% !important;font-size:11px}
+    .itab th:nth-child(6),.itab td:nth-child(6){width:12% !important;font-size:11px}
+    .itab th:nth-child(7),.itab td:nth-child(7){width:8% !important}
+    .itab td.sum{font-size:12px}
+    .del{width:26px !important;height:26px !important;font-size:12px !important}
+  }
   .del{width:38px;height:38px;border:none;border-radius:50%;background:var(--danger);color:#fff;font-size:16px;cursor:pointer;line-height:1}
   .del:hover{opacity:.9}
   .idx{color:var(--muted);text-align:center;width:30px}
@@ -681,7 +695,7 @@ function makeRow(name='',unit='шт',qty='1',price='0'){
 function esc(s){return String(s).replace(/"/g,'&quot;').replace(/</g,'&lt;')}
 function escT(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 
-$('items').appendChild(makeRow('Товар / послуга','шт','1','0'));
+$('items').appendChild(makeRow('','шт','1','0'));
 $('addRow').onclick=()=>{$('items').appendChild(makeRow());render();};
 document.addEventListener('input',e=>{if(e.target.closest('.form'))render();});
 document.addEventListener('click',e=>{
@@ -965,7 +979,7 @@ $('clear').onclick=()=>{
   currentEditId=null;
   $('docNo').value=nextNoFor(docType);
   $('recipient').value='';$('extra').value='';
-  $('items').innerHTML='';$('items').appendChild(makeRow('Товар / послуга','шт','1','0'));
+  $('items').innerHTML='';$('items').appendChild(makeRow('','шт','1','0'));
   render();
 };
 

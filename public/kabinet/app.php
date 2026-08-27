@@ -3785,21 +3785,28 @@ function updateShapePreview() {
     const edge = document.querySelector('input[name="edge_type"]:checked').value;
     const facet = safeInt(document.querySelector('input[name="facet_size"]:checked').value);
     
+    // Обробка кромки й фацет дорожчають на 20%, якщо в деталі є сторона > 2550 мм.
+    const BIG_SIDE_MM = 2550, BIG_SIDE_SURCHARGE = 0.20;
     let area=0, perim=0, width=0, height=0;
+    let normPerim=0, surPerim=0; // periмetr без надбавки / periмetr, що йде з надбавкою 20%
     if(currentShape==="rect") {
       const items = getRectItems();
-      let totalA = 0, totalP = 0;
+      let totalA = 0, totalP = 0, totalNorm = 0, totalSur = 0;
       // use first item for preview dimensions
       const first = items[0] || {w:0,h:0,q:0};
       items.forEach(it=>{
-        const w = (safeFloat(it.w,0))/1000;
-        const h = (safeFloat(it.h,0))/1000;
+        const wMm = safeFloat(it.w,0), hMm = safeFloat(it.h,0);
+        const w = wMm/1000;
+        const h = hMm/1000;
         const q = safeInt(it.q,0);
         totalA += (w*h) * q;
-        totalP += (2*(w+h)) * q;
+        const pOne = (2*(w+h)) * q;
+        totalP += pOne;
+        if(wMm>BIG_SIDE_MM || hMm>BIG_SIDE_MM) totalSur += pOne; else totalNorm += pOne;
       });
       area = totalA;
       perim = totalP;
+      normPerim = totalNorm; surPerim = totalSur;
       width = safeFloat(first.w,0);
       height = safeFloat(first.h,0);
       { const _ai = document.getElementById("area-info");
@@ -3808,6 +3815,7 @@ function updateShapePreview() {
       const d=safeFloat(document.getElementById("circle_diameter").value)/1000;
       area=d*d; perim=Math.PI*d;   // площа = описаний квадрат (як рахуємо ціну круга)
       width = height = d * 1000;
+      if(width>BIG_SIDE_MM) surPerim=perim; else normPerim=perim;
       document.getElementById("circle-area-info").textContent = `Площа: ${area.toFixed(3)} м² | Довжина: ${perim.toFixed(3)} м`;
     } else if(currentShape==="ellipse") {
       const a=safeFloat(document.getElementById("ellipse_a").value)/1000;
@@ -3816,6 +3824,7 @@ function updateShapePreview() {
       area = a*b;
       perim = Math.PI*(3*(a+b)-Math.sqrt((3*a+b)*(a+3*b)))/2;
       width = a*1000; height = b*1000;
+      if(width>BIG_SIDE_MM || height>BIG_SIDE_MM) surPerim=perim; else normPerim=perim;
       { const _ei=document.getElementById("ellipse-area-info"); if(_ei) _ei.textContent = `Площа: ${area.toFixed(3)} м² | Периметр: ~${perim.toFixed(3)} м`; }
     } else if(currentShape==="diamond") {
       const d1=safeFloat(document.getElementById("diamond_d1").value)/1000;
@@ -3907,7 +3916,9 @@ function updateShapePreview() {
       glassCost = roundSquareArea * glassPriceM2 * (1 + roundCutPct/100);
     }
 
-    const baseCost = glassCost + (perim * prPriceM) + (perim * facetPriceM) + holesCost + filmCost + ledCost + profileCost + mountsCost;
+    const prCost = normPerim*prPriceM + surPerim*prPriceM*(1+BIG_SIDE_SURCHARGE);
+    const facetCost = normPerim*facetPriceM + surPerim*facetPriceM*(1+BIG_SIDE_SURCHARGE);
+    const baseCost = glassCost + prCost + facetCost + holesCost + filmCost + ledCost + profileCost + mountsCost;
 
     let complexCost = 0;
     if(document.getElementById("has_complexity").checked) {
@@ -3918,7 +3929,7 @@ function updateShapePreview() {
     const subTotal = baseCost + complexCost + sensorCost;
     
     const discP = safeFloat(document.getElementById("discount_percent").value);
-    const discVal = subTotal * (discP/100);
+    const discVal = glassCost * (discP/100); // знижка діє лише на ціну самого дзеркала (скла), а не на обробку/фацет/опції
     const priceOne = subTotal - discVal;
 
     let delCost=0, instCost=0;
@@ -4005,13 +4016,16 @@ let idx = 1;
         }else{
           dDetailed.push(`⚠️ Колір не вибрано`);
         }
+    const itemSur = (wMm>BIG_SIDE_MM || hMm>BIG_SIDE_MM);
+        const itemMult = itemSur ? (1+BIG_SIDE_SURCHARGE) : 1;
+        const itemNote = itemSur ? ` (+${(BIG_SIDE_SURCHARGE*100).toFixed(0)}% — є сторона > ${BIG_SIDE_MM}мм)` : "";
     if(prPriceM) {
-          const pr = p * prPriceM;
-          dDetailed.push(`Полірування: ${p.toFixed(3)}м × ${prPriceM.toFixed(0)} = ${pr.toFixed(2)} грн`);
+          const pr = p * prPriceM * itemMult;
+          dDetailed.push(`Полірування: ${p.toFixed(3)}м × ${prPriceM.toFixed(0)}${itemNote} = ${pr.toFixed(2)} грн`);
         }
     if(facetPriceM) {
-          const ft = p * facetPriceM;
-          dDetailed.push(`Фацет ${facet}мм: ${p.toFixed(3)}м × ${facetPriceM.toFixed(0)} = ${ft.toFixed(2)} грн`);
+          const ft = p * facetPriceM * itemMult;
+          dDetailed.push(`Фацет ${facet}мм: ${p.toFixed(3)}м × ${facetPriceM.toFixed(0)}${itemNote} = ${ft.toFixed(2)} грн`);
         }
         if(hasFilm){
           const film = a * priceState.price_film_m2;
@@ -4044,13 +4058,12 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
       }
     }
 
+    const bigSideNote = surPerim>1e-6 ? ` (+${(BIG_SIDE_SURCHARGE*100).toFixed(0)}% — є сторона > ${BIG_SIDE_MM}мм)` : "";
     if(prPriceM) {
-      const prTotal = perim * prPriceM;
-      dDetailed.push(`Полірування: ${perim.toFixed(3)}м × ${prPriceM.toFixed(0)} = ${prTotal.toFixed(2)} грн`);
+      dDetailed.push(`Полірування: ${perim.toFixed(3)}м × ${prPriceM.toFixed(0)}${bigSideNote} = ${prCost.toFixed(2)} грн`);
     }
     if(facetPriceM) {
-      const facetTotal = perim * facetPriceM;
-      dDetailed.push(`Фацет ${facet}мм: ${perim.toFixed(3)}м × ${facetPriceM.toFixed(0)} = ${facetTotal.toFixed(2)} грн`);
+      dDetailed.push(`Фацет ${facet}мм: ${perim.toFixed(3)}м × ${facetPriceM.toFixed(0)}${bigSideNote} = ${facetCost.toFixed(2)} грн`);
     }
     if(holesCost) dDetailed.push(`Отвори: ${holesCost.toFixed(2)} грн`);
     if(currentShape!=="rect" && hasFilm) dDetailed.push(`Плівка безпеки: ${area.toFixed(3)}м² × ${priceState.price_film_m2.toFixed(0)} = ${filmCost.toFixed(2)} грн`);
@@ -4080,14 +4093,8 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
       dSimple.push("⚠️ Колір не вибрано");
     }
 
-    if(prPriceM) {
-      const prTotal = perim * prPriceM;
-      dSimple.push(`Полірування: ${prTotal.toFixed(0)} грн`);
-    }
-    if(facetPriceM) {
-      const facetTotal = perim * facetPriceM;
-      dSimple.push(`Фацет ${facet}мм: ${facetTotal.toFixed(0)} грн`);
-    }
+    if(prPriceM) dSimple.push(`Полірування: ${prCost.toFixed(0)} грн`);
+    if(facetPriceM) dSimple.push(`Фацет ${facet}мм: ${facetCost.toFixed(0)} грн`);
     if(holesCost) dSimple.push(`Отвори: ${holesCost.toFixed(0)} грн`);
     if(hasFilm) dSimple.push(`Плівка безпеки: ${filmCost.toFixed(0)} грн`);
     if(hasProfile) dSimple.push(`Алюмінієвий профіль: ${profileCost.toFixed(0)} грн`);
@@ -4137,9 +4144,12 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
             const perimUnit = 2*(w+h);         // м за 1 шт
 
             // базові компоненти (за 1 шт)
+            const itemSur = (it.wMm>BIG_SIDE_MM || it.hMm>BIG_SIDE_MM);
+            const itemMult = itemSur ? (1+BIG_SIDE_SURCHARGE) : 1;
+            const itemNote = itemSur ? ` (+${(BIG_SIDE_SURCHARGE*100).toFixed(0)}% — є сторона > ${BIG_SIDE_MM}мм)` : "";
             const glassUnit = mirrorColor ? (areaUnit * glassPriceM2) : 0;
-            const prUnit = prPriceM ? (perimUnit * prPriceM) : 0;
-            const facetUnit = facetPriceM ? (perimUnit * facetPriceM) : 0;
+            const prUnit = prPriceM ? (perimUnit * prPriceM * itemMult) : 0;
+            const facetUnit = facetPriceM ? (perimUnit * facetPriceM * itemMult) : 0;
             const filmUnit = hasFilm ? (areaUnit * (priceState?.price_film_m2 || 0)) : 0;
             const profUnit = hasProf ? (perimUnit * (priceState?.price_profile_m || 0)) : 0;
 
@@ -4155,8 +4165,8 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
 	            }
 
 	            const processing = [];
-	            if(prPriceM) processing.push(`Полірування: ${(perimUnit*it.q).toFixed(3)} м × ${prPriceM.toFixed(0)} = ${(prUnit*it.q).toFixed(2)} грн`);
-	            if(facetPriceM) processing.push(`Фацет ${facet}мм: ${(perimUnit*it.q).toFixed(3)} м × ${facetPriceM.toFixed(0)} = ${(facetUnit*it.q).toFixed(2)} грн`);
+	            if(prPriceM) processing.push(`Полірування: ${(perimUnit*it.q).toFixed(3)} м × ${prPriceM.toFixed(0)}${itemNote} = ${(prUnit*it.q).toFixed(2)} грн`);
+	            if(facetPriceM) processing.push(`Фацет ${facet}мм: ${(perimUnit*it.q).toFixed(3)} м × ${facetPriceM.toFixed(0)}${itemNote} = ${(facetUnit*it.q).toFixed(2)} грн`);
 	            if(hasFilm) processing.push(`Плівка безпеки: ${(areaUnit*it.q).toFixed(3)} м² × ${(priceState?.price_film_m2||0).toFixed(0)} = ${(filmUnit*it.q).toFixed(2)} грн`);
 	            if(hasProf) processing.push(`Алюмінієвий профіль: ${(perimUnit*it.q).toFixed(3)} м × ${(priceState?.price_profile_m||0).toFixed(0)} = ${(profUnit*it.q).toFixed(2)} грн`);
 	            d.push(`2. Обробка: ${processing.length ? processing.join("; ") : "0.00 грн"}`);
@@ -4181,8 +4191,8 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
 	          } else {
 	            d.push(`⚠️ Колір не вибрано`);
 	          }
-	          if(prPriceM) d.push(`Поліровка (${perim.toFixed(3)} пог.м × ${prPriceM.toFixed(0)}): ${(perim*prPriceM).toFixed(2)} грн`);
-	          if(facetPriceM) d.push(`Фацет ${facet}мм: ${(perim*facetPriceM).toFixed(2)} грн`);
+	          if(prPriceM) d.push(`Поліровка (${perim.toFixed(3)} пог.м × ${prPriceM.toFixed(0)}${bigSideNote}): ${prCost.toFixed(2)} грн`);
+	          if(facetPriceM) d.push(`Фацет ${facet}мм: ${facetCost.toFixed(2)} грн`);
 	          if(holesCost) d.push(`Отвори: ${holesCost.toFixed(2)} грн`);
 	          platesBreakdownLines.forEach(function(l){ d.push(l); });
 	          if(hasFilm) d.push(`Плівка безпеки: ${filmCost.toFixed(2)} грн`);
