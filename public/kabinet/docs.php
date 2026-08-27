@@ -35,6 +35,8 @@ header("X-Robots-Tag: noindex, nofollow");
   .wrap{max-width:1000px;margin:0 auto;padding:22px 18px 60px}
   h1{font-size:22px;margin:0 0 4px}
   .lead{color:var(--muted);font-size:14px;margin:0 0 18px}
+  a.back{display:inline-block;margin-bottom:14px;color:var(--blue);text-decoration:none;font-weight:600;font-size:14px}
+  a.back:hover{text-decoration:underline}
   .seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;margin-bottom:18px}
   .seg button{border:none;background:#fff;padding:11px 22px;font-size:15px;font-weight:600;cursor:pointer;color:var(--muted)}
   .seg button.active{background:var(--blue);color:#fff}
@@ -145,6 +147,7 @@ header("X-Robots-Tag: noindex, nofollow");
 <body>
 <div class="wrap">
   <div class="noprint">
+    <a class="back" href="app.php">← До калькулятора</a>
     <h1>Генератор рахунків та видаткових накладних</h1>
     <p class="lead">Заповніть форму — документ формується нижче. Кнопка «Створити» відкриває друк / збереження в PDF. Реквізити зберігаються у вашому браузері.</p>
 
@@ -653,6 +656,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 <script>
 const $=id=>document.getElementById(id);
 let docType='invoice';
+let currentEditId=null; // id архівного запису, який зараз редагується (щоб повторне збереження не плодило копії)
+
+/* ---------- наскрізна нумерація (рахунки й накладні рахуються окремо, старт №64) ---------- */
+const NO_KEY='lux_doc_no';
+function getCounters(){ try{ return JSON.parse(localStorage.getItem(NO_KEY))||{}; }catch(e){ return {}; } }
+function setCounters(o){ try{ localStorage.setItem(NO_KEY, JSON.stringify(o)); }catch(e){} }
+function nextNoFor(type){ const c=getCounters(); return (type in c) ? c[type] : 64; }
+function bumpNoFor(type){ const c=getCounters(); c[type]=nextNoFor(type)+1; setCounters(c); }
 
 /* ---------- items ---------- */
 function makeRow(name='',unit='шт',qty='1',price='0'){
@@ -685,7 +696,10 @@ $('seg').addEventListener('click',e=>{
   if(e.target.tagName!=='BUTTON')return;
   if(e.target.dataset.type==='offer'){location.href='propozytsiya.php';return;} // Lux-пропозиція — окрема сторінка
   [...e.currentTarget.children].forEach(b=>b.classList.toggle('active',b===e.target));
-  docType=e.target.dataset.type;render();
+  docType=e.target.dataset.type;
+  currentEditId=null;
+  $('docNo').value=nextNoFor(docType);
+  render();
 });
 
 /* ---------- helpers ---------- */
@@ -809,6 +823,7 @@ $('print').onclick=printDoc;
 /* ---------- download PDF (offline, html2canvas + jsPDF) ---------- */
 async function downloadPDF(){
   render();
+  try{ saveToArchive(); }catch(e){} // документ завантажують — вважаємо оформленим, зберігаємо в архів
   const btn=$('download'),lbl=btn.textContent;
   const paper=document.querySelector('.paper');
   if(!window.html2canvas||!window.jspdf){alert('Бібліотеки PDF не завантажились. Файли html2canvas.min.js та jspdf.umd.min.js мають лежати поруч з index.html.');return;}
@@ -848,7 +863,7 @@ function setArchive(a){localStorage.setItem('archive',JSON.stringify(a));}
 
 function collectDoc(){
   return {
-    id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+    id: currentEditId || (Date.now().toString(36)+Math.random().toString(36).slice(2,6)),
     type:docType, no:$('docNo').value, date:$('docDate').value,
     supplier:$('supplier').value, recipient:$('recipient').value,
     payer:$('payer').value, currency:$('currency').value, extra:$('extra').value,
@@ -858,13 +873,26 @@ function collectDoc(){
     total:calc().total, savedAt:Date.now()
   };
 }
-$('archiveBtn').onclick=()=>{
-  const a=getArchive(); a.unshift(collectDoc()); setArchive(a);
-  renderArchive(); flash($('archiveBtn'),'✓ Додано в архів');
-};
+// Зберігає поточний документ в архів. Якщо це вже архівний запис (відкритий
+// «Відкрити» або щойно збережений) — оновлює його на місці, а не плодить копію.
+// Номер наступного документа цього типу зсувається лише коли запис справді новий.
+function saveToArchive(){
+  const a=getArchive();
+  const doc=collectDoc();
+  const idx=a.findIndex(x=>x.id===doc.id);
+  const isNew = idx<0;
+  if(isNew) a.unshift(doc); else a[idx]=doc;
+  setArchive(a);
+  if(isNew && (docType==='invoice'||docType==='waybill')) bumpNoFor(docType);
+  currentEditId=doc.id;
+  renderArchive();
+  return doc;
+}
+$('archiveBtn').onclick=()=>{ saveToArchive(); flash($('archiveBtn'),'✓ Збережено в архів'); };
 
 function loadEntry(id){
   const d=getArchive().find(x=>x.id===id); if(!d)return;
+  currentEditId=d.id;
   docType=d.type;
   [...$('seg').children].forEach(b=>b.classList.toggle('active',b.dataset.type===docType));
   $('docNo').value=d.no||''; $('docDate').value=d.date||'';
@@ -934,6 +962,8 @@ function flash(b,t){const o=b.textContent;b.textContent=t;setTimeout(()=>b.textC
 
 $('clear').onclick=()=>{
   if(!confirm('Очистити поля (крім збереженого постачальника)?'))return;
+  currentEditId=null;
+  $('docNo').value=nextNoFor(docType);
   $('recipient').value='';$('extra').value='';
   $('items').innerHTML='';$('items').appendChild(makeRow('Товар / послуга','шт','1','0'));
   render();
@@ -961,6 +991,7 @@ UA483052990000026008046223448
 
 /* ---------- init ---------- */
 $('docDate').value=new Date().toISOString().slice(0,10);
+$('docNo').value=nextNoFor(docType);
 loadSup();
 /* Дані, передані з комерційної пропозиції («Створити рахунок») */
 (function(){

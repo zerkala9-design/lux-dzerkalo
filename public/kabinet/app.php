@@ -3725,31 +3725,48 @@ function updateShapePreview() {
 
   // Максимальний розмір одного дзеркала — лист 1800×3100 мм.
   // Деталь влазить, якщо коротша сторона ≤ 1800, а довша ≤ 3100.
+  // Значення понад це вводити не можна — поле саме зрізається до максимуму, який
+  // ще лишає пару валідною (враховуючи вже вписане число в другому полі).
   const MAX_MIN=1800, MAX_MAX=3100;
   function fitsSheet(w,h){ w=+w||0; h=+h||0; if(w<=0||h<=0) return true; return Math.min(w,h)<=MAX_MIN+1e-6 && Math.max(w,h)<=MAX_MAX+1e-6; }
+  // Якщо друге поле пари вже > 1800 (тобто воно — «довга» сторона), це поле
+  // може бути щонайбільше 1800. Інакше (друге поле ще в межах короткої сторони
+  // або порожнє) — це поле може бути аж до 3100.
+  function pairMaxFor(otherVal){ const o=+otherVal||0; return (o>MAX_MIN) ? MAX_MIN : MAX_MAX; }
+  function clampPairInput(input, otherInput){
+    if(!input) return;
+    const cap=pairMaxFor(otherInput&&otherInput.value);
+    const v=+input.value||0;
+    if(v>cap+1e-6) input.value=String(cap);
+  }
   function checkMaxSizes(){
     const bad=[];
     document.querySelectorAll("#rect-items .rect-item-row").forEach(r=>{
       const wi=r.querySelector(".rect-w"), hi=r.querySelector(".rect-h");
-      const ok=fitsSheet(wi&&wi.value, hi&&hi.value);
-      [wi,hi].forEach(i=>{ if(i) i.style.borderColor = ok?"":"#ef4444"; });
+      if(!wi||!hi) return;
+      // спершу зрізаємо те, що вийшло за межу пари, потім лишається лише позначити межовий випадок кольором
+      clampPairInput(wi,hi); clampPairInput(hi,wi);
+      const ok=fitsSheet(wi.value, hi.value);
+      [wi,hi].forEach(i=>{ i.style.borderColor = ok?"":"#ef4444"; });
       if(!ok) bad.push(Math.round(+wi.value)+"×"+Math.round(+hi.value));
     });
     const ea=document.getElementById("ellipse_a"), eb=document.getElementById("ellipse_b");
     if(ea&&eb&&currentShape==="ellipse"){
+      clampPairInput(ea,eb); clampPairInput(eb,ea);
       const ok=fitsSheet(ea.value, eb.value);
       [ea,eb].forEach(i=>{ i.style.borderColor = ok?"":"#ef4444"; });
       if(!ok) bad.push(Math.round(+ea.value)+"×"+Math.round(+eb.value));
     }
     const cd=document.getElementById("circle_diameter");
     if(cd&&currentShape==="circle"){
-      const d=+cd.value||0, ok=(d<=0)||(d<=MAX_MAX+1e-6);
-      cd.style.borderColor = ok?"":"#ef4444";
-      if(!ok) bad.push("Ø"+Math.round(d));
+      // діаметр — це і коротка, і довга сторона одночасно, тож межа завжди 1800
+      let d=+cd.value||0;
+      if(d>MAX_MIN+1e-6){ d=MAX_MIN; cd.value=String(d); }
+      cd.style.borderColor="";
     }
     const note=document.getElementById("max-size-note");
     if(note){
-      if(bad.length){ note.style.display="block"; note.textContent="⚠️ Більше за макс. лист 1800×3100 мм: "+bad.join(", ")+" мм"; }
+      if(bad.length){ note.style.display="block"; note.textContent="⚠️ Максимум для одного дзеркала — лист 1800×3100 мм: "+bad.join(", ")+" мм"; }
       else note.style.display="none";
     }
     return bad.length===0;
