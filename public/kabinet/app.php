@@ -4175,6 +4175,7 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
 	            if(idx===0){ platesBreakdownLines.forEach(function(l){ d.push(l); }); }
 	          });
 
+	          if(discP) d.push(`Знижка ${discP}%: -${discVal.toFixed(2)} грн`);
 	          d.push(`3. Монтаж: ${instCost.toFixed(2)} грн`);
 	          d.push(`4. Доставка: ${delCost.toFixed(2)} грн`);
 	          if(liftCost) d.push(`5. Підйом на ${floorNum} поверх (${qty} дзерк. × ${floorNum} × ${liftPerFloor}): ${liftCost.toFixed(2)} грн`);
