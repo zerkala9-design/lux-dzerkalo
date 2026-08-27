@@ -649,6 +649,17 @@ body {
       margin-bottom: 2px;
     }
 
+    .preview-actions {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      gap: 6px;
+      z-index: 10;
+    }
+    .preview-actions .screenshot-btn {
+      position: static;
+    }
     .screenshot-btn {
       position: absolute;
       top: 12px;
@@ -2663,8 +2674,11 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 
         <!-- RIGHT RESULT -->
         <div class="preview-box" id="calc-preview-box">
-          <button class="screenshot-btn" id="btn-calc-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">Відправити</button>
-          
+          <div class="preview-actions">
+            <button class="screenshot-btn" id="btn-calc-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">Відправити</button>
+            <button class="screenshot-btn" id="btn-calc-to-kp" title="Додати цей розрахунок у комерційну пропозицію">У КП</button>
+          </div>
+
           <div class="mirror-preview-row">
             <div class="mirror-shape" id="mirror-shape" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;padding:8px 6px;">
               <div id="mirror-sizes" style="display:inline-block;color:#fff;font-weight:800;font-size:14px;line-height:1.6;white-space:nowrap;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.95),0 0 3px rgba(0,0,0,.85);">—</div>
@@ -4448,9 +4462,9 @@ document.querySelectorAll(".calc-input").forEach(i => {
 	  function takeScreenshot(elementId, filename) {
 	    const el = document.getElementById(elementId);
 	    if(!el || typeof html2canvas !== "function") return;
-	    const btn = el.querySelector(".screenshot-btn");
+	    const btn = el.querySelector(".preview-actions") || el.querySelector(".screenshot-btn");
     const detailsEl = document.getElementById("details");
-    
+
     // Hide button
     if(btn) btn.style.display = "none";
     
@@ -4486,7 +4500,7 @@ document.querySelectorAll(".calc-input").forEach(i => {
     // Take screenshot
 	    html2canvas(el, { backgroundColor: "#0f172a", scale: 2 }).then(canvas => {
 	      // Restore everything
-	      if(btn) btn.style.display = "block";
+	      if(btn) btn.style.display = "";
 	      if(detailsEl && originalHTML) {
         detailsEl.innerHTML = originalHTML;
         detailsEl.style.fontSize = originalFontSize;
@@ -4502,6 +4516,16 @@ document.querySelectorAll(".calc-input").forEach(i => {
 	  }
   
   document.getElementById("btn-calc-screenshot").addEventListener("click", () => takeScreenshot("calc-preview-box", "calc_result"));
+  document.getElementById("btn-calc-to-kp").addEventListener("click", () => {
+    const colorLabel = document.querySelector(".color-btn.active")?.textContent?.trim() || "";
+    const sizes = (document.getElementById("mirror-sizes")?.innerText || "").split("\n").map(s=>s.trim()).filter(Boolean).join("; ");
+    const priceText = document.getElementById("total_price")?.textContent || "0";
+    const price = parseFloat(priceText.replace(/[^\d.,]/g,"").replace(",",".")) || 0;
+    const name = ["Дзеркало", colorLabel, sizes].filter(Boolean).join(" ").trim() || "Дзеркало";
+    const payload = { items: [{ name, unit:"шт", qty:1, price }] };
+    try{ localStorage.setItem("lux_calc_to_kp", JSON.stringify(payload)); }catch(e){}
+    location.href = "propozytsiya.php";
+  });
   document.getElementById("btn-wall-screenshot").addEventListener("click", () => takeScreenshot("wall-result-container", "wall_result"));
   document.getElementById("btn-pano-screenshot")?.addEventListener("click", () => takeScreenshot("pano-result-container", "pano_result"));
 

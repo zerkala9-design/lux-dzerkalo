@@ -706,6 +706,15 @@ function makeRow(o={}){
   return tr;
 }
 $('items').appendChild(makeRow({name:'Товар / послуга'}));
+(function(){
+  let raw; try{ raw=localStorage.getItem('lux_calc_to_kp'); }catch(e){}
+  if(!raw) return;
+  try{ localStorage.removeItem('lux_calc_to_kp'); }catch(e){}
+  let d; try{ d=JSON.parse(raw); }catch(e){ return; }
+  if(!d || !d.items || !d.items.length) return;
+  $('items').innerHTML='';
+  d.items.forEach(it=>$('items').appendChild(makeRow(it)));
+})();
 $('addRow').onclick=()=>{$('items').appendChild(makeRow());render();};
 document.addEventListener('input',e=>{if(e.target.closest('.form'))render();});
 document.addEventListener('click',e=>{if(e.target.classList.contains('del')){if($('items').rows.length>1)e.target.closest('tr').remove();render();}});
