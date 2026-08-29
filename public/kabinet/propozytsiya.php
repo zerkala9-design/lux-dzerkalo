@@ -126,6 +126,8 @@ header("X-Robots-Tag: noindex, nofollow");
   .kp-tab td.sum{text-align:right;font-weight:700;white-space:nowrap}
   .kp-total{text-align:right;margin:14px 0 2px;font-size:14px}
   .kp-total .amt{color:var(--gold);font-weight:800;font-size:18px;margin-left:6px}
+  .kp-total.kp-disc{margin:0 0 2px;font-size:12px;color:#555}
+  .kp-total.kp-disc .amt.disc{color:#c0392b;font-weight:700;font-size:14px;margin-left:6px}
   .kp-novat{text-align:right;font-size:11px;color:#666;margin-bottom:10px}
   .kp-words{margin:10px 0;font-size:12px}
   .kp-words i{font-style:italic}
@@ -755,8 +757,15 @@ function render(){
 
   const sub = dText($('date').value) || '«__» ____ ____ р.';
 
-  const rowsHtml=c.rows.map(r=>`<tr>
-    <td class="num">${r.i}</td><td class="nm">${escT(r.name)}</td>
+  // Знижка не йде рядком у таблиці товарів — показуємо її окремо, під сумою.
+  const DISCOUNT_RE = /^знижка/i;
+  const itemRows = c.rows.filter(r => !DISCOUNT_RE.test((r.name||'').trim()));
+  const discountRows = c.rows.filter(r => DISCOUNT_RE.test((r.name||'').trim()));
+  const discountTotal = discountRows.reduce((s,r)=>s+r.sum, 0);
+  const discountLabel = discountRows.length===1 ? discountRows[0].name : 'Знижка';
+
+  const rowsHtml=itemRows.map((r,idx)=>`<tr>
+    <td class="num">${idx+1}</td><td class="nm">${escT(r.name)}</td>
     <td class="c">${qtyStr(r.qty)}</td><td class="c">${escT(r.unit)}</td>
     <td class="price">${money(r.price)}</td><td class="sum">${money(r.sum)}</td></tr>`).join('');
 
@@ -782,6 +791,7 @@ function render(){
         <thead><tr><th>№</th><th class="nm">Найменування товару / послуги</th><th>К-сть</th><th>Од.</th><th>Ціна, грн</th><th>Сума, грн</th></tr></thead>
         <tbody>${rowsHtml}</tbody>
       </table>
+      ${discountRows.length ? `<div class="kp-total kp-disc"><b>${escT(discountLabel)}:</b><span class="amt disc">${money(discountTotal)} грн</span></div>` : ''}
       <div class="kp-total"><b>Разом до сплати:</b><span class="amt">${money(c.total)} грн</span></div>
       <div class="kp-novat">Ціни вказані в гривнях, <b>без ПДВ</b> (ФОП не є платником ПДВ).</div>
       <div class="kp-words"><b>Сума прописом:</b> <i>${amountWords(c.total)}.</i></div>
