@@ -2772,8 +2772,11 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 
         <!-- RIGHT RESULT -->
         <div id="wall-result-container" class="preview-box">
-           <button class="screenshot-btn" id="btn-wall-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">Відправити</button>
-           
+           <div class="preview-actions">
+             <button class="screenshot-btn" id="btn-wall-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">Відправити</button>
+             <button class="screenshot-btn" id="btn-wall-to-kp" title="Додати цей розрахунок у комерційну пропозицію">У КП</button>
+           </div>
+
            <div class="card-title-row">
              <div class="result-main" id="wall-total-price">0 ₴</div>
            </div>
@@ -4118,7 +4121,6 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     if(sensorCost) dSimple.push(`Сенсор: ${sensorCost.toFixed(0)} грн`);
     
     dSimple.push("");
-    dSimple.push(`Ціна 1 шт: ${priceOne.toFixed(0)} грн`);
     if(discP) dSimple.push(`Знижка ${discP}%: -${discVal.toFixed(0)} грн`);
     if(instCost) dSimple.push(`Монтаж: ${instCost.toFixed(0)} грн`);
     if(delCost) dSimple.push(`Доставка: ${delCost.toFixed(0)} грн`);
@@ -4527,6 +4529,16 @@ document.querySelectorAll(".calc-input").forEach(i => {
     location.href = "propozytsiya.php";
   });
   document.getElementById("btn-wall-screenshot").addEventListener("click", () => takeScreenshot("wall-result-container", "wall_result"));
+  document.getElementById("btn-wall-to-kp").addEventListener("click", () => {
+    const priceText = document.getElementById("wall-total-price")?.textContent || "0";
+    const price = parseFloat(priceText.replace(/[^\d.,]/g,"").replace(",",".")) || 0;
+    const w = document.getElementById("wall_width")?.value || "";
+    const h = document.getElementById("wall_height")?.value || "";
+    const name = `Дзеркальна стіна ${w}×${h} мм`;
+    const payload = { items: [{ name, unit:"шт", qty:1, price }] };
+    try{ localStorage.setItem("lux_calc_to_kp", JSON.stringify(payload)); }catch(e){}
+    location.href = "propozytsiya.php";
+  });
   document.getElementById("btn-pano-screenshot")?.addEventListener("click", () => takeScreenshot("pano-result-container", "pano_result"));
 
   /* ===== GYM CALCULATOR (WALL SPLIT) ===== */
