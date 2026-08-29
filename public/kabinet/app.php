@@ -4531,11 +4531,16 @@ document.querySelectorAll(".calc-input").forEach(i => {
   document.getElementById("btn-wall-screenshot").addEventListener("click", () => takeScreenshot("wall-result-container", "wall_result"));
   document.getElementById("btn-wall-to-kp").addEventListener("click", () => {
     const priceText = document.getElementById("wall-total-price")?.textContent || "0";
-    const price = parseFloat(priceText.replace(/[^\d.,]/g,"").replace(",",".")) || 0;
-    const w = document.getElementById("wall_width")?.value || "";
-    const h = document.getElementById("wall_height")?.value || "";
-    const name = `Дзеркальна стіна ${w}×${h} мм`;
-    const payload = { items: [{ name, unit:"шт", qty:1, price }] };
+    const total = parseFloat(priceText.replace(/[^\d.,]/g,"").replace(",",".")) || 0;
+    const W = safeInt(document.getElementById("wall_width")?.value);
+    const H = safeInt(document.getElementById("wall_height")?.value);
+    const maxW = safeInt(document.getElementById("max_sheet_w")?.value);
+    const cols = (W>0 && maxW>0) ? Math.ceil(W / maxW) : 1;
+    const sheetW = cols>0 ? W / cols : W;
+    const sheetH = H;
+    const name = `Дзеркало ${Math.round(sheetH)}×${Math.round(sheetW)} мм`;
+    const price = Number(((cols>0 ? total/cols : total)).toFixed(2));
+    const payload = { items: [{ name, unit:"шт", qty:cols, price }] };
     try{ localStorage.setItem("lux_calc_to_kp", JSON.stringify(payload)); }catch(e){}
     location.href = "propozytsiya.php";
   });
