@@ -4207,6 +4207,7 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
 	            if(hasFilm) processing.push(`Плівка безпеки: ${(areaUnit*it.q).toFixed(3)} м² × ${(priceState?.price_film_m2||0).toFixed(0)} = ${(filmUnit*it.q).toFixed(2)} грн`);
 	            if(hasProf) processing.push(`Алюмінієвий профіль: ${(perimUnit*it.q).toFixed(3)} м × ${(priceState?.price_profile_m||0).toFixed(0)} = ${(profUnit*it.q).toFixed(2)} грн`);
 	            d.push(`2. Обробка: ${processing.length ? processing.join("; ") : "0.00 грн"}`);
+	            d.push(`Ціна за шт: ${unitTotal.toFixed(2)} грн`);
 
 	            if(idx===0){ try{ var _hr=(typeof getHoleRows==="function"?getHoleRows():[]).filter(function(h){return h.q>0&&h.d>0;}); if(_hr.length&&holesCost){ d.push("Отвори ("+_hr.map(function(h){return "Ø"+h.d+"×"+h.q;}).join(", ")+"): "+holesCost.toFixed(2)+" грн"); } }catch(e){} }
 	            if(idx===0){ platesBreakdownLines.forEach(function(l){ d.push(l); }); }
