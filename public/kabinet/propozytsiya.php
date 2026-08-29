@@ -125,9 +125,9 @@ header("X-Robots-Tag: noindex, nofollow");
   .kp-tab td.price{text-align:right;white-space:nowrap}
   .kp-tab td.sum{text-align:right;font-weight:700;white-space:nowrap}
   .kp-total{text-align:right;margin:14px 0 2px;font-size:14px}
-  .kp-total .amt{color:var(--gold);font-weight:800;font-size:18px;margin-left:6px}
-  .kp-total.kp-disc{margin:0 0 2px;font-size:12px;color:#555}
-  .kp-total.kp-disc .amt.disc{color:#c0392b;font-weight:700;font-size:14px;margin-left:6px}
+  .kp-total .amt{color:#1c1c1c;font-weight:800;font-size:18px;margin-left:6px}
+  .kp-total.kp-disc{margin:0 0 2px;font-size:13px;color:#555}
+  .kp-total.kp-disc .amt.disc{color:#1c1c1c;font-weight:700;font-size:16px;margin-left:6px}
   .kp-novat{text-align:right;font-size:11px;color:#666;margin-bottom:10px}
   .kp-words{margin:10px 0;font-size:12px}
   .kp-words i{font-style:italic}
