@@ -4118,7 +4118,8 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
         const prUnit = prPriceM ? perimUnit*prPriceM*itemMult : 0;
         const facetUnit = facetPriceM ? perimUnit*facetPriceM*itemMult : 0;
         const itemTotal = (glassUnit + prUnit + facetUnit) * it.q;
-        dSimple.push(`${it.wMm}×${it.hMm} мм — ${it.q} шт: ${itemTotal.toFixed(0)} грн`);
+        dSimple.push(`${it.wMm}-${it.hMm}-${it.q}шт`);
+        dSimple.push(`Ціна за шт ${Math.round(itemTotal / it.q)}грн`);
       });
     } else if(mirrorColor) {
       dSimple.push(`Дзеркало ${mirrorColor} ${thickness}мм: ${glassCost.toFixed(0)} грн`);
@@ -4141,7 +4142,7 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     if(liftCost) dSimple.push(`Підйом на ${floorNum} поверх (${qty} дзерк.): ${liftCost.toFixed(0)} грн`);
     if(pointsProfileCost) dSimple.push(`Точкові зверху + профіль знизу: ${pointsProfileCost.toFixed(0)} грн`);
     platesBreakdownLines.forEach(l=>dSimple.push(l));
-    dSimple.push(`РАЗОМ (${qty} шт): ${total.toFixed(0)} грн`);
+    dSimple.push(`Все разом ціна: ${total.toFixed(0)}грн`);
 
     document.getElementById("details").setAttribute("data-simple", dSimple.join("<br>"));
   
