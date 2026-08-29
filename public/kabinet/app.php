@@ -4106,7 +4106,8 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     let dSimple = [];
     if(mirrorColor){
       const edgeLabel = edge === "PR" ? "Полірування" : (edge === "None" ? "Без обробки" : edge);
-      dSimple.push(`Дзеркало ${mirrorColor} ${thickness}мм, обробка краю: ${edgeLabel}`);
+      dSimple.push(`Дзеркало ${mirrorColor} ${thickness}мм`);
+      dSimple.push(`Обробка краю: ${edgeLabel}`);
     } else {
       dSimple.push("⚠️ Колір не вибрано");
     }
