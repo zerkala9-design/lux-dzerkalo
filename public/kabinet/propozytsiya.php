@@ -95,7 +95,7 @@ header("X-Robots-Tag: noindex, nofollow");
   .docwrap{margin:28px auto 0;max-width:794px}
   .doc-h{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
   .paper{background:#fff;border:1px solid var(--line);border-radius:6px;padding:40px 44px;
-         color:#1c1c1c;font-size:14px;box-shadow:0 4px 24px rgba(30,50,90,.08);aspect-ratio:210/297}
+         color:#1c1c1c;font-size:12px;box-shadow:0 4px 24px rgba(30,50,90,.08);aspect-ratio:210/297}
 
   .kp-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
   .kp-logo{display:flex;align-items:center;gap:12px}
@@ -106,33 +106,33 @@ header("X-Robots-Tag: noindex, nofollow");
   .ld-word .wm .lux{color:var(--gold)}
   .ld-word .wm .dz{color:var(--dark)}
   .ld-tag{font-size:9px;letter-spacing:2px;color:#8a8a8a;margin-top:3px}
-  .kp-supplier{text-align:right;font-size:12.5px;line-height:1.55;color:#333}
-  .kp-supplier .sn{font-weight:700;color:#1c1c1c;font-size:13.5px}
+  .kp-supplier{text-align:right;font-size:11px;line-height:1.55;color:#333}
+  .kp-supplier .sn{font-weight:700;color:#1c1c1c;font-size:12px}
   .kp-supplier .lnk{color:var(--gold);font-weight:700}
   .kp-rule{height:2px;background:var(--gold);margin:14px 0 6px;border-radius:2px}
-  .kp-title{text-align:center;font-size:22px;font-weight:800;letter-spacing:2px;margin:12px 0 4px;color:#1c1c1c}
-  .kp-sub{text-align:center;color:#444;font-size:14px;margin-bottom:14px}
+  .kp-title{text-align:center;font-size:17px;font-weight:800;letter-spacing:1.5px;margin:8px 0 3px;color:#1c1c1c}
+  .kp-sub{text-align:center;color:#444;font-size:12px;margin-bottom:14px}
   .kp-buyer{margin:8px 0}
   .kp-fill{display:inline-block;border-bottom:1px solid #333;min-width:62%}
-  .kp-supp{margin:6px 0 12px;font-size:13.5px;line-height:1.5}
+  .kp-supp{margin:6px 0 12px;font-size:12px;line-height:1.5}
   .kp-tab{width:100%;border-collapse:collapse;margin:6px 0}
-  .kp-tab th{background:var(--dark);color:#fff;font-weight:700;font-size:12.5px;padding:9px 10px;text-align:center;border:1px solid var(--dark);white-space:nowrap}
+  .kp-tab th{background:var(--dark);color:#fff;font-weight:700;font-size:11px;padding:9px 10px;text-align:center;border:1px solid var(--dark);white-space:nowrap}
   .kp-tab th.nm{text-align:left}
-  .kp-tab td{border:1px solid #d7d7d7;padding:8px 10px;font-size:14px;vertical-align:middle}
+  .kp-tab td{border:1px solid #d7d7d7;padding:8px 10px;font-size:12px;vertical-align:middle}
   .kp-tab td.nm{text-align:left}
   .kp-tab td.c{text-align:center}
   .kp-tab td.num{text-align:center;color:#555;width:34px}
   .kp-tab td.price{text-align:right;white-space:nowrap}
   .kp-tab td.sum{text-align:right;font-weight:700;white-space:nowrap}
-  .kp-total{text-align:right;margin:14px 0 2px;font-size:16px}
-  .kp-total .amt{color:var(--gold);font-weight:800;font-size:21px;margin-left:6px}
-  .kp-novat{text-align:right;font-size:12px;color:#666;margin-bottom:10px}
-  .kp-words{margin:10px 0;font-size:14px}
+  .kp-total{text-align:right;margin:14px 0 2px;font-size:14px}
+  .kp-total .amt{color:var(--gold);font-weight:800;font-size:18px;margin-left:6px}
+  .kp-novat{text-align:right;font-size:11px;color:#666;margin-bottom:10px}
+  .kp-words{margin:10px 0;font-size:12px}
   .kp-words i{font-style:italic}
-  .kp-cond{margin:10px 0;font-size:13.5px;line-height:1.5}
-  .kp-valid{margin:8px 0 2px;font-size:12.5px;color:#777}
-  .kp-note{font-size:12px;color:#888;font-style:italic;margin-bottom:6px}
-  .kp-foot{margin-top:18px;padding-top:10px;border-top:1px solid #e2e2e2;font-size:13px;color:#333}
+  .kp-cond{margin:10px 0;font-size:12px;line-height:1.5}
+  .kp-valid{margin:8px 0 2px;font-size:11px;color:#777}
+  .kp-note{font-size:11px;color:#888;font-style:italic;margin-bottom:6px}
+  .kp-foot{margin-top:18px;padding-top:10px;border-top:1px solid #e2e2e2;font-size:12px;color:#333}
   .kp-foot b{color:#1c1c1c}
   .kp-foot .lnk{color:var(--gold);font-weight:700}
 
