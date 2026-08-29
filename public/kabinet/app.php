@@ -3590,6 +3590,7 @@ syncState();
   /* ===== CALCULATOR LOGIC ===== */
   let currentShape = "rect";
   let mirrorColor = null;
+  let lastKpItems = [];
 
   document.querySelectorAll(".shape-tab").forEach(t => {
     t.addEventListener("click", () => {
@@ -4151,6 +4152,42 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     dSimple.push(`Все разом ціна: ${total.toFixed(0)}грн`);
 
     document.getElementById("details").setAttribute("data-simple", dSimple.join("<br>"));
+
+    // Line items for "У КП" — one row per size for rect (so the offer table matches the calc), one row overall for other shapes
+    lastKpItems = [];
+    if(currentShape === "rect") {
+      const kpSizeItems = getRectItems()
+        .map(it=>({wMm:safeFloat(it.w,0), hMm:safeFloat(it.h,0), q:safeInt(it.q,0)}))
+        .filter(it=> it.wMm>0 && it.hMm>0 && it.q>0);
+      kpSizeItems.forEach(it=>{
+        const w = it.wMm/1000, h = it.hMm/1000;
+        const areaUnit = w*h, perimUnit = 2*(w+h);
+        const itemMult = (it.wMm>BIG_SIDE_MM || it.hMm>BIG_SIDE_MM) ? (1+BIG_SIDE_SURCHARGE) : 1;
+        const glassUnit = mirrorColor ? areaUnit*glassPriceM2 : 0;
+        const prUnit = prPriceM ? perimUnit*prPriceM*itemMult : 0;
+        const facetUnit = facetPriceM ? perimUnit*facetPriceM*itemMult : 0;
+        const unitPrice = glassUnit + prUnit + facetUnit;
+        lastKpItems.push({ name:`Дзеркало ${thickness}мм ${it.wMm}-${it.hMm}`, unit:"шт", qty: it.q, price: Number(unitPrice.toFixed(2)) });
+      });
+      if(holesCost) lastKpItems.push({name:"Отвори", unit:"компл", qty:1, price:Number(holesCost.toFixed(2))});
+      if(hasFilm) lastKpItems.push({name:"Плівка безпеки", unit:"компл", qty:1, price:Number(filmCost.toFixed(2))});
+      if(hasProfile) lastKpItems.push({name:"Алюмінієвий профіль", unit:"компл", qty:1, price:Number(profileCost.toFixed(2))});
+      if(mountsCost) lastKpItems.push({name:`Точкові кріплення (${mountsQty} точок)`, unit:"компл", qty:1, price:Number(mountsCost.toFixed(2))});
+      if(hasLed) lastKpItems.push({name:"LED", unit:"компл", qty:1, price:Number(ledCost.toFixed(2))});
+      if(complexCost) lastKpItems.push({name:"Складність", unit:"компл", qty:1, price:Number(complexCost.toFixed(2))});
+      if(sensorCost) lastKpItems.push({name:"Сенсор", unit:"компл", qty:1, price:Number(sensorCost.toFixed(2))});
+      if(pointsProfileCost) lastKpItems.push({name:"Точкові зверху + профіль знизу", unit:"компл", qty:1, price:Number(pointsProfileCost.toFixed(2))});
+      if(platesCost) lastKpItems.push({name:"Пластини-кріплення", unit:"компл", qty:1, price:Number(platesCost.toFixed(2))});
+      if(discP) lastKpItems.push({name:`Знижка ${discP}%`, unit:"компл", qty:1, price:-Number(discVal.toFixed(2))});
+      if(instCost) lastKpItems.push({name:"Монтаж", unit:"компл", qty:1, price:Number(instCost.toFixed(2))});
+      if(delCost) lastKpItems.push({name:"Доставка", unit:"компл", qty:1, price:Number(delCost.toFixed(2))});
+      if(liftCost) lastKpItems.push({name:`Підйом на ${floorNum} поверх`, unit:"компл", qty:1, price:Number(liftCost.toFixed(2))});
+    } else {
+      const colorLabel = document.querySelector(".color-btn.active")?.textContent?.trim() || "";
+      const sizes = (document.getElementById("mirror-sizes")?.innerText || "").split("\n").map(s=>s.trim()).filter(Boolean).join("; ");
+      const name = ["Дзеркало", colorLabel, sizes].filter(Boolean).join(" ").trim() || "Дзеркало";
+      lastKpItems.push({ name, unit:"шт", qty:1, price: Number(total.toFixed(2)) });
+    }
   
 
     // === Деталізація розрахунку: по кожному розміру (Прямокутне) ===
@@ -4541,12 +4578,8 @@ document.querySelectorAll(".calc-input").forEach(i => {
   
   document.getElementById("btn-calc-screenshot").addEventListener("click", () => takeScreenshot("calc-preview-box", "calc_result"));
   document.getElementById("btn-calc-to-kp").addEventListener("click", () => {
-    const colorLabel = document.querySelector(".color-btn.active")?.textContent?.trim() || "";
-    const sizes = (document.getElementById("mirror-sizes")?.innerText || "").split("\n").map(s=>s.trim()).filter(Boolean).join("; ");
-    const priceText = document.getElementById("total_price")?.textContent || "0";
-    const price = parseFloat(priceText.replace(/[^\d.,]/g,"").replace(",",".")) || 0;
-    const name = ["Дзеркало", colorLabel, sizes].filter(Boolean).join(" ").trim() || "Дзеркало";
-    const payload = { items: [{ name, unit:"шт", qty:1, price }] };
+    if(!lastKpItems.length) return;
+    const payload = { items: lastKpItems };
     try{ localStorage.setItem("lux_calc_to_kp", JSON.stringify(payload)); }catch(e){}
     location.href = "propozytsiya.php";
   });
