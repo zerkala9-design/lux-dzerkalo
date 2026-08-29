@@ -835,14 +835,54 @@ function collectDoc(){
 $('archiveBtn').onclick=()=>{const a=getArchive();a.unshift(collectDoc());setArchive(a);renderArchive();flash($('archiveBtn'),'✓ Додано в архів');};
 /* Створити рахунок із цієї пропозиції: передаємо покупця й позиції у генератор рахунків. */
 $('toInvoice').onclick=()=>{
+  const MONTAGE_DELIVERY_RE = /^(монтаж|доставка)/i;
+  const SIZE_RE = /(\d{2,5})\s*[-×xX]\s*(\d{2,5})/;
+
+  const rawItems = [...$('items').rows].map(tr=>({
+    name: tr.querySelector('.i-name').value,
+    qty: num(tr.querySelector('.i-qty').value) || 1,
+    unit: tr.querySelector('.i-unit').value,
+    price: num(tr.querySelector('.i-price').value)
+  })).filter(it=>(it.name||'').trim()||it.price);
+
+  // Монтаж і доставка не йдуть окремими рядками в рахунок — їхня сума
+  // розкидається по розмірах пропорційно до площі (квадратури) кожного.
+  let extraTotal = 0;
+  const items = [];
+  rawItems.forEach(it=>{
+    if(MONTAGE_DELIVERY_RE.test((it.name||'').trim())){
+      extraTotal += it.qty * it.price;
+    } else {
+      items.push(it);
+    }
+  });
+
+  if(extraTotal > 0 && items.length){
+    const sized = items.map(it=>{
+      const m = (it.name||'').match(SIZE_RE);
+      let area = 0;
+      if(m){
+        const w = parseFloat(m[1]), h = parseFloat(m[2]);
+        area = (w/1000) * (h/1000) * it.qty;
+      }
+      return { it, area };
+    });
+    let totalArea = sized.reduce((s,x)=>s+x.area, 0);
+    if(totalArea <= 0){
+      sized.forEach(x=>{ x.area = x.it.qty * x.it.price; }); // площу не визначили — ділимо пропорційно сумі
+      totalArea = sized.reduce((s,x)=>s+x.area, 0);
+    }
+    sized.forEach(x=>{
+      const share = totalArea > 0 ? (x.area / totalArea) : (1 / sized.length);
+      const extra = extraTotal * share;
+      const newSum = x.it.qty * x.it.price + extra;
+      x.it.price = Number((newSum / x.it.qty).toFixed(2));
+    });
+  }
+
   const payload={
     buyer:$('buyer').value.trim(),
-    items:[...$('items').rows].map(tr=>({
-      name:tr.querySelector('.i-name').value,
-      qty:tr.querySelector('.i-qty').value,
-      unit:tr.querySelector('.i-unit').value,
-      price:tr.querySelector('.i-price').value
-    })).filter(it=>(it.name||'').trim()||num(it.price))
+    items: items.map(it=>({ name: it.name, qty: it.qty, unit: it.unit, price: it.price }))
   };
   try{ localStorage.setItem('lux_kp_to_invoice', JSON.stringify(payload)); }catch(e){}
   location.href='docs.php';
