@@ -753,10 +753,7 @@ function render(){
       <div>${escT($('s_email').value)}${$('s_email').value&&$('s_site').value?' · ':''}${$('s_site').value?`<span class="lnk">${escT($('s_site').value)}</span>`:''}</div>
     </div>`;
 
-  const sub=`№ ${$('no').value?escT($('no').value):'______'}   від ${dText($('date').value)||'«__» ____ ____ р.'}`;
-  const buyer = $('buyer').value.trim()
-    ? escT($('buyer').value.trim())
-    : `<span class="kp-fill"></span>`;
+  const sub = dText($('date').value) || '«__» ____ ____ р.';
 
   const rowsHtml=c.rows.map(r=>`<tr>
     <td class="num">${r.i}</td><td class="nm">${escT(r.name)}</td>
@@ -781,8 +778,6 @@ function render(){
       <div class="kp-rule"></div>
       <div class="kp-title">КОМЕРЦІЙНА ПРОПОЗИЦІЯ</div>
       <div class="kp-sub">${sub}</div>
-      <div class="kp-buyer"><b>Покупець:</b> ${buyer}</div>
-      <div class="kp-supp"><b>Постачальник:</b> ${escT($('suppLine').value.trim())}</div>
       <table class="kp-tab">
         <thead><tr><th>№</th><th class="nm">Найменування товару / послуги</th><th>К-сть</th><th>Од.</th><th>Ціна, грн</th><th>Сума, грн</th></tr></thead>
         <tbody>${rowsHtml}</tbody>
