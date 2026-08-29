@@ -4104,14 +4104,28 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
 
     // SIMPLIFIED version for screenshot (stored in data attribute)
     let dSimple = [];
-    if(mirrorColor) {
+    if(!mirrorColor) dSimple.push("⚠️ Колір не вибрано");
+
+    if(currentShape === "rect") {
+      const simpleItems = getRectItems()
+        .map(it=>({wMm:safeFloat(it.w,0), hMm:safeFloat(it.h,0), q:safeInt(it.q,0)}))
+        .filter(it=> it.wMm>0 && it.hMm>0 && it.q>0);
+      simpleItems.forEach(it=>{
+        const w = it.wMm/1000, h = it.hMm/1000;
+        const areaUnit = w*h, perimUnit = 2*(w+h);
+        const itemMult = (it.wMm>BIG_SIDE_MM || it.hMm>BIG_SIDE_MM) ? (1+BIG_SIDE_SURCHARGE) : 1;
+        const glassUnit = mirrorColor ? areaUnit*glassPriceM2 : 0;
+        const prUnit = prPriceM ? perimUnit*prPriceM*itemMult : 0;
+        const facetUnit = facetPriceM ? perimUnit*facetPriceM*itemMult : 0;
+        const itemTotal = (glassUnit + prUnit + facetUnit) * it.q;
+        dSimple.push(`${it.wMm}×${it.hMm} мм — ${it.q} шт: ${itemTotal.toFixed(0)} грн`);
+      });
+    } else if(mirrorColor) {
       dSimple.push(`Дзеркало ${mirrorColor} ${thickness}мм: ${glassCost.toFixed(0)} грн`);
-    } else {
-      dSimple.push("⚠️ Колір не вибрано");
+      if(prPriceM) dSimple.push(`Полірування: ${prCost.toFixed(0)} грн`);
+      if(facetPriceM) dSimple.push(`Фацет ${facet}мм: ${facetCost.toFixed(0)} грн`);
     }
 
-    if(prPriceM) dSimple.push(`Полірування: ${prCost.toFixed(0)} грн`);
-    if(facetPriceM) dSimple.push(`Фацет ${facet}мм: ${facetCost.toFixed(0)} грн`);
     if(holesCost) dSimple.push(`Отвори: ${holesCost.toFixed(0)} грн`);
     if(hasFilm) dSimple.push(`Плівка безпеки: ${filmCost.toFixed(0)} грн`);
     if(hasProfile) dSimple.push(`Алюмінієвий профіль: ${profileCost.toFixed(0)} грн`);
