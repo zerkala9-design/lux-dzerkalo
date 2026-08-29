@@ -4104,7 +4104,12 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
 
     // SIMPLIFIED version for screenshot (stored in data attribute)
     let dSimple = [];
-    if(!mirrorColor) dSimple.push("⚠️ Колір не вибрано");
+    if(mirrorColor){
+      const edgeLabel = edge === "PR" ? "Полірування" : (edge === "None" ? "Без обробки" : edge);
+      dSimple.push(`Дзеркало ${mirrorColor} ${thickness}мм, обробка краю: ${edgeLabel}`);
+    } else {
+      dSimple.push("⚠️ Колір не вибрано");
+    }
 
     if(currentShape === "rect") {
       const simpleItems = getRectItems()
