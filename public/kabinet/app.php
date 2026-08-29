@@ -3591,6 +3591,7 @@ syncState();
   let currentShape = "rect";
   let mirrorColor = null;
   let lastKpItems = [];
+  let lastWallKpItems = [];
 
   document.querySelectorAll(".shape-tab").forEach(t => {
     t.addEventListener("click", () => {
@@ -4585,17 +4586,8 @@ document.querySelectorAll(".calc-input").forEach(i => {
   });
   document.getElementById("btn-wall-screenshot").addEventListener("click", () => takeScreenshot("wall-result-container", "wall_result"));
   document.getElementById("btn-wall-to-kp").addEventListener("click", () => {
-    const priceText = document.getElementById("wall-total-price")?.textContent || "0";
-    const total = parseFloat(priceText.replace(/[^\d.,]/g,"").replace(",",".")) || 0;
-    const W = safeInt(document.getElementById("wall_width")?.value);
-    const H = safeInt(document.getElementById("wall_height")?.value);
-    const maxW = safeInt(document.getElementById("max_sheet_w")?.value);
-    const cols = (W>0 && maxW>0) ? Math.ceil(W / maxW) : 1;
-    const sheetW = cols>0 ? W / cols : W;
-    const sheetH = H;
-    const name = `Дзеркало ${Math.round(sheetH)}×${Math.round(sheetW)} мм`;
-    const price = Number(((cols>0 ? total/cols : total)).toFixed(2));
-    const payload = { items: [{ name, unit:"шт", qty:cols, price }] };
+    if(!lastWallKpItems.length) return;
+    const payload = { items: lastWallKpItems };
     try{ localStorage.setItem("lux_calc_to_kp", JSON.stringify(payload)); }catch(e){}
     location.href = "propozytsiya.php";
   });
@@ -4651,14 +4643,10 @@ document.querySelectorAll(".calc-input").forEach(i => {
 
     const hasInst = document.getElementById("wall-toggle-install").textContent.includes("ON");
     const hasDel = document.getElementById("wall-toggle-delivery").textContent.includes("ON");
-    
-    let extra = 0;
-    if(hasInst) {
-      extra += priceState.install_type==="percent" ? totalBase*(priceState.price_install/100) : priceState.price_install;
-    }
-    if(hasDel) {
-      extra += priceState.delivery_type==="percent" ? totalBase*(priceState.price_delivery/100) : priceState.price_delivery;
-    }
+
+    const instCostVal = hasInst ? (priceState.install_type==="percent" ? totalBase*(priceState.price_install/100) : priceState.price_install) : 0;
+    const delCostVal = hasDel ? (priceState.delivery_type==="percent" ? totalBase*(priceState.price_delivery/100) : priceState.price_delivery) : 0;
+    const extra = instCostVal + delCostVal;
 
     // Підйом на поверх: кількість листів (розкрій) × № поверху × ціна за 1 дзеркало/поверх
     const wallFloorNum = safeInt(document.getElementById("wall_floor_num")?.value, 0);
@@ -4688,6 +4676,15 @@ document.querySelectorAll(".calc-input").forEach(i => {
     detailsArr.push(`Разом: ${grandTotal.toFixed(0)} грн`);
 
     document.getElementById("wall-details").innerHTML = detailsArr.join("<br>");
+
+    // Line items for "У КП" — one row per cost component, same idea as the main calculator
+    lastWallKpItems = [];
+    lastWallKpItems.push({ name:`Дзеркало ${sheetH}×${Math.round(sheetW)} мм`, unit:"шт", qty: cols, price: Number((sheetGlassCost + sheetPrCost).toFixed(2)) });
+    if(filmP) lastWallKpItems.push({name:"Плівка безпеки", unit:"компл", qty:1, price:Number((sheetFilmCost*cols).toFixed(2))});
+    if(mountCost) lastWallKpItems.push({name:mountDesc, unit:"компл", qty:1, price:Number(mountCost.toFixed(2))});
+    if(instCostVal) lastWallKpItems.push({name:"Монтаж", unit:"компл", qty:1, price:Number(instCostVal.toFixed(2))});
+    if(delCostVal) lastWallKpItems.push({name:"Доставка", unit:"компл", qty:1, price:Number(delCostVal.toFixed(2))});
+    if(wallLiftCost) lastWallKpItems.push({name:`Підйом на ${wallFloorNum} поверх`, unit:"компл", qty:1, price:Number(wallLiftCost.toFixed(2))});
 
     const svg = document.getElementById("wall-svg");
     svg.innerHTML = "";
