@@ -42,7 +42,15 @@ const orgLd = {
     addressCountry: 'UA',
   },
   geo: { '@type': 'GeoCoordinates', latitude: site.geo.lat, longitude: site.geo.lng },
+  hasMap: site.googleMaps,
   areaServed: lang === 'ru' ? 'Киев и область' : 'Київ та область',
+  priceRange: '₴₴',
+  openingHoursSpecification: {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+    opens: '10:00',
+    closes: '18:00',
+  },
   sameAs: [
     site.googleMaps,
     site.social.instagram,

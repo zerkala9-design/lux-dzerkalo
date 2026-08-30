@@ -16,7 +16,8 @@ interface Props {
 const { title, description = '', image = '/og-default.jpg', jsonLd, noindex = false, alternates = true, hreflang } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
 
-const fullTitle = title ? `${title} — ${site.name}` : `${site.name}`;
+// Бренд-суфікс додаємо лише коротким тайтлам — щоб довгі не обрізались у SERP і не втрачали ключі.
+const fullTitle = title ? (title.length > 50 ? title : `${title} — ${site.name}`) : `${site.name}`;
 const canonical = new URL(Astro.url.pathname, site.url).href;
 const ogImage = new URL(image, site.url).href;
 
