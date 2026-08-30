@@ -33,10 +33,40 @@ const pillarMap: Record<string, { slug: string; uk: string; ru: string }> = {
 const pillar = pillarMap[category.key];
 const pillarLabel = pillar ? (lang === 'ru' ? pillar.ru : pillar.uk) : '';
 
+// sportzal — блок під запит «дзеркало в спортзал на стіну» (синоніми + таблиця розмірів/цін для AEO)
+const gymIntro = lang === 'ru'
+  ? 'Изготавливаем <strong>зеркало в спортзал, тренажёрный зал и танцевальную студию на стену</strong> — по вашим размерам. Ставим большие сплошные полотна для фитнес-клубов, залов единоборств, кроссфита и домашнего зала: стекло 4 мм (6 мм для больших полотен), полированный край, по желанию — плёнка безопасности и надёжное крепление. Замер и монтаж своей бригадой в Киеве и области, доставка Новой Почтой по Украине.'
+  : 'Виготовляємо <strong>дзеркало в спортзал, тренажерний зал і танцювальну студію на стіну</strong> — за вашими розмірами. Ставимо великі суцільні полотна для фітнес-клубів, залів єдиноборств, кросфіту та домашнього залу: скло 4 мм (6 мм для великих полотен), полірований край, за бажанням — плівка безпеки й надійне кріплення. Замір і монтаж власною бригадою в Києві та області, доставка Новою Поштою по Україні.';
+const gymSizes = [
+  { size: '1000 × 1000 мм', area: '1 м²', price: 'від 1400 грн', priceRu: 'от 1400 грн' },
+  { size: '1500 × 1000 мм', area: '1,5 м²', price: 'від 2100 грн', priceRu: 'от 2100 грн' },
+  { size: '2000 × 1000 мм', area: '2 м²', price: 'від 2800 грн', priceRu: 'от 2800 грн' },
+  { size: '2000 × 1500 мм', area: '3 м²', price: 'від 4200 грн', priceRu: 'от 4200 грн' },
+  { size: '2500 × 2000 мм', area: '5 м²', price: 'від 7000 грн', priceRu: 'от 7000 грн' },
+];
+const gymTableHead = lang === 'ru' ? ['Размер полотна', 'Площадь', 'Ориентировочная цена'] : ['Розмір полотна', 'Площа', 'Орієнтовна ціна'];
+const gymTableTitle = lang === 'ru' ? 'Зеркало в спортзал на стену: размеры и цена' : 'Дзеркало в спортзал на стіну: розміри й ціна';
+const gymNote = lang === 'ru'
+  ? 'Ориентировочно, за полотно 4 мм без плёнки и крепления. Плёнка безопасности +100 грн, комплект крепления +85 грн. Большие полотна (6 мм) — дороже, макс. размер 3200×2200 мм. Точная цена — после бесплатного замера.'
+  : 'Орієнтовно, за полотно 4 мм без плівки та кріплення. Плівка безпеки +100 грн, комплект кріплення +85 грн. Великі полотна (6 мм) — дорожче, макс. розмір 3200×2200 мм. Точна ціна — після безкоштовного заміру.';
+
 // Заголовок із локальним наміром (під пошукові запити «… в Києві / в Киеве»)
-const metaTitle = lang === 'ru'
-  ? `${catTitle(category, lang)} на заказ в Киеве`
-  : `${catTitle(category, lang)} на замовлення в Києві`;
+// sportzal — точний збіг із головним комерційним запитом «дзеркало в спортзал … на стіну»
+const seoOverride: Record<string, { titleUk: string; titleRu: string; h1Uk: string; h1Ru: string }> = {
+  sportzal: {
+    titleUk: 'Дзеркало в спортзал на стіну — на замовлення за розміром, Київ',
+    titleRu: 'Зеркало в спортзал на стену — на заказ по размеру, Киев',
+    h1Uk: 'Дзеркало в спортзал на стіну',
+    h1Ru: 'Зеркало в спортзал на стену',
+  },
+};
+const ov = seoOverride[category.key];
+const metaTitle = ov
+  ? (lang === 'ru' ? ov.titleRu : ov.titleUk)
+  : (lang === 'ru'
+      ? `${catTitle(category, lang)} на заказ в Киеве`
+      : `${catTitle(category, lang)} на замовлення в Києві`);
+const pageH1 = ov ? (lang === 'ru' ? ov.h1Ru : ov.h1Uk) : catTitle(category, lang);
 
 // Тригери довіри під комерційні запити (реальні факти)
 const trust = lang === 'ru'
@@ -60,7 +90,7 @@ const breadcrumbsLd = {
       <nav class="crumbs">
         <a href={base}>{t('nav.home')}</a> / <a href={localizePath('/katalog/', lang)}>{t('catalog.title')}</a> / <span>{catTitle(category, lang)}</span>
       </nav>
-      <h1>{catTitle(category, lang)}</h1>
+      <h1>{pageH1}</h1>
       <p>{catDescription(category, lang)}</p>
       <ul class="trust-strip">
         {trust.map((t) => <li>{t}</li>)}
@@ -88,6 +118,32 @@ const breadcrumbsLd = {
       )}
     </div>
   </section>
+
+  {category.key === 'sportzal' && (
+    <section class="section">
+      <div class="container gym-block">
+        <p set:html={gymIntro}></p>
+        <h2>{gymTableTitle}</h2>
+        <div class="gym-table-wrap">
+          <table class="gym-table">
+            <thead>
+              <tr>{gymTableHead.map((h) => <th>{h}</th>)}</tr>
+            </thead>
+            <tbody>
+              {gymSizes.map((r) => (
+                <tr>
+                  <td>{r.size}</td>
+                  <td>{r.area}</td>
+                  <td><strong>{lang === 'ru' ? r.priceRu : r.price}</strong></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="gym-note">{gymNote}</p>
+      </div>
+    </section>
+  )}
 
   {pillar && pillarLabel && (
     <section class="section">
@@ -122,4 +178,14 @@ const breadcrumbsLd = {
   .pillar-link { display: flex; flex-direction: column; gap: 0.5rem; background: var(--accent-soft); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 26px; color: var(--ink); }
   .pillar-link strong { font-family: var(--serif); font-size: 1.3rem; }
   .pillar-link:hover { border-color: var(--accent); }
+
+  .gym-block { max-width: 900px; }
+  .gym-block > p { color: var(--ink-soft); font-size: 1.05rem; }
+  .gym-block h2 { margin: 1.6rem 0 1rem; font-size: 1.5rem; }
+  .gym-table-wrap { overflow-x: auto; }
+  .gym-table { width: 100%; border-collapse: collapse; font-size: 1rem; }
+  .gym-table th, .gym-table td { border: 1px solid var(--line); padding: 11px 14px; text-align: left; }
+  .gym-table thead th { background: var(--bg-dark); color: #fff; font-family: var(--font); font-weight: 600; font-size: 0.95rem; }
+  .gym-table tbody tr:nth-child(even) { background: var(--bg-soft); }
+  .gym-note { color: var(--muted); font-size: 0.88rem; margin-top: 0.8rem; }
 </style>
