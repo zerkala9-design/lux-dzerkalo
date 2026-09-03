@@ -213,7 +213,7 @@ header("X-Robots-Tag: noindex, nofollow");
       <button class="btn btn-orange" id="addRow">Додати рядок</button>
 
       <div class="flabel" style="margin-top:18px">Сума замовлення</div>
-      <input id="orderTotal" readonly>
+      <input id="orderTotal" inputmode="decimal">
 
       <div class="flabel">Додаткова інформація <span>(умови оплати, доставки, гарантії)</span></div>
       <textarea id="extra" rows="3" placeholder="Додаткова інформація (внизу документа)"></textarea>
@@ -697,12 +697,36 @@ function escT(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').rep
 
 $('items').appendChild(makeRow('','шт','1','0'));
 $('addRow').onclick=()=>{$('items').appendChild(makeRow());render();};
-document.addEventListener('input',e=>{if(e.target.closest('.form'))render();});
+document.addEventListener('input',e=>{if(e.target.closest('.form') && e.target.id!=='orderTotal')render();});
 document.addEventListener('click',e=>{
   if(e.target.classList.contains('del')){
     if($('items').rows.length>1)e.target.closest('tr').remove();
     render();
   }
+});
+
+// Можна ввести готову суму замовлення напряму — ціна за штуку розрахується сама
+$('orderTotal').addEventListener('change', () => {
+  const desiredTotal = num($('orderTotal').value);
+  const rowData = [...$('items').rows].map(tr => ({
+    tr,
+    qty: num(tr.querySelector('.i-qty').value) || 0,
+    price: num(tr.querySelector('.i-price').value) || 0
+  })).filter(r => r.qty > 0);
+  if(!rowData.length){ render(); return; }
+
+  const currentSum = rowData.reduce((s,r)=>s + r.qty*r.price, 0);
+  if(currentSum > 0){
+    rowData.forEach(r => {
+      const share = (r.qty*r.price) / currentSum;
+      r.tr.querySelector('.i-price').value = ((desiredTotal*share) / r.qty).toFixed(2);
+    });
+  } else {
+    const totalQty = rowData.reduce((s,r)=>s+r.qty, 0);
+    const perUnit = totalQty > 0 ? desiredTotal / totalQty : 0;
+    rowData.forEach(r => { r.tr.querySelector('.i-price').value = perUnit.toFixed(2); });
+  }
+  render();
 });
 
 /* ---------- doc type ---------- */
