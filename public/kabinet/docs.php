@@ -135,8 +135,8 @@ header("X-Robots-Tag: noindex, nofollow");
   .doc table.dt td{font-size:10px}
   .doc table.dt td.n{text-align:center;white-space:nowrap}   /* цифри по центру колонок */
   .doc table.dt td.c{text-align:center}
-  /* підсумки в тій самій таблиці — колонки рівно під колонкою «Сума», рамка як у решти таблиці */
-  .doc table.dt td.tl{text-align:right;font-weight:700;white-space:nowrap}
+  /* підсумки в тій самій таблиці — колонки рівно під колонкою «Сума» */
+  .doc table.dt td.tl{border:none;text-align:right;font-weight:700;white-space:nowrap}
   .doc table.dt td.tv{text-align:center;white-space:nowrap}
   .doc .sumw{margin:12px 0 2px;font-size:10px}
   .doc .sumw .w{font-weight:700}
