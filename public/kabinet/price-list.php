@@ -226,31 +226,23 @@ header("X-Robots-Tag: noindex, nofollow");
       <div>
         <div class="section-h"><span class="no">—</span><h2>Допуск на зміщення променя</h2></div>
         <div class="rule-diagram">
-          <svg width="176" height="122" viewBox="0 0 176 122" fill="none">
-            <defs>
-              <linearGradient id="glassGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#f1f4f2"/>
-                <stop offset="1" stop-color="#dde4e0"/>
-              </linearGradient>
-              <linearGradient id="bevelGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#faf0d6"/>
-                <stop offset="1" stop-color="var(--gold)"/>
-              </linearGradient>
-            </defs>
-            <!-- скляна пластина з фацетним зрізом кута -->
-            <path d="M18 18 H124 L150 44 V96 Q150 100 146 100 H22 Q18 100 18 96 Z"
-                  fill="url(#glassGrad)" stroke="#a9a290" stroke-width="1.2"/>
-            <!-- полірований фацет уздовж зрізаного кута -->
-            <path d="M124 18 L150 44 L136 44 L114 22 Z" fill="url(#bevelGrad)" stroke="var(--gold)" stroke-width="1"/>
+          <svg width="182" height="162" viewBox="0 0 220 195" fill="none">
+            <!-- контур деталі: пологий зріз зліва переходить у вертикальну стінку справа -->
+            <path d="M20 155 L20 95 C20 75 38 60 62 58 L100 55 L155 55 L155 155 Z"
+                  fill="#fbfaf7" stroke="var(--ink)" stroke-width="1.8" stroke-linejoin="round"/>
+            <!-- внутрішній згин -->
+            <line x1="100" y1="55" x2="100" y2="155" stroke="var(--ink)" stroke-width="1.2"/>
+            <!-- лінія фацетного шва, куди «дивиться» промінь -->
+            <line x1="155" y1="155" x2="100" y2="102" stroke="var(--ink)" stroke-width="1.2"/>
             <!-- промінь -->
-            <line x1="46" y1="8" x2="112" y2="23" stroke="#6f6a5c" stroke-width="1.3" stroke-dasharray="4 3"/>
-            <path d="M107 21.5 L112 23 L109.5 18" fill="none" stroke="#6f6a5c" stroke-width="1.3"/>
-            <text x="28" y="8" font-size="9" fill="var(--muted)" font-family="Manrope,sans-serif" font-weight="700">промінь</text>
-            <!-- зміщення на межі фацету -->
-            <line x1="132" y1="30" x2="146" y2="50" stroke="var(--gold)" stroke-width="1.2"/>
-            <path d="M141.5 47 L146 50 L140.5 51.5" fill="none" stroke="var(--gold)" stroke-width="1.2"/>
-            <path d="M137 33 L132 30 L137.5 28.5" fill="none" stroke="var(--gold)" stroke-width="1.2"/>
-            <text x="132" y="64" font-size="9" fill="var(--gold)" font-weight="800" font-family="Manrope,sans-serif">до 2 мм</text>
+            <text x="160" y="80" font-size="12" fill="var(--ink)" font-family="Manrope,sans-serif" font-weight="700">промінь</text>
+            <line x1="160" y1="86" x2="160" y2="90" stroke="var(--ink)" stroke-width="1"/>
+            <line x1="160" y1="90" x2="133" y2="107" stroke="var(--ink)" stroke-width="1"/>
+            <!-- зміщення -->
+            <line x1="158" y1="160" x2="192" y2="188" stroke="var(--ink)" stroke-width="2.2"/>
+            <path d="M186 175 L192 188 L179 183" fill="var(--ink)"/>
+            <path d="M164 173 L158 160 L171 165" fill="var(--ink)"/>
+            <text x="168" y="182" font-size="13" fill="var(--ink)" font-weight="700" font-family="Manrope,sans-serif">до 2 мм</text>
           </svg>
           <p>Допустиме зміщення променя — до 2 мм.<br>За вимоги максимальної точності до кутів фацет
           рахується за вартістю криволінійного.</p>
@@ -261,7 +253,7 @@ header("X-Robots-Tag: noindex, nofollow");
     <div class="section">
       <div class="section-h"><span class="no">05</span><h2>Скло (сировина, не дзеркало)</h2></div>
       <table class="tbl">
-        <thead><tr><th style="text-align:left">Назва</th><th>3–4 мм</th><th>5 мм</th><th>6 мм</th><th>8 мм</th><th>10 мм</th></tr></thead>
+        <thead><tr><th style="text-align:left">Назва</th><th>4 мм</th><th>5 мм</th><th>6 мм</th><th>8 мм</th><th>10 мм</th></tr></thead>
         <tbody>
           <tr><td class="lbl">Скло прозоре</td><td>550</td><td>755</td><td>950</td><td></td><td></td></tr>
           <tr><td class="lbl">Скло діамант</td><td></td><td></td><td></td><td></td><td></td></tr>
