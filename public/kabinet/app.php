@@ -2291,7 +2291,7 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 
     <div style="margin-top:16px;display:flex;justify-content:space-between;gap:10px;">
       <button class="btn-secondary" id="btn-reset-prices">Скинути</button>
-    
+      <button class="btn-secondary" id="btn-print-pricelist" type="button">🖨 Друкувати прайс</button>
     </div>
 
     </div><!-- end price section -->
@@ -3436,6 +3436,11 @@ syncState();
     document.getElementById("price_round_edge_m").value = 260;
     document.getElementById("price_round_cut_pct").value = 35;
     syncState(); calculate(); calcWall(); calcPano();
+  });
+
+  document.getElementById("btn-print-pricelist").addEventListener("click", async ()=>{
+    try{ if(window.rxSaveParams) await window.rxSaveParams(); }catch(e){}
+    window.open("price-list.php", "_blank");
   });
 
   /* ===== AUTO-SAVE CALCULATOR STATE ===== */
