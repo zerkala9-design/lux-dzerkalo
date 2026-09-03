@@ -45,6 +45,7 @@ header("X-Robots-Tag: noindex, nofollow");
     font-size:14px;font-weight:700;cursor:pointer}
   .btn-print:hover{background:#1f57e6}
 
+  .docwrap{width:100%}
   .paper{
     background:var(--paper);border:1px solid var(--line);border-radius:4px;
     padding:34px 38px;box-shadow:0 10px 30px rgba(30,25,10,.08);
@@ -110,7 +111,9 @@ header("X-Robots-Tag: noindex, nofollow");
     body{background:#fff}
     .noprint{display:none!important}
     .wrap{max-width:none;padding:0}
-    .paper{border:none;box-shadow:none;border-radius:0;padding:14mm}
+    .docwrap{width:auto!important;height:auto!important;overflow:visible!important}
+    .paper{border:none;box-shadow:none;border-radius:0;padding:14mm;
+           width:auto!important;transform:none!important}
     @page{size:A4;margin:0}
   }
 </style>
@@ -124,7 +127,7 @@ header("X-Robots-Tag: noindex, nofollow");
     <button class="btn-print" id="printBtn">🖨 Друкувати</button>
   </div>
 
-  <div class="paper">
+  <div class="docwrap"><div class="paper">
 
     <div class="letterhead">
       <div class="brand">
@@ -281,7 +284,7 @@ header("X-Robots-Tag: noindex, nofollow");
       <span class="gold">lux-zerkalo.com.ua</span>
     </div>
 
-  </div>
+  </div></div>
 </div>
 
 <script>
@@ -311,7 +314,51 @@ header("X-Robots-Tag: noindex, nofollow");
   });
 
   document.getElementById('today').textContent = new Date().toLocaleDateString('uk-UA', {day:'2-digit', month:'2-digit', year:'numeric'});
-  document.getElementById('printBtn').addEventListener('click', function(){ window.print(); });
+
+  /* ---- Мобільний перегляд: аркуш A4 масштабується цілком, а не ламається по колонках ---- */
+  (function(){
+    var A4 = 794;
+    var wrap  = document.querySelector('.docwrap');
+    var paper = document.querySelector('.paper');
+    if(!wrap || !paper) return;
+    var on = false;
+
+    function reset(){
+      paper.style.transform = '';
+      paper.style.transformOrigin = '';
+      paper.style.width = '';
+      wrap.style.height = '';
+      wrap.style.overflow = '';
+      on = false;
+    }
+    function fit(){
+      reset();
+      var avail = wrap.clientWidth;
+      if(avail >= A4) return;
+      var k = avail / A4;
+      paper.style.width = A4 + 'px';
+      paper.style.transformOrigin = 'top left';
+      paper.style.transform = 'scale(' + k + ')';
+      wrap.style.height = Math.ceil(paper.offsetHeight * k) + 'px';
+      wrap.style.overflow = 'hidden';
+      on = true;
+    }
+    window.__fitOff = function(){ if(on) reset(); };
+    window.__fitOn  = fit;
+
+    window.addEventListener('resize', fit);
+    window.addEventListener('orientationchange', function(){ setTimeout(fit, 150); });
+    window.addEventListener('beforeprint', function(){ reset(); });
+    window.addEventListener('afterprint',  function(){ setTimeout(fit, 50); });
+    window.addEventListener('load', function(){ setTimeout(fit, 60); });
+    fit();
+  })();
+
+  document.getElementById('printBtn').addEventListener('click', function(){
+    if(window.__fitOff) window.__fitOff();
+    window.print();
+    if(window.__fitOn) setTimeout(window.__fitOn, 300);
+  });
 </script>
 
 </body>
