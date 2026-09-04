@@ -87,8 +87,8 @@ header("X-Robots-Tag: noindex, nofollow");
   /* Аркуш завжди має вигляд А4 (як на екрані, так і в друку) — його масштабує
      скрипт нижче, тому колонки тут НЕ повинні перелаштовуватись під вузький екран. */
 
-  .mini-h{font-size:11px;font-weight:700;color:var(--ink);margin-bottom:5px;
-    padding-bottom:4px;border-bottom:1px solid var(--gold-soft)}
+  .mini-h{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:6px;
+    padding-bottom:4px;border-bottom:1px solid var(--gold-soft);font-family:'Manrope',sans-serif}
 
   .note-strip{margin-top:8px;font-size:10.5px;color:var(--muted);line-height:1.5}
 
