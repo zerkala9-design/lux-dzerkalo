@@ -4119,6 +4119,7 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
       dSimple.push("⚠️ Колір не вибрано");
     }
 
+    let mirrorsTotal = 0;
     if(currentShape === "rect") {
       const simpleItems = getRectItems()
         .map(it=>({wMm:safeFloat(it.w,0), hMm:safeFloat(it.h,0), q:safeInt(it.q,0)}))
@@ -4131,10 +4132,12 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
         const prUnit = prPriceM ? perimUnit*prPriceM*itemMult : 0;
         const facetUnit = facetPriceM ? perimUnit*facetPriceM*itemMult : 0;
         const itemTotal = (glassUnit + prUnit + facetUnit) * it.q;
+        mirrorsTotal += itemTotal;
         dSimple.push(`${it.wMm}-${it.hMm}-${it.q}шт`);
         dSimple.push(`Ціна за шт ${Math.round(itemTotal / it.q)}грн`);
       });
     } else if(mirrorColor) {
+      mirrorsTotal = glassCost + prCost + facetCost;
       dSimple.push(`Дзеркало ${mirrorColor} ${thickness}мм: ${glassCost.toFixed(0)} грн`);
       if(prPriceM) dSimple.push(`Полірування: ${prCost.toFixed(0)} грн`);
       if(facetPriceM) dSimple.push(`Фацет ${facet}мм: ${facetCost.toFixed(0)} грн`);
@@ -4150,6 +4153,7 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     
     dSimple.push("");
     if(discP) dSimple.push(`Знижка ${discP}%: -${discVal.toFixed(0)} грн`);
+    dSimple.push(`Дзеркала разом: ${(mirrorsTotal - (discP?discVal:0)).toFixed(0)} грн`);
     if(instCost) dSimple.push(`Монтаж: ${instCost.toFixed(0)} грн`);
     if(delCost) dSimple.push(`Доставка: ${delCost.toFixed(0)} грн`);
     if(liftCost) dSimple.push(`Підйом на ${floorNum} поверх (${qty} дзерк.): ${liftCost.toFixed(0)} грн`);
