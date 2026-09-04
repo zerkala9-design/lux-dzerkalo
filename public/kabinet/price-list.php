@@ -84,7 +84,8 @@ header("X-Robots-Tag: noindex, nofollow");
 
   .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  @media (max-width:640px){.grid4{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+  /* Аркуш завжди має вигляд А4 (як на екрані, так і в друку) — його масштабує
+     скрипт нижче, тому колонки тут НЕ повинні перелаштовуватись під вузький екран. */
 
   .mini-h{font-size:11px;font-weight:700;color:var(--ink);margin-bottom:5px;
     padding-bottom:4px;border-bottom:1px solid var(--gold-soft)}
