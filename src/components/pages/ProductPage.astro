@@ -212,6 +212,7 @@ const breadcrumbsLd = {
   .crumbs { font-size: 0.88rem; color: var(--muted); }
   .crumbs a { color: var(--ink-soft); }
   .product__grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: start; }
+  .product__gallery { position: sticky; top: 88px; align-self: start; }
   .product__main { border-radius: var(--radius); overflow: hidden; background: var(--bg-soft); border: 1px solid var(--line); }
   .product__main img { width: 100%; height: auto; object-fit: cover; }
   .product__thumbs { display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
@@ -248,7 +249,7 @@ const breadcrumbsLd = {
   .product__actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 2rem; }
   .product__desc { border-top: 1px solid var(--line); padding-top: 1.6rem; color: var(--ink-soft); }
   .product__desc :global(strong) { color: var(--ink); }
-  @media (max-width: 860px) { .product__grid { grid-template-columns: 1fr; gap: 28px; } }
+  @media (max-width: 860px) { .product__grid { grid-template-columns: 1fr; gap: 28px; } .product__gallery { position: static; } }
 </style>
 
 <script define:vars={{ orderPrefix: lang === 'ru' ? 'Хочу заказать: ' : 'Хочу замовити: ', deliveryWord: cfg.delivery, totalWord: cfg.total }}>
