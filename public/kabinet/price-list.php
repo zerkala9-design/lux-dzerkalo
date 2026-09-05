@@ -109,12 +109,37 @@ header("X-Robots-Tag: noindex, nofollow");
   .foot .gold{color:var(--gold);font-weight:700}
 
   @media print{
-    body{background:#fff}
+    body{background:#fff;font-size:11px}
     .noprint{display:none!important}
     .wrap{max-width:none;padding:0}
     .docwrap{width:auto!important;height:auto!important;overflow:visible!important}
-    .paper{border:none;box-shadow:none;border-radius:0;padding:14mm;
+    .paper{border:none;box-shadow:none;border-radius:0;padding:8mm 11mm;
            width:auto!important;transform:none!important}
+    .letterhead{padding-bottom:8px}
+    .brand .mark{width:36px;height:36px;font-size:15px}
+    .brand .word .wm{font-size:17px}
+    .supplier{font-size:9.5px}
+    .supplier .sn{font-size:10px}
+    .doc-title{margin:8px 0 2px}
+    .doc-title h1{font-size:17px}
+    .doc-sub{margin-bottom:10px;font-size:9.5px}
+    .section{margin-top:11px}
+    .section:first-of-type{margin-top:2px}
+    .section-h{margin-bottom:5px}
+    .section-h h2{font-size:11.5px}
+    .grid4{gap:7px}
+    .grid2{gap:9px}
+    .mini-h{font-size:11.5px;margin-bottom:3px;padding-bottom:2px}
+    .tbl th{font-size:8.5px;padding:3px 6px}
+    .tbl td{font-size:9.5px;padding:2px 6px}
+    .note-strip{margin-top:3px;font-size:8.5px}
+    .rule-diagram{padding:6px 9px;gap:10px}
+    .rule-diagram svg{width:130px;height:auto}
+    .rule-diagram p{font-size:8.5px}
+    .terms{margin-top:11px;padding-top:7px;font-size:8.5px}
+    .terms ul{margin-top:3px}
+    .terms li{margin-bottom:1px}
+    .foot{margin-top:9px;padding-top:7px;font-size:8px}
     @page{size:A4;margin:0}
   }
 </style>
