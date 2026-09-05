@@ -113,10 +113,10 @@ const breadcrumbsLd = {
         <div class="product__price">
           {data.priceFrom ? (
             data.priceExact ? (
-              <><strong>{data.priceFrom.toLocaleString('uk-UA')} {data.priceUnit}</strong>
+              <><strong>{data.priceFrom} {data.priceUnit}</strong>
               <span class="product__instock">✔ {lang === 'ru' ? 'В наличии' : 'В наявності'}</span></>
             ) : (
-              <><strong>{t('common.priceFrom')} {data.priceFrom.toLocaleString('uk-UA')} {data.priceUnit}</strong>
+              <><strong>{t('common.priceFrom')} {data.priceFrom} {data.priceUnit}</strong>
               <span>{t('product.priceNote')}</span></>
             )
           ) : (
@@ -133,7 +133,7 @@ const breadcrumbsLd = {
             {data.options!.film && (
               <label class="cfg-opt">
                 <input type="checkbox" name="film" data-add={data.options!.film} value={cfg.film} />
-                <span>{cfg.film} <b class="cfg-add">+{data.options!.film.toLocaleString('uk-UA')} {data.priceUnit}</b></span>
+                <span>{cfg.film} <b class="cfg-add">+{data.options!.film} {data.priceUnit}</b></span>
               </label>
             )}
             {(data.options!.mountProfile || data.options!.mountPoint) && (
@@ -141,10 +141,10 @@ const breadcrumbsLd = {
                 <legend>{cfg.mount}</legend>
                 <label class="cfg-opt"><input type="radio" name="mount" data-add="0" value="" checked /><span>{cfg.none}</span></label>
                 {data.options!.mountProfile && (
-                  <label class="cfg-opt"><input type="radio" name="mount" data-add={data.options!.mountProfile} value={cfg.mProfile} /><span>{cfg.mProfile} <b class="cfg-add">+{data.options!.mountProfile.toLocaleString('uk-UA')} {data.priceUnit}</b></span></label>
+                  <label class="cfg-opt"><input type="radio" name="mount" data-add={data.options!.mountProfile} value={cfg.mProfile} /><span>{cfg.mProfile} <b class="cfg-add">+{data.options!.mountProfile} {data.priceUnit}</b></span></label>
                 )}
                 {data.options!.mountPoint && (
-                  <label class="cfg-opt"><input type="radio" name="mount" data-add={data.options!.mountPoint} value={cfg.mPoint} /><span>{cfg.mPoint} <b class="cfg-add">+{data.options!.mountPoint.toLocaleString('uk-UA')} {data.priceUnit}</b></span></label>
+                  <label class="cfg-opt"><input type="radio" name="mount" data-add={data.options!.mountPoint} value={cfg.mPoint} /><span>{cfg.mPoint} <b class="cfg-add">+{data.options!.mountPoint} {data.priceUnit}</b></span></label>
                 )}
               </fieldset>
             )}
@@ -152,13 +152,13 @@ const breadcrumbsLd = {
               <legend>{cfg.delivery}</legend>
               <label class="cfg-opt"><input type="radio" name="delivery" data-add="0" value={cfg.pickup} checked /><span>{cfg.pickup} <b class="cfg-free">{cfg.free}</b></span></label>
               {data.options!.deliveryKyiv && (
-                <label class="cfg-opt"><input type="radio" name="delivery" data-add={data.options!.deliveryKyiv} value={cfg.kyiv} /><span>{cfg.kyiv} <b class="cfg-add">+{data.options!.deliveryKyiv.toLocaleString('uk-UA')} {data.priceUnit}</b></span></label>
+                <label class="cfg-opt"><input type="radio" name="delivery" data-add={data.options!.deliveryKyiv} value={cfg.kyiv} /><span>{cfg.kyiv} <b class="cfg-add">+{data.options!.deliveryKyiv} {data.priceUnit}</b></span></label>
               )}
               {data.options!.deliveryNPfrom && (
-                <label class="cfg-opt"><input type="radio" name="delivery" data-add="0" value={`${cfg.np} (${cfg.from} ${data.options!.deliveryNPfrom.toLocaleString('uk-UA')} ${data.priceUnit})`} /><span>{cfg.np} <b class="cfg-note">{cfg.from} {data.options!.deliveryNPfrom.toLocaleString('uk-UA')} {data.priceUnit}, {cfg.byCity}</b></span></label>
+                <label class="cfg-opt"><input type="radio" name="delivery" data-add="0" value={`${cfg.np} (${cfg.from} ${data.options!.deliveryNPfrom} ${data.priceUnit})`} /><span>{cfg.np} <b class="cfg-note">{cfg.from} {data.options!.deliveryNPfrom} {data.priceUnit}, {cfg.byCity}</b></span></label>
               )}
             </fieldset>
-            <div class="cfg-total"><span>{cfg.total}:</span> <strong data-total>{data.priceFrom.toLocaleString('uk-UA')} {data.priceUnit}</strong></div>
+            <div class="cfg-total"><span>{cfg.total}:</span> <strong data-total>{data.priceFrom} {data.priceUnit}</strong></div>
           </div>
         )}
 
@@ -265,7 +265,7 @@ const breadcrumbsLd = {
 
   // Конфігуратор ціни: живий підрахунок суми.
   const config = document.querySelector('.product__config');
-  const fmt = (n) => n.toLocaleString('uk-UA');
+  const fmt = (n) => n;
   function calcTotal() {
     if (!config) return null;
     const base = Number(config.getAttribute('data-base')) || 0;

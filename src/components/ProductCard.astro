@@ -23,7 +23,7 @@ const href = localizePath(`/tovar/${productSlug(product)}/`, lang);
     <p>{data.summary}</p>
     <div class="card__foot">
       {data.priceFrom ? (
-        <span class="price">{t('common.priceFrom')} {data.priceFrom.toLocaleString('uk-UA')} <span>{data.priceUnit}</span></span>
+        <span class="price">{!data.priceExact && `${t('common.priceFrom')} `}{data.priceFrom} <span>{data.priceUnit}</span></span>
       ) : (
         <span class="price"><span>{t('common.priceRequest')}</span></span>
       )}
