@@ -113,7 +113,7 @@ const breadcrumbsLd = {
         <div class="product__price">
           {data.priceFrom ? (
             data.priceExact ? (
-              <><strong>{data.priceFrom} {data.priceUnit}</strong>
+              <><strong>{lang === 'ru' ? 'Цена' : 'Ціна'} {data.priceFrom} {data.priceUnit}</strong>
               <span class="product__instock">✔ {lang === 'ru' ? 'В наличии' : 'В наявності'}</span></>
             ) : (
               <><strong>{t('common.priceFrom')} {data.priceFrom} {data.priceUnit}</strong>
