@@ -111,6 +111,10 @@ const breadcrumbsLd = {
           ) : (
             <strong>{t('common.priceRequest')}</strong>
           )}
+          <div class="product__price-actions">
+            <a href="#zayavka" class="btn btn--primary" data-order-btn data-product={data.title}>{t('product.order')}</a>
+            <a href={`tel:${site.phones[0].tel}`} class="btn btn--light">☎ {site.phones[0].display}</a>
+          </div>
         </div>
 
         {data.specs.length > 0 && (
@@ -133,7 +137,7 @@ const breadcrumbsLd = {
         {data.category === 'sportzal' && <GymHook />}
 
         <div class="product__actions">
-          <a href="#zayavka" class="btn btn--primary">{t('product.order')}</a>
+          <a href="#zayavka" class="btn btn--primary" data-order-btn data-product={data.title}>{t('product.order')}</a>
           <a href={`tel:${site.phones[0].tel}`} class="btn btn--ghost">☎ {site.phones[0].display}</a>
         </div>
 
@@ -174,6 +178,8 @@ const breadcrumbsLd = {
   .product__price strong { font-family: var(--serif); font-size: 1.5rem; color: var(--ink); }
   .product__price span { font-size: 0.85rem; color: var(--ink-soft); }
   .product__instock { color: #188038 !important; font-weight: 600; }
+  .product__price-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 0.9rem; }
+  .product__price-actions .btn { flex: 1; justify-content: center; min-width: 140px; }
   .product__specs { width: 100%; border-collapse: collapse; margin: 0 0 1.4rem; font-size: 0.95rem; }
   .product__specs caption { text-align: left; font-weight: 700; color: var(--ink); margin-bottom: 0.5rem; font-size: 1.05rem; }
   .product__specs th, .product__specs td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
@@ -188,15 +194,24 @@ const breadcrumbsLd = {
   @media (max-width: 860px) { .product__grid { grid-template-columns: 1fr; gap: 28px; } }
 </style>
 
-<script>
-  const main = document.getElementById('main-image') as HTMLImageElement | null;
-  const thumbs = document.querySelectorAll<HTMLButtonElement>('.thumb');
+<script define:vars={{ orderPrefix: lang === 'ru' ? 'Хочу заказать: ' : 'Хочу замовити: ' }}>
+  const main = document.getElementById('main-image');
+  const thumbs = document.querySelectorAll('.thumb');
   thumbs.forEach((btn) => {
     btn.addEventListener('click', () => {
       const img = btn.querySelector('img');
       if (main && img) { main.src = img.currentSrc || img.src; main.removeAttribute('srcset'); }
       thumbs.forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
+    });
+  });
+
+  // Кнопка «Замовити» → підставляє назву товару в поле коментаря заявки.
+  document.querySelectorAll('[data-order-btn]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const msg = document.querySelector('#callback-form textarea[name="message"]');
+      const product = btn.getAttribute('data-product') || '';
+      if (msg && product && !msg.value.trim()) msg.value = orderPrefix + product;
     });
   });
 </script>
