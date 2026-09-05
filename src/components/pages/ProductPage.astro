@@ -28,13 +28,14 @@ const gallery = [data.image, ...(data.gallery ?? [])];
 
 // Конфігуратор ціни показуємо лише коли є опції й точна базова ціна
 const showConfig = !!data.options && !!data.priceFrom && data.priceExact;
+const orderLabel = lang === 'ru' ? 'Заказать' : 'Замовити';
 const cfg = lang === 'ru'
   ? { heading: 'Соберите комплектацию', film: 'Плёнка безопасности', mount: 'Крепление', none: 'Без крепления',
       mProfile: 'Профиль снизу', mPoint: 'Точечное сверху', delivery: 'Доставка', pickup: 'Самовывоз, Киев',
-      free: 'бесплатно', np: 'Новая Почта', npRate: 'по тарифу', kyiv: 'Доставка по Киеву', total: 'Итого' }
+      free: 'бесплатно', np: 'Новая Почта', from: 'от', byCity: 'зависит от города', kyiv: 'Доставка по Киеву', total: 'Итого' }
   : { heading: 'Зберіть комплектацію', film: 'Плівка безпеки', mount: 'Кріплення', none: 'Без кріплення',
       mProfile: 'Профіль знизу', mPoint: 'Точкове зверху', delivery: 'Доставка', pickup: 'Самовивіз, Київ',
-      free: 'безкоштовно', np: 'Нова Пошта', npRate: 'за тарифом', kyiv: 'Доставка по Києву', total: 'Разом' };
+      free: 'безкоштовно', np: 'Нова Пошта', from: 'від', byCity: 'залежно від міста', kyiv: 'Доставка по Києву', total: 'Разом' };
 
 // getImage гарантує емітований JPEG (data.image.src може вести на неемітований оригінал → 404).
 const schemaImg = await getImage({ src: data.image, format: 'jpeg', width: 1200 });
@@ -122,8 +123,7 @@ const breadcrumbsLd = {
             <strong>{t('common.priceRequest')}</strong>
           )}
           <div class="product__price-actions">
-            <a href="#zayavka" class="btn btn--primary" data-order-btn data-product={data.title}>{t('product.order')}</a>
-            <a href={`tel:${site.phones[0].tel}`} class="btn btn--light">☎ {site.phones[0].display}</a>
+            <a href="#zayavka" class="btn btn--primary" data-order-btn data-product={data.title}>{orderLabel}</a>
           </div>
         </div>
 
@@ -136,20 +136,26 @@ const breadcrumbsLd = {
                 <span>{cfg.film} <b class="cfg-add">+{data.options!.film.toLocaleString('uk-UA')} {data.priceUnit}</b></span>
               </label>
             )}
-            {data.options!.mount && (
+            {(data.options!.mountProfile || data.options!.mountPoint) && (
               <fieldset class="cfg-group">
                 <legend>{cfg.mount}</legend>
                 <label class="cfg-opt"><input type="radio" name="mount" data-add="0" value="" checked /><span>{cfg.none}</span></label>
-                <label class="cfg-opt"><input type="radio" name="mount" data-add={data.options!.mount} value={cfg.mProfile} /><span>{cfg.mProfile} <b class="cfg-add">+{data.options!.mount.toLocaleString('uk-UA')} {data.priceUnit}</b></span></label>
-                <label class="cfg-opt"><input type="radio" name="mount" data-add={data.options!.mount} value={cfg.mPoint} /><span>{cfg.mPoint} <b class="cfg-add">+{data.options!.mount.toLocaleString('uk-UA')} {data.priceUnit}</b></span></label>
+                {data.options!.mountProfile && (
+                  <label class="cfg-opt"><input type="radio" name="mount" data-add={data.options!.mountProfile} value={cfg.mProfile} /><span>{cfg.mProfile} <b class="cfg-add">+{data.options!.mountProfile.toLocaleString('uk-UA')} {data.priceUnit}</b></span></label>
+                )}
+                {data.options!.mountPoint && (
+                  <label class="cfg-opt"><input type="radio" name="mount" data-add={data.options!.mountPoint} value={cfg.mPoint} /><span>{cfg.mPoint} <b class="cfg-add">+{data.options!.mountPoint.toLocaleString('uk-UA')} {data.priceUnit}</b></span></label>
+                )}
               </fieldset>
             )}
             <fieldset class="cfg-group">
               <legend>{cfg.delivery}</legend>
               <label class="cfg-opt"><input type="radio" name="delivery" data-add="0" value={cfg.pickup} checked /><span>{cfg.pickup} <b class="cfg-free">{cfg.free}</b></span></label>
-              <label class="cfg-opt"><input type="radio" name="delivery" data-add="0" value={cfg.np} /><span>{cfg.np} <b class="cfg-note">{cfg.npRate}</b></span></label>
               {data.options!.deliveryKyiv && (
                 <label class="cfg-opt"><input type="radio" name="delivery" data-add={data.options!.deliveryKyiv} value={cfg.kyiv} /><span>{cfg.kyiv} <b class="cfg-add">+{data.options!.deliveryKyiv.toLocaleString('uk-UA')} {data.priceUnit}</b></span></label>
+              )}
+              {data.options!.deliveryNPfrom && (
+                <label class="cfg-opt"><input type="radio" name="delivery" data-add="0" value={`${cfg.np} (${cfg.from} ${data.options!.deliveryNPfrom.toLocaleString('uk-UA')} ${data.priceUnit})`} /><span>{cfg.np} <b class="cfg-note">{cfg.from} {data.options!.deliveryNPfrom.toLocaleString('uk-UA')} {data.priceUnit}, {cfg.byCity}</b></span></label>
               )}
             </fieldset>
             <div class="cfg-total"><span>{cfg.total}:</span> <strong data-total>{data.priceFrom.toLocaleString('uk-UA')} {data.priceUnit}</strong></div>

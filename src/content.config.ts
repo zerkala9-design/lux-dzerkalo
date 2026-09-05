@@ -25,8 +25,10 @@ const products = defineCollection({
       options: z
         .object({
           film: z.number().optional(), // плівка безпеки +
-          mount: z.number().optional(), // кріплення (профіль знизу / точкове зверху) +
-          deliveryKyiv: z.number().optional(), // доставка по Києву +
+          mountProfile: z.number().optional(), // кріплення профіль знизу +
+          mountPoint: z.number().optional(), // кріплення точкове зверху +
+          deliveryKyiv: z.number().optional(), // доставка по Києву (фіксовано) +
+          deliveryNPfrom: z.number().optional(), // Нова Пошта — від X грн (залежно від міста), у суму не додаємо
         })
         .optional(),
       order: z.number().default(100),
