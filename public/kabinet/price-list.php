@@ -252,28 +252,23 @@ header("X-Robots-Tag: noindex, nofollow");
       <div>
         <div class="section-h"><span class="no">—</span><h2>Допуск на зміщення променя</h2></div>
         <div class="rule-diagram">
-          <svg width="182" height="162" viewBox="0 0 220 195" fill="none">
-            <!-- контур деталі: пологий S-подібний зріз зліва переходить у вертикальну стінку справа -->
-            <path d="M20 150 L20 95 C20 78 28 64 46 60 C52 59 56 60 60 58 L98 55 L154 55 L154 150 Z"
+          <svg width="228" height="176" viewBox="0 0 312 240" fill="none">
+            <!-- зовнішній контур: пологий підйом зліва, плаский верх, права стінка, низ -->
+            <path d="M20 150 C20 108 32 62 80 40 C100 32 122 32 145 30 L280 30 L280 210 L20 210 Z"
                   fill="#fbfaf7" stroke="var(--ink)" stroke-width="1.8" stroke-linejoin="round"/>
-            <!-- товщина деталі (передня грань) -->
-            <path d="M20 150 L20 160 L134 160 L134 150" fill="none" stroke="var(--ink)" stroke-width="1.2"/>
-            <!-- внутрішній згин -->
-            <line x1="98" y1="55" x2="98" y2="160" stroke="var(--ink)" stroke-width="1.2"/>
-            <!-- лінія фацетного шва, куди «дивиться» промінь -->
-            <line x1="154" y1="150" x2="98" y2="100" stroke="var(--ink)" stroke-width="1.2"/>
-            <!-- промінь -->
-            <text x="160" y="80" font-size="12" fill="var(--ink)" font-family="Manrope,sans-serif" font-weight="700">промінь</text>
-            <line x1="160" y1="86" x2="160" y2="90" stroke="var(--ink)" stroke-width="1"/>
-            <line x1="160" y1="90" x2="132" y2="106" stroke="var(--ink)" stroke-width="1"/>
+            <!-- лінія товщини (тільки до згину) -->
+            <line x1="20" y1="150" x2="223" y2="150" stroke="var(--ink)" stroke-width="1.4"/>
+            <!-- внутрішній згин (тільки до лінії товщини) -->
+            <line x1="223" y1="30" x2="223" y2="150" stroke="var(--ink)" stroke-width="1.2"/>
+            <!-- лінія шва фацетного кута -->
+            <line x1="223" y1="150" x2="280" y2="210" stroke="var(--ink)" stroke-width="1.2"/>
             <!-- зміщення -->
-            <line x1="157" y1="155" x2="192" y2="188" stroke="var(--ink)" stroke-width="2.2"/>
-            <path d="M186 175 L192 188 L179 183" fill="var(--ink)"/>
-            <path d="M163 168 L157 155 L170 161" fill="var(--ink)"/>
-            <text x="168" y="182" font-size="13" fill="var(--ink)" font-weight="700" font-family="Manrope,sans-serif">до 2 мм</text>
+            <line x1="284" y1="214" x2="303" y2="234" stroke="var(--ink)" stroke-width="2.2"/>
+            <path d="M298 223 L303 234 L291 230" fill="var(--ink)"/>
+            <path d="M289 218 L284 214 L296 217" fill="var(--ink)"/>
+            <text x="238" y="234" font-size="13" fill="var(--ink)" font-weight="700" font-family="Manrope,sans-serif">до 2 мм</text>
           </svg>
-          <p>Допустиме зміщення променя — до 2 мм.<br>За вимоги максимальної точності до кутів фацет
-          рахується за вартістю криволінійного.</p>
+          <p>Допустиме зміщення променя — до 2 мм.</p>
         </div>
       </div>
     </div>
