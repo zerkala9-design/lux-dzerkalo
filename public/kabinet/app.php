@@ -2184,6 +2184,9 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 
     </div><!-- end main section -->
     <div id="settings-price-section" class="settings-section">
+    <div style="margin-bottom:16px;display:flex;justify-content:flex-end;">
+      <button class="btn-secondary" id="btn-print-pricelist" type="button">🖨 Друкувати прайс</button>
+    </div>
     <div class="form-grid-2">
       <div>
         <div class="price-section-title">Ціна дзеркала за м² (грн) - Роздріб</div>
@@ -2291,7 +2294,6 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 
     <div style="margin-top:16px;display:flex;justify-content:space-between;gap:10px;">
       <button class="btn-secondary" id="btn-reset-prices">Скинути</button>
-      <button class="btn-secondary" id="btn-print-pricelist" type="button">🖨 Друкувати прайс</button>
     </div>
 
     </div><!-- end price section -->
