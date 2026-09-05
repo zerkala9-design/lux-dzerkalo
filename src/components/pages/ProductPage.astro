@@ -26,6 +26,16 @@ const related = (await getProductsByLang(lang))
 
 const gallery = [data.image, ...(data.gallery ?? [])];
 
+// Конфігуратор ціни показуємо лише коли є опції й точна базова ціна
+const showConfig = !!data.options && !!data.priceFrom && data.priceExact;
+const cfg = lang === 'ru'
+  ? { heading: 'Соберите комплектацию', film: 'Плёнка безопасности', mount: 'Крепление', none: 'Без крепления',
+      mProfile: 'Профиль снизу', mPoint: 'Точечное сверху', delivery: 'Доставка', pickup: 'Самовывоз, Киев',
+      free: 'бесплатно', np: 'Новая Почта', npRate: 'по тарифу', kyiv: 'Доставка по Киеву', total: 'Итого' }
+  : { heading: 'Зберіть комплектацію', film: 'Плівка безпеки', mount: 'Кріплення', none: 'Без кріплення',
+      mProfile: 'Профіль знизу', mPoint: 'Точкове зверху', delivery: 'Доставка', pickup: 'Самовивіз, Київ',
+      free: 'безкоштовно', np: 'Нова Пошта', npRate: 'за тарифом', kyiv: 'Доставка по Києву', total: 'Разом' };
+
 // getImage гарантує емітований JPEG (data.image.src може вести на неемітований оригінал → 404).
 const schemaImg = await getImage({ src: data.image, format: 'jpeg', width: 1200 });
 
@@ -117,6 +127,35 @@ const breadcrumbsLd = {
           </div>
         </div>
 
+        {showConfig && (
+          <div class="product__config" data-base={data.priceFrom} data-unit={data.priceUnit}>
+            <h3 class="cfg__h">{cfg.heading}</h3>
+            {data.options!.film && (
+              <label class="cfg-opt">
+                <input type="checkbox" name="film" data-add={data.options!.film} value={cfg.film} />
+                <span>{cfg.film} <b class="cfg-add">+{data.options!.film.toLocaleString('uk-UA')} {data.priceUnit}</b></span>
+              </label>
+            )}
+            {data.options!.mount && (
+              <fieldset class="cfg-group">
+                <legend>{cfg.mount}</legend>
+                <label class="cfg-opt"><input type="radio" name="mount" data-add="0" value="" checked /><span>{cfg.none}</span></label>
+                <label class="cfg-opt"><input type="radio" name="mount" data-add={data.options!.mount} value={cfg.mProfile} /><span>{cfg.mProfile} <b class="cfg-add">+{data.options!.mount.toLocaleString('uk-UA')} {data.priceUnit}</b></span></label>
+                <label class="cfg-opt"><input type="radio" name="mount" data-add={data.options!.mount} value={cfg.mPoint} /><span>{cfg.mPoint} <b class="cfg-add">+{data.options!.mount.toLocaleString('uk-UA')} {data.priceUnit}</b></span></label>
+              </fieldset>
+            )}
+            <fieldset class="cfg-group">
+              <legend>{cfg.delivery}</legend>
+              <label class="cfg-opt"><input type="radio" name="delivery" data-add="0" value={cfg.pickup} checked /><span>{cfg.pickup} <b class="cfg-free">{cfg.free}</b></span></label>
+              <label class="cfg-opt"><input type="radio" name="delivery" data-add="0" value={cfg.np} /><span>{cfg.np} <b class="cfg-note">{cfg.npRate}</b></span></label>
+              {data.options!.deliveryKyiv && (
+                <label class="cfg-opt"><input type="radio" name="delivery" data-add={data.options!.deliveryKyiv} value={cfg.kyiv} /><span>{cfg.kyiv} <b class="cfg-add">+{data.options!.deliveryKyiv.toLocaleString('uk-UA')} {data.priceUnit}</b></span></label>
+              )}
+            </fieldset>
+            <div class="cfg-total"><span>{cfg.total}:</span> <strong data-total>{data.priceFrom.toLocaleString('uk-UA')} {data.priceUnit}</strong></div>
+          </div>
+        )}
+
         {data.specs.length > 0 && (
           <table class="product__specs">
             <caption>{lang === 'ru' ? 'Характеристики' : 'Характеристики'}</caption>
@@ -180,6 +219,18 @@ const breadcrumbsLd = {
   .product__instock { color: #188038 !important; font-weight: 600; }
   .product__price-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 0.9rem; }
   .product__price-actions .btn { flex: 1; justify-content: center; min-width: 140px; }
+  .product__config { border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; margin: 0 0 1.6rem; }
+  .cfg__h { font-size: 1.1rem; margin: 0 0 0.9rem; }
+  .cfg-group { border: 0; padding: 0; margin: 0 0 0.9rem; }
+  .cfg-group legend { font-weight: 600; color: var(--ink-soft); font-size: 0.9rem; padding: 0; margin-bottom: 0.4rem; }
+  .cfg-opt { display: flex; align-items: center; gap: 10px; padding: 7px 0; cursor: pointer; font-size: 0.96rem; }
+  .cfg-opt input { width: 18px; height: 18px; accent-color: var(--accent); flex: none; cursor: pointer; }
+  .cfg-add { color: var(--accent-dark); font-weight: 700; }
+  .cfg-free { color: #188038; font-weight: 700; }
+  .cfg-note { color: var(--muted); font-weight: 500; font-size: 0.85rem; }
+  .cfg-total { border-top: 1px solid var(--line); margin-top: 0.6rem; padding-top: 0.9rem; display: flex; align-items: baseline; justify-content: space-between; }
+  .cfg-total span { color: var(--ink-soft); font-weight: 600; }
+  .cfg-total strong { font-family: var(--serif); font-size: 1.6rem; color: var(--ink); }
   .product__specs { width: 100%; border-collapse: collapse; margin: 0 0 1.4rem; font-size: 0.95rem; }
   .product__specs caption { text-align: left; font-weight: 700; color: var(--ink); margin-bottom: 0.5rem; font-size: 1.05rem; }
   .product__specs th, .product__specs td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
@@ -194,7 +245,7 @@ const breadcrumbsLd = {
   @media (max-width: 860px) { .product__grid { grid-template-columns: 1fr; gap: 28px; } }
 </style>
 
-<script define:vars={{ orderPrefix: lang === 'ru' ? 'Хочу заказать: ' : 'Хочу замовити: ' }}>
+<script define:vars={{ orderPrefix: lang === 'ru' ? 'Хочу заказать: ' : 'Хочу замовити: ', deliveryWord: cfg.delivery, totalWord: cfg.total }}>
   const main = document.getElementById('main-image');
   const thumbs = document.querySelectorAll('.thumb');
   thumbs.forEach((btn) => {
@@ -206,12 +257,39 @@ const breadcrumbsLd = {
     });
   });
 
-  // Кнопка «Замовити» → підставляє назву товару в поле коментаря заявки.
+  // Конфігуратор ціни: живий підрахунок суми.
+  const config = document.querySelector('.product__config');
+  const fmt = (n) => n.toLocaleString('uk-UA');
+  function calcTotal() {
+    if (!config) return null;
+    const base = Number(config.getAttribute('data-base')) || 0;
+    const unit = config.getAttribute('data-unit') || 'грн';
+    let sum = base;
+    config.querySelectorAll('input:checked').forEach((i) => { sum += Number(i.getAttribute('data-add')) || 0; });
+    const totalEl = config.querySelector('[data-total]');
+    if (totalEl) totalEl.textContent = fmt(sum) + ' ' + unit;
+    return sum;
+  }
+  if (config) { config.addEventListener('change', calcTotal); calcTotal(); }
+
+  // Кнопка «Замовити» → підставляє назву товару + вибрану комплектацію й суму в заявку.
   document.querySelectorAll('[data-order-btn]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const msg = document.querySelector('#callback-form textarea[name="message"]');
       const product = btn.getAttribute('data-product') || '';
-      if (msg && product && !msg.value.trim()) msg.value = orderPrefix + product;
+      if (!msg || !product) return;
+      const lines = [orderPrefix + product];
+      if (config) {
+        const film = config.querySelector('input[name="film"]');
+        if (film && film.checked) lines.push('+ ' + film.value);
+        const mount = config.querySelector('input[name="mount"]:checked');
+        if (mount && mount.value) lines.push('+ ' + mount.value);
+        const del = config.querySelector('input[name="delivery"]:checked');
+        if (del && del.value) lines.push(deliveryWord + ': ' + del.value);
+        const total = config.querySelector('[data-total]');
+        if (total) lines.push(totalWord + ': ' + total.textContent);
+      }
+      if (!msg.value.trim()) msg.value = lines.join('\n');
     });
   });
 </script>

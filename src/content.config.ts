@@ -21,6 +21,14 @@ const products = defineCollection({
       sku: z.string().optional(),
       // Таблиця характеристик (розмір, товщина, обробка тощо)
       specs: z.array(z.object({ label: z.string(), value: z.string() })).default([]),
+      // Опції конфігуратора ціни (доплати, грн). Показуємо блок лише коли задано.
+      options: z
+        .object({
+          film: z.number().optional(), // плівка безпеки +
+          mount: z.number().optional(), // кріплення (профіль знизу / точкове зверху) +
+          deliveryKyiv: z.number().optional(), // доставка по Києву +
+        })
+        .optional(),
       order: z.number().default(100),
       featured: z.boolean().default(false),
       // Не показувати в загальному каталозі /katalog/ (лишається лише у своїй категорії)
