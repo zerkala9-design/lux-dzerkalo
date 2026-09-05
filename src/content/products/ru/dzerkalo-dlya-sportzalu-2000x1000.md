@@ -23,7 +23,7 @@ order: 1
 featured: false
 options:
   film: 100
-  mount: 85
+  mount: 280
   deliveryKyiv: 1500
 ---
 
