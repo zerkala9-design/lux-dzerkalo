@@ -79,7 +79,7 @@ header("X-Robots-Tag: noindex, nofollow");
   table{width:100%;border-collapse:collapse}
   .tbl th{background:var(--dark);color:#fff;font-weight:700;font-size:10.5px;text-align:center;
     padding:4px 8px;border:1px solid var(--dark)}
-  .tbl td{border:1px solid var(--line);padding:3px 8px;text-align:center;font-size:12px;
+  .tbl td{border:1px solid var(--line);padding:2px 8px;text-align:center;font-size:13px;
     font-variant-numeric:tabular-nums}
   .tbl td.lbl{text-align:left;font-weight:600;background:#faf8f3}
   .tbl tbody tr:nth-child(even) td:not(.lbl){background:#fbfaf7}
