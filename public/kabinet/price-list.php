@@ -46,13 +46,15 @@ header("X-Robots-Tag: noindex, nofollow");
   .btn-print:hover{background:#1f57e6}
 
   .docwrap{width:100%}
+  /* Ширина аркуша = ширина А4 (794px при 96dpi), тому екран і друк виглядають однаково. */
   .paper{
     background:var(--paper);border:1px solid var(--line);border-radius:4px;
-    padding:34px 38px;box-shadow:0 10px 30px rgba(30,25,10,.08);
+    width:794px;max-width:100%;margin:0 auto;
+    padding:26px 30px;box-shadow:0 10px 30px rgba(30,25,10,.08);
   }
 
   .letterhead{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;
-    padding-bottom:16px;border-bottom:2px solid var(--gold)}
+    padding-bottom:12px;border-bottom:2px solid var(--gold)}
   .brand{display:flex;align-items:center;gap:12px}
   .brand .mark{width:46px;height:46px;border-radius:10px;background:var(--dark);color:#fff;
     display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;letter-spacing:.5px}
@@ -63,21 +65,21 @@ header("X-Robots-Tag: noindex, nofollow");
   .supplier{text-align:right;font-size:11px;line-height:1.6;color:#3a3a3a}
   .supplier .sn{font-weight:700;color:var(--ink);font-size:12px}
 
-  .doc-title{text-align:center;margin:20px 0 4px}
+  .doc-title{text-align:center;margin:12px 0 3px}
   .doc-title h1{font-size:22px;font-weight:800;letter-spacing:1.5px;margin:0;text-wrap:balance}
-  .doc-sub{text-align:center;color:var(--muted);font-size:11.5px;margin-bottom:22px}
+  .doc-sub{text-align:center;color:var(--muted);font-size:11.5px;margin-bottom:14px}
 
-  .section{margin-top:26px}
+  .section{margin-top:16px}
   .section:first-of-type{margin-top:8px}
-  .section-h{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+  .section-h{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
   .section-h .no{font-family:'Manrope',sans-serif;font-weight:800;color:var(--gold);font-size:12px}
   .section-h h2{font-size:14.5px;font-weight:800;margin:0;letter-spacing:.2px}
   .section-h .unit{color:var(--muted);font-size:11px;font-weight:600}
 
   table{width:100%;border-collapse:collapse}
   .tbl th{background:var(--dark);color:#fff;font-weight:700;font-size:10.5px;text-align:center;
-    padding:7px 8px;border:1px solid var(--dark)}
-  .tbl td{border:1px solid var(--line);padding:6px 8px;text-align:center;font-size:12px;
+    padding:5px 8px;border:1px solid var(--dark)}
+  .tbl td{border:1px solid var(--line);padding:4px 8px;text-align:center;font-size:12px;
     font-variant-numeric:tabular-nums}
   .tbl td.lbl{text-align:left;font-weight:600;background:#faf8f3}
   .tbl tbody tr:nth-child(even) td:not(.lbl){background:#fbfaf7}
@@ -92,54 +94,31 @@ header("X-Robots-Tag: noindex, nofollow");
 
   .note-strip{margin-top:8px;font-size:10.5px;color:var(--muted);line-height:1.5}
 
-  .terms{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);
+  .terms{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);
     font-size:11px;color:#333;line-height:1.65}
   .terms b{color:var(--ink)}
   .terms ul{margin:6px 0 0;padding-left:18px}
-  .terms li{margin-bottom:3px}
+  .terms li{margin-bottom:2px}
 
   .rule-diagram{display:flex;align-items:center;gap:18px;background:#faf8f3;
-    border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-top:10px}
+    border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:8px}
   .rule-diagram svg{flex:0 0 auto}
   .rule-diagram p{margin:0;font-size:11px;color:#333;line-height:1.55}
 
-  .foot{margin-top:24px;padding-top:12px;border-top:1px solid var(--line);
+  .foot{margin-top:16px;padding-top:10px;border-top:1px solid var(--line);
     font-size:10.5px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
   .foot b{color:var(--ink)}
   .foot .gold{color:var(--gold);font-weight:700}
 
+  /* Друк = точна копія того, що на екрані: ті самі шрифти й відступи, аркуш А4 завширшки,
+     а скрипт нижче лише вписує його у висоту сторінки через zoom (без зміни пропорцій). */
   @media print{
-    body{background:#fff;font-size:11px}
+    body{background:#fff}
     .noprint{display:none!important}
     .wrap{max-width:none;padding:0}
     .docwrap{width:auto!important;height:auto!important;overflow:visible!important}
-    .paper{border:none;box-shadow:none;border-radius:0;padding:8mm 11mm;
-           width:auto!important;transform:none!important}
-    .letterhead{padding-bottom:8px}
-    .brand .mark{width:36px;height:36px;font-size:15px}
-    .brand .word .wm{font-size:17px}
-    .supplier{font-size:9.5px}
-    .supplier .sn{font-size:10px}
-    .doc-title{margin:8px 0 2px}
-    .doc-title h1{font-size:17px}
-    .doc-sub{margin-bottom:10px;font-size:9.5px}
-    .section{margin-top:11px}
-    .section:first-of-type{margin-top:2px}
-    .section-h{margin-bottom:5px}
-    .section-h h2{font-size:11.5px}
-    .grid4{gap:7px}
-    .grid2{gap:9px}
-    .mini-h{font-size:11.5px;margin-bottom:3px;padding-bottom:2px}
-    .tbl th{font-size:8.5px;padding:3px 6px}
-    .tbl td{font-size:9.5px;padding:2px 6px}
-    .note-strip{margin-top:3px;font-size:8.5px}
-    .rule-diagram{padding:6px 9px;gap:10px}
-    .rule-diagram svg{width:130px;height:auto}
-    .rule-diagram p{font-size:8.5px}
-    .terms{margin-top:11px;padding-top:7px;font-size:8.5px}
-    .terms ul{margin-top:3px}
-    .terms li{margin-bottom:1px}
-    .foot{margin-top:9px;padding-top:7px;font-size:8px}
+    .paper{border:none;box-shadow:none;border-radius:0;
+           width:794px!important;max-width:none;margin:0 auto;transform:none!important}
     @page{size:A4;margin:0}
   }
 </style>
@@ -342,6 +321,7 @@ header("X-Robots-Tag: noindex, nofollow");
       paper.style.transform = '';
       paper.style.transformOrigin = '';
       paper.style.width = '';
+      paper.style.maxWidth = '';
       wrap.style.height = '';
       wrap.style.overflow = '';
       on = false;
@@ -351,6 +331,8 @@ header("X-Robots-Tag: noindex, nofollow");
       var avail = wrap.clientWidth;
       if(avail >= A4) return;
       var k = avail / A4;
+      // max-width:100% з CSS не дає аркушу лишитись завширшки А4 — знімаємо його на час масштабу
+      paper.style.maxWidth = 'none';
       paper.style.width = A4 + 'px';
       paper.style.transformOrigin = 'top left';
       paper.style.transform = 'scale(' + k + ')';
@@ -369,8 +351,31 @@ header("X-Robots-Tag: noindex, nofollow");
     fit();
   })();
 
+  /* ---- Друк: той самий макет, що на екрані, вписаний у висоту однієї сторінки А4 ---- */
+  (function(){
+    var A4_H = 1123;              // 297 мм при 96dpi
+    var paper = document.querySelector('.paper');
+    if(!paper) return;
+    var st = document.createElement('style');
+    st.media = 'print';
+    document.head.appendChild(st);
+
+    function calc(){
+      // offsetHeight не залежить від transform, тож міряємо реальну висоту макета
+      var h = paper.offsetHeight;
+      if(!h) return;
+      var k = Math.min(1, (A4_H - 2) / h);
+      st.textContent = '@media print{.paper{zoom:' + k.toFixed(4) + '}}';
+    }
+    window.__printFit = calc;
+    window.addEventListener('load', function(){ setTimeout(calc, 80); });
+    window.addEventListener('beforeprint', calc);
+    calc();
+  })();
+
   document.getElementById('printBtn').addEventListener('click', function(){
     if(window.__fitOff) window.__fitOff();
+    if(window.__printFit) window.__printFit();
     window.print();
     if(window.__fitOn) setTimeout(window.__fitOn, 300);
   });
