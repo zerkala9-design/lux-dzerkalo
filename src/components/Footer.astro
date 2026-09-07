@@ -87,6 +87,7 @@ const socials = [
         {navItems.map((item) => (
           <li><a href={localizePath(item.path, lang)}>{t(item.key)}</a></li>
         ))}
+        <li><a href={localizePath('/povernennya/', lang)}>{lang === 'ru' ? 'Условия возврата' : 'Умови повернення'}</a></li>
       </ul>
     </div>
 
