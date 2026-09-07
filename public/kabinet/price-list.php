@@ -50,13 +50,13 @@ header("X-Robots-Tag: noindex, nofollow");
   .paper{
     background:var(--paper);border:1px solid var(--line);border-radius:4px;
     width:794px;max-width:100%;margin:0 auto;
-    padding:26px 30px;box-shadow:0 10px 30px rgba(30,25,10,.08);
+    padding:24px 30px;box-shadow:0 10px 30px rgba(30,25,10,.08);
   }
 
   .letterhead{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;
-    padding-bottom:12px;border-bottom:2px solid var(--gold)}
+    padding-bottom:10px;border-bottom:2px solid var(--gold)}
   .brand{display:flex;align-items:center;gap:12px}
-  .brand .mark{width:46px;height:46px;border-radius:10px;background:var(--dark);color:#fff;
+  .brand .mark{width:42px;height:42px;border-radius:10px;background:var(--dark);color:#fff;
     display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;letter-spacing:.5px}
   .brand .word{line-height:1.15}
   .brand .word .wm{font-size:21px;font-weight:800;font-family:'Manrope',sans-serif;letter-spacing:.2px}
@@ -65,21 +65,21 @@ header("X-Robots-Tag: noindex, nofollow");
   .supplier{text-align:right;font-size:11px;line-height:1.6;color:#3a3a3a}
   .supplier .sn{font-weight:700;color:var(--ink);font-size:12px}
 
-  .doc-title{text-align:center;margin:12px 0 3px}
+  .doc-title{text-align:center;margin:10px 0 3px}
   .doc-title h1{font-size:22px;font-weight:800;letter-spacing:1.5px;margin:0;text-wrap:balance}
-  .doc-sub{text-align:center;color:var(--muted);font-size:11.5px;margin-bottom:14px}
+  .doc-sub{text-align:center;color:var(--muted);font-size:11.5px;margin-bottom:10px}
 
-  .section{margin-top:16px}
-  .section:first-of-type{margin-top:8px}
-  .section-h{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+  .section{margin-top:12px}
+  .section:first-of-type{margin-top:6px}
+  .section-h{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
   .section-h .no{font-family:'Manrope',sans-serif;font-weight:800;color:var(--gold);font-size:12px}
   .section-h h2{font-size:14.5px;font-weight:800;margin:0;letter-spacing:.2px}
   .section-h .unit{color:var(--muted);font-size:11px;font-weight:600}
 
   table{width:100%;border-collapse:collapse}
   .tbl th{background:var(--dark);color:#fff;font-weight:700;font-size:10.5px;text-align:center;
-    padding:5px 8px;border:1px solid var(--dark)}
-  .tbl td{border:1px solid var(--line);padding:4px 8px;text-align:center;font-size:12px;
+    padding:4px 8px;border:1px solid var(--dark)}
+  .tbl td{border:1px solid var(--line);padding:3px 8px;text-align:center;font-size:12px;
     font-variant-numeric:tabular-nums}
   .tbl td.lbl{text-align:left;font-weight:600;background:#faf8f3}
   .tbl tbody tr:nth-child(even) td:not(.lbl){background:#fbfaf7}
@@ -89,37 +89,38 @@ header("X-Robots-Tag: noindex, nofollow");
   /* Аркуш завжди має вигляд А4 (як на екрані, так і в друку) — його масштабує
      скрипт нижче, тому колонки тут НЕ повинні перелаштовуватись під вузький екран. */
 
-  .mini-h{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:6px;
-    padding-bottom:4px;border-bottom:1px solid var(--gold-soft);font-family:'Manrope',sans-serif}
+  .mini-h{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:4px;
+    padding-bottom:3px;border-bottom:1px solid var(--gold-soft);font-family:'Manrope',sans-serif}
 
-  .note-strip{margin-top:8px;font-size:10.5px;color:var(--muted);line-height:1.5}
+  .note-strip{margin-top:5px;font-size:10.5px;color:var(--muted);line-height:1.5}
 
-  .terms{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);
+  .terms{margin-top:12px;padding-top:9px;border-top:1px solid var(--line);
     font-size:11px;color:#333;line-height:1.65}
   .terms b{color:var(--ink)}
-  .terms ul{margin:6px 0 0;padding-left:18px}
-  .terms li{margin-bottom:2px}
+  .terms ul{margin:4px 0 0;padding-left:18px}
+  .terms li{margin-bottom:1px}
 
   .rule-diagram{display:flex;align-items:center;gap:18px;background:#faf8f3;
-    border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:8px}
+    border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-top:6px}
   .rule-diagram svg{flex:0 0 auto}
   .rule-diagram p{margin:0;font-size:11px;color:#333;line-height:1.55}
 
-  .foot{margin-top:16px;padding-top:10px;border-top:1px solid var(--line);
+  .foot{margin-top:12px;padding-top:8px;border-top:1px solid var(--line);
     font-size:10.5px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
   .foot b{color:var(--ink)}
   .foot .gold{color:var(--gold);font-weight:700}
 
-  /* Друк = точна копія того, що на екрані: ті самі шрифти й відступи, аркуш А4 завширшки,
-     а скрипт нижче лише вписує його у висоту сторінки через zoom (без зміни пропорцій). */
+  /* Друк = ті самі шрифти й відступи, що на екрані. Аркуш займає всю ширину сторінки
+     принтера (width:auto — так само, як у рахунках, які нормально друкуються з iPhone),
+     а макет ущільнений так, щоб природно вміщатись у висоту А4 без масштабування. */
   @media print{
     body{background:#fff}
     .noprint{display:none!important}
     .wrap{max-width:none;padding:0}
     .docwrap{width:auto!important;height:auto!important;overflow:visible!important}
-    .paper{border:none;box-shadow:none;border-radius:0;
-           width:794px!important;max-width:none;margin:0 auto;transform:none!important}
-    @page{size:A4;margin:0}
+    .paper{border:none;box-shadow:none;border-radius:0;padding:0;
+           width:auto!important;max-width:none;margin:0;transform:none!important}
+    @page{size:A4;margin:8mm}
   }
 </style>
 </head>
@@ -231,7 +232,7 @@ header("X-Robots-Tag: noindex, nofollow");
       <div>
         <div class="section-h"><span class="no">—</span><h2>Допуск на зміщення променя</h2></div>
         <div class="rule-diagram">
-          <svg width="228" height="176" viewBox="0 0 312 240" fill="none">
+          <svg width="195" height="150" viewBox="0 0 312 240" fill="none">
             <!-- зовнішній контур: пологий підйом зліва, плаский верх, права стінка, низ -->
             <path d="M20 150 C20 108 32 62 80 40 C100 32 122 32 145 30 L280 30 L280 210 L20 210 Z"
                   fill="#fbfaf7" stroke="var(--ink)" stroke-width="1.8" stroke-linejoin="round"/>
@@ -351,9 +352,10 @@ header("X-Robots-Tag: noindex, nofollow");
     fit();
   })();
 
-  /* ---- Друк: той самий макет, що на екрані, вписаний у висоту однієї сторінки А4 ---- */
+  /* ---- Страхувальник друку: якщо колись контенту побільшає і аркуш переросте сторінку,
+         він трохи зменшиться, щоб лишитись на одній А4. За нормою тут виходить zoom = 1. ---- */
   (function(){
-    var A4_H = 1123;              // 297 мм при 96dpi
+    var AVAIL = 1062;             // 281 мм при 96dpi — А4 мінус поля @page 8мм
     var paper = document.querySelector('.paper');
     if(!paper) return;
     var st = document.createElement('style');
@@ -361,10 +363,12 @@ header("X-Robots-Tag: noindex, nofollow");
     document.head.appendChild(st);
 
     function calc(){
-      // offsetHeight не залежить від transform, тож міряємо реальну висоту макета
-      var h = paper.offsetHeight;
-      if(!h) return;
-      var k = Math.min(1, (A4_H - 2) / h);
+      // offsetHeight не залежить від transform; віднімаємо екранні padding — у друку їх немає
+      var cs = getComputedStyle(paper);
+      var padV = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+      var h = paper.offsetHeight - padV;
+      if(!h || h <= 0) return;
+      var k = Math.min(1, (AVAIL - 2) / h);
       st.textContent = '@media print{.paper{zoom:' + k.toFixed(4) + '}}';
     }
     window.__printFit = calc;
