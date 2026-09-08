@@ -3440,9 +3440,15 @@ syncState();
     syncState(); calculate(); calcWall(); calcPano();
   });
 
-  document.getElementById("btn-print-pricelist").addEventListener("click", async ()=>{
-    try{ if(window.rxSaveParams) await window.rxSaveParams(); }catch(e){}
-    window.open("price-list.php", "_blank");
+  document.getElementById("btn-print-pricelist").addEventListener("click", ()=>{
+    // Ціни зберігаємо СИНХРОННО: після await Safari на iPhone втрачає «жест користувача»
+    // і блокує відкриття вікна — саме тому кнопка раніше нічого не робила на телефоні.
+    try{ if(window.rxSaveParamsLocal) window.rxSaveParamsLocal(); }catch(e){}
+    const w = window.open("price-list.php", "_blank");
+    // якщо спливні вікна заблоковані — відкриваємо прайс у цій же вкладці
+    if(!w) { location.href = "price-list.php"; return; }
+    // синхронізацію на сервер довантажуємо у фоні, вона вікну вже не потрібна
+    try{ if(window.rxSaveParams) window.rxSaveParams(); }catch(e){}
   });
 
   /* ===== AUTO-SAVE CALCULATOR STATE ===== */
@@ -11296,9 +11302,15 @@ function exportSingleNaradPNG(order){
       else el.value = o[k];
     });
   }
-  window.rxSaveParams = async function(){
+  // Локальне збереження без мережі — синхронне, щоб його можна було викликати
+  // прямо в обробнику кліку перед window.open (інакше Safari блокує вікно).
+  window.rxSaveParamsLocal = function(){
     const p = readParams();
     try{ localStorage.setItem("reflectique_prices", JSON.stringify(p)); }catch(e){}
+    return p;
+  };
+  window.rxSaveParams = async function(){
+    const p = window.rxSaveParamsLocal();
     await push("params", p);
   };
   // Кнопка «Зберегти» у Параметрах: зберігаємо прайс локально і на сервер (спільно)
