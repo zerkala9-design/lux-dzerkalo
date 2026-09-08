@@ -2184,9 +2184,6 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 
     </div><!-- end main section -->
     <div id="settings-price-section" class="settings-section">
-    <div style="margin-bottom:16px;display:flex;justify-content:flex-end;">
-      <button class="btn-secondary" id="btn-print-pricelist" type="button">🖨 Друкувати прайс</button>
-    </div>
     <div class="form-grid-2">
       <div>
         <div class="price-section-title">Ціна дзеркала за м² (грн) - Роздріб</div>
@@ -3314,8 +3311,22 @@ syncState();
     if(price) price.style.display = (tab==='price') ? '' : 'none';
     if(sync) sync.style.display = (tab==='sync') ? '' : 'none';
   }
+  // Відкриває вікно з прайсом. Ціни зберігаємо СИНХРОННО: після await Safari на iPhone
+  // втрачає «жест користувача» і блокує вікно.
+  function openPriceList(){
+    try{ if(window.rxSaveParamsLocal) window.rxSaveParamsLocal(); }catch(e){}
+    const w = window.open("price-list.php", "_blank");
+    if(!w){ location.href = "price-list.php"; return; }   // якщо спливні вікна заблоковані
+    try{ if(window.rxSaveParams) window.rxSaveParams(); }catch(e){}  // синхронізація у фоні
+  }
   settingsModal.querySelectorAll('.settings-tab').forEach(btn=>{
-    btn.addEventListener('click', ()=> setSettingsTab(btn.dataset.tab));
+    btn.addEventListener('click', ()=>{
+      setSettingsTab(btn.dataset.tab);
+      // Натискання саме на вкладку «Прайс» відкриває прайс для перегляду та друку.
+      // Прив'язано до кліку, а не до setSettingsTab — модалка відкривається на цій
+      // вкладці програмно, і вікно не має вискакувати щоразу при вході в Параметри.
+      if(btn.dataset.tab === 'price') openPriceList();
+    });
   });
   // default when opening
   document.getElementById("settings-btn").addEventListener("click", ()=>{ try{ setSettingsTab('price'); }catch(e){} });
@@ -3438,17 +3449,6 @@ syncState();
     document.getElementById("price_round_edge_m").value = 260;
     document.getElementById("price_round_cut_pct").value = 35;
     syncState(); calculate(); calcWall(); calcPano();
-  });
-
-  document.getElementById("btn-print-pricelist").addEventListener("click", ()=>{
-    // Ціни зберігаємо СИНХРОННО: після await Safari на iPhone втрачає «жест користувача»
-    // і блокує відкриття вікна — саме тому кнопка раніше нічого не робила на телефоні.
-    try{ if(window.rxSaveParamsLocal) window.rxSaveParamsLocal(); }catch(e){}
-    const w = window.open("price-list.php", "_blank");
-    // якщо спливні вікна заблоковані — відкриваємо прайс у цій же вкладці
-    if(!w) { location.href = "price-list.php"; return; }
-    // синхронізацію на сервер довантажуємо у фоні, вона вікну вже не потрібна
-    try{ if(window.rxSaveParams) window.rxSaveParams(); }catch(e){}
   });
 
   /* ===== AUTO-SAVE CALCULATOR STATE ===== */
