@@ -3022,8 +3022,9 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
   // Розбір вставлених розмірів: "1022х1023-5шт", кілька рядків/через кому тощо.
   function parsePastedSizes(text){
     const out = [];
-    // W [х/x/×/*] H [ -/: Q ]  — Q лише після роздільника, щоб не зʼїсти наступний розмір
-    const re = /(\d+(?:[.,]\d+)?)\s*[xXхХ×*\/]\s*(\d+(?:[.,]\d+)?)(?:\s*[-–—:]\s*(\d+))?/g;
+    // W [-/х/x/×/*] H [ -/: Q ]  — роздільником може бути й дефіс: «1300-800-4».
+    // Пробіли лише звичайні (не \s), щоб розмір не «склеювався» з наступного рядка.
+    const re = /(\d+(?:[.,]\d+)?)[ \t]*[-–—xXхХ×*\/][ \t]*(\d+(?:[.,]\d+)?)(?:[ \t]*[-–—:xXхХ×*][ \t]*(\d+)[ \t]*(?:шт\.?)?)?/g;
     let m;
     while((m = re.exec(String(text||"")))){
       const w = parseFloat(m[1].replace(",", "."));
@@ -3050,18 +3051,19 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
   function rectItemTemplate(w=0,h=0,q=1){
     const row = document.createElement("div");
     row.className = "rect-item-row";
+    // Нуль показуємо як порожнє поле — щоб не доводилось стирати «0» перед вводом
     row.innerHTML = `
       <div class="field">
         <label>Ширина, мм</label>
-        <input class="input calc-input rect-w" type="number" min="0" value="${w}">
+        <input class="input calc-input rect-w" type="number" min="0" value="${w || ''}">
       </div>
       <div class="field">
         <label>Висота, мм</label>
-        <input class="input calc-input rect-h" type="number" min="0" value="${h}">
+        <input class="input calc-input rect-h" type="number" min="0" value="${h || ''}">
       </div>
       <div class="field">
         <label>Кількість, шт</label>
-        <input class="input calc-input rect-q" type="number" min="1" value="${q}">
+        <input class="input calc-input rect-q" type="number" min="1" value="${q || ''}">
       </div>
       <button class="rect-remove" type="button" title="Видалити">−</button>
     `;
@@ -3070,9 +3072,9 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
       if(!box) return;
       // keep at least 1 row
       if(box.querySelectorAll(".rect-item-row").length<=1){
-        row.querySelector(".rect-w").value = 0;
-        row.querySelector(".rect-h").value = 0;
-        row.querySelector(".rect-q").value = 0;
+        row.querySelector(".rect-w").value = "";
+        row.querySelector(".rect-h").value = "";
+        row.querySelector(".rect-q").value = "";
       }else{
         row.remove();
       }
@@ -3085,17 +3087,17 @@ syncState();
         syncState();
       });
     });
-    // Розумна вставка у поле ширини: "1022х1023-5шт" → авто-розкладка + нові рядки
-    const wInput = row.querySelector(".rect-w");
-    if(wInput){
-      wInput.addEventListener("paste", (e)=>{
+    // Розумна вставка списку розмірів: "1300-800-4", "1022х1023-5шт", кілька рядків.
+    // Слухаємо обидва поля розміру — щоб спрацювало, у яке з них не вставили.
+    row.querySelectorAll(".rect-w, .rect-h").forEach(inp=>{
+      inp.addEventListener("paste", (e)=>{
         const text = (e.clipboardData || window.clipboardData) ? (e.clipboardData || window.clipboardData).getData("text") : "";
         const entries = parsePastedSizes(text);
         if(!entries.length) return; // звичайне число — стандартна вставка
         e.preventDefault();
         applyPastedSizes(row, entries);
       });
-    }
+    });
     return row;
   }
 
@@ -3149,13 +3151,15 @@ syncState();
   }
 
   function resetCalculatorToZero(){
-    // rect items
-    setRectItems([{w:0,h:0,q:1}]);
+    // Поля лишаємо ПОРОЖНІМИ, а не з нулем — щоб можна було одразу вводити цифри
+    setRectItems([{w:0,h:0,q:0}]);
     // other shapes
     const setVal = (id, v)=>{ const el=document.getElementById(id); if(el) el.value=v; };
-    setVal("circle_diameter", 0); setVal("circle_qty", 0);
-    setVal("ellipse_a", 0); setVal("ellipse_b", 0); setVal("ellipse_qty", 0);
-    setVal("diamond_w", 0); setVal("diamond_h", 0); setVal("diamond_qty", 0);
+    setVal("circle_diameter", ""); setVal("circle_qty", "");
+    setVal("ellipse_a", ""); setVal("ellipse_b", ""); setVal("ellipse_qty", "");
+    // ромб: поля звуться d1/d2 (раніше тут стояли неіснуючі diamond_w/diamond_h,
+    // тому розміри ромба взагалі не скидались)
+    setVal("diamond_d1", ""); setVal("diamond_d2", ""); setVal("diamond_qty", "");
     // keep options (thickness/edge/facet/film) as is
     calculate();
     syncState();
