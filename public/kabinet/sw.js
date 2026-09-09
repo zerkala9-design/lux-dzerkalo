@@ -1,5 +1,5 @@
 /* Service worker кабінету Lux Dzerkalo — офлайн-режим (рахувати без інтернету). */
-const CACHE = 'lux-kabinet-v1';
+const CACHE = 'lux-kabinet-v2';
 const CORE = [
   '/kabinet/vendor/html2canvas.min.js',
   '/kabinet/vendor/JsBarcode.all.min.js',
@@ -26,12 +26,14 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(req.url);
   if (url.origin !== location.origin || !url.pathname.startsWith('/kabinet/')) return;
   if (url.pathname.endsWith('/sync.php')) return; // синхронізацію не кешуємо
+  if (url.pathname.endsWith('/ver.php')) return;  // перевірку версії — завжди в мережу
 
   // Сторінка застосунку: мережа-перша, офлайн → кешований калькулятор
   if (req.mode === 'navigate') {
     e.respondWith((async () => {
       try {
-        const net = await fetch(req.url, { credentials: 'same-origin', redirect: 'follow' });
+        // no-store: інакше HTTP-кеш телефона може віддати стару сторінку повз мережу
+        const net = await fetch(req.url, { credentials: 'same-origin', redirect: 'follow', cache: 'no-store' });
         // Кешуємо ЛИШЕ справжній калькулятор (app.php без редіректу на форму входу)
         if (net && net.ok && net.url && net.url.indexOf('/kabinet/app.php') >= 0) {
           const clone = net.clone();

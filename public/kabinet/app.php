@@ -38,6 +38,77 @@ header("X-Robots-Tag: noindex, nofollow");
         navigator.serviceWorker.register('/kabinet/sw.js', { scope: '/kabinet/' }).catch(function(){});
       });
     }
+
+    /* Автооновлення збереженого на телефон кабінету (Android/iOS PWA).
+       Проблема: ярлик не перезавантажує сторінку — застосунок «прокидається» зі старим
+       кодом, тож зміни не зʼявляються. Тому при поверненні у застосунок звіряємо версію
+       з сервером і, якщо вона змінилась, перезавантажуємось. Введені дані не губляться:
+       калькулятор зберігає стан у localStorage і відновлює його після завантаження. */
+    (function(){
+      var RUNNING = "<?php echo (string) @filemtime(__FILE__); ?>";
+      var last = 0, busy = false;
+
+      function check(){
+        if (busy) return;
+        if (document.visibilityState !== 'visible') return;
+        var now = Date.now();
+        if (now - last < 30000) return;   // не частіше разу на 30 с
+        last = now; busy = true;
+
+        fetch('/kabinet/ver.php', { cache: 'no-store', credentials: 'same-origin' })
+          .then(function(r){ return r.ok ? r.text() : null; })
+          .then(function(v){
+            busy = false;
+            if (!v) return;
+            v = v.trim();
+            if (!v || !RUNNING || v === RUNNING) return;
+            // нова версія на сервері — спершу оновлюємо service worker
+            if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+              navigator.serviceWorker.getRegistrations().then(function(rs){
+                rs.forEach(function(r){ try{ r.update(); }catch(e){} });
+              }).catch(function(){});
+            }
+            // Розміри, які вже набрані, ніде не зберігаються — тому мовчки перезавантажуємо
+            // лише порожній калькулятор. Якщо є незакінчений розрахунок — питаємо.
+            if (hasWork()) showBar();
+            else setTimeout(function(){ location.reload(); }, 150);
+          })
+          .catch(function(){ busy = false; });
+      }
+
+      // Чи є незакінчений розрахунок (введені розміри)
+      function hasWork(){
+        try{
+          var rows = document.querySelectorAll('.rect-item-row');
+          for (var i = 0; i < rows.length; i++){
+            var w = rows[i].querySelector('.rect-w'), h = rows[i].querySelector('.rect-h');
+            if ((w && parseFloat(w.value) > 0) || (h && parseFloat(h.value) > 0)) return true;
+          }
+        }catch(e){}
+        return false;
+      }
+
+      function showBar(){
+        if (document.getElementById('rx-update-bar')) return;
+        var bar = document.createElement('div');
+        bar.id = 'rx-update-bar';
+        bar.setAttribute('style',
+          'position:fixed;left:12px;right:12px;bottom:14px;z-index:99999;display:flex;' +
+          'align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;' +
+          'border-radius:14px;background:rgba(20,14,8,.97);border:1px solid rgba(255,122,0,.85);' +
+          'box-shadow:0 10px 30px rgba(0,0,0,.45);color:#ffd6aa;font-size:14px;font-weight:600');
+        bar.innerHTML =
+          '<span>Доступна нова версія калькулятора</span>' +
+          '<button type="button" style="flex:0 0 auto;background:#ff7a00;color:#111;border:none;' +
+          'border-radius:999px;padding:8px 16px;font-weight:800;font-size:14px">Оновити</button>';
+        bar.querySelector('button').addEventListener('click', function(){ location.reload(); });
+        document.body.appendChild(bar);
+      }
+
+      document.addEventListener('visibilitychange', check);
+      window.addEventListener('focus', check);
+      window.addEventListener('online', check);
+    })();
   </script>
   <script src="/kabinet/vendor/html2canvas.min.js"></script>
   <script src="/kabinet/vendor/JsBarcode.all.min.js"></script>
