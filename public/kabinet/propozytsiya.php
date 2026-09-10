@@ -8,7 +8,7 @@ session_set_cookie_params([
 ]);
 session_start();
 // Автовхід за токеном «запамʼятати мене» (щоб не питати пароль щоразу)
-$PASS_HASH_APP = '$2y$12$Cu21nx9TBkE1/6uf7i.Eo.tviz4.Q7hA/m1/zXvlkBVvorAxWCXri';
+$PASS_HASH_APP = '$2y$12$B2p4Oew.ALOf6wWC6ioVI.LIyVTEnuQObdgcuNgoyKqPn2MTUN2cG';
 $REMEMBER_APP  = hash('sha256', $PASS_HASH_APP . '|lux-kabinet-remember-v1');
 if (empty($_SESSION["kabinet_ok"])
     && isset($_COOKIE['kabinet_remember'])

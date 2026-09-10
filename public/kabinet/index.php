@@ -12,7 +12,7 @@
  */
 
 // bcrypt-хеш пароля (не сам пароль!).
-$PASS_HASH = '$2y$12$Cu21nx9TBkE1/6uf7i.Eo.tviz4.Q7hA/m1/zXvlkBVvorAxWCXri';
+$PASS_HASH = '$2y$12$B2p4Oew.ALOf6wWC6ioVI.LIyVTEnuQObdgcuNgoyKqPn2MTUN2cG';
 
 // Токен «запамʼятати мене» — привʼязаний до пароля (зміна пароля скидає всі токени)
 $REMEMBER = hash('sha256', $PASS_HASH . '|lux-kabinet-remember-v1');
