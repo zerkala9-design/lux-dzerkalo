@@ -1,0 +1,10 @@
+# Дані кабінету (замовлення, прайс) — доступ лише зсередини PHP, ніколи напряму.
+# Це другий шар: основний захист не залежить від .htaccess, бо файли мають
+# розширення .php із заглушкою «<?php exit;» (nginx на цьому хостингу .htaccess не читає).
+<IfModule mod_authz_core.c>
+  Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+  Order allow,deny
+  Deny from all
+</IfModule>

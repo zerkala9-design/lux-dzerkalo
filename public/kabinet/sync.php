@@ -33,7 +33,22 @@ if (!in_array($key, $allowed, true)) {
 
 $dir = __DIR__ . '/data';
 if (!is_dir($dir)) { @mkdir($dir, 0775, true); }
-$file = $dir . '/' . $key . '.json';
+
+// Дані лежать у файлах із розширенням .php і заглушкою «<?php exit;» на початку.
+// Причина: хостинг віддає статику через nginx, який .htaccess не читає, тож звичайний
+// data/orders.json був доступний будь-кому без входу. Файл .php сервер завжди віддає
+// інтерпретатору — той одразу завершує роботу і не показує нічого.
+$GUARD = "<?php exit; ?>\n";
+$file  = $dir . '/' . $key . '.json.php';
+$legacy = $dir . '/' . $key . '.json';   // старий, відкритий формат
+
+// Разова міграція старих даних + видалення відкритого файлу з сервера
+if (!is_file($file) && is_file($legacy)) {
+    $old = @file_get_contents($legacy);
+    if ($old !== false && @file_put_contents($file, $GUARD . $old, LOCK_EX) !== false) {
+        @unlink($legacy);
+    }
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $raw = file_get_contents('php://input');
@@ -46,11 +61,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     // атомарний запис
     $tmp = $file . '.tmp';
-    if (@file_put_contents($tmp, $raw, LOCK_EX) === false || !@rename($tmp, $file)) {
+    if (@file_put_contents($tmp, $GUARD . $raw, LOCK_EX) === false || !@rename($tmp, $file)) {
         http_response_code(500);
         echo json_encode(['ok' => false, 'error' => 'write failed']);
         exit;
     }
+    @unlink($legacy); // старий відкритий файл більше не потрібен
     echo json_encode(['ok' => true, 'saved' => $key, 'ts' => time()]);
     exit;
 }
@@ -58,6 +74,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // GET
 if (is_file($file)) {
     $data = @file_get_contents($file);
+    if ($data !== false && strpos($data, $GUARD) === 0) {
+        $data = substr($data, strlen($GUARD));   // прибрати заглушку
+    }
     echo ($data !== false && $data !== '') ? $data : 'null';
 } else {
     echo 'null';

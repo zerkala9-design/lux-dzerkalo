@@ -121,6 +121,10 @@ const socials = [
       <a href={altRu} class:list={['footer-lang__opt', { active: lang === 'ru' }]} hreflang="ru-RU">RU</a>
     </div>
     <span>{st.addressFull}</span>
+    {/* Службовий вхід для персоналу. rel=nofollow — сама сторінка входу віддає noindex. */}
+    <a href="/kabinet/" class="footer-kabinet" rel="nofollow noopener">
+      {lang === 'ru' ? 'Вход в кабинет' : 'Вхід у кабінет'}
+    </a>
   </div>
 </footer>
 
@@ -143,6 +147,15 @@ const socials = [
     display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
     padding: 22px 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.85rem; color: #79828d;
   }
+  .footer-kabinet {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.18); color: #aeb6c0;
+    font-weight: 600; font-size: 0.82rem; white-space: nowrap;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .footer-kabinet::before { content: '🔒'; font-size: 0.85em; }
+  .footer-kabinet:hover { color: var(--accent); border-color: var(--accent); }
   .footer-lang { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.95rem; }
   .footer-lang__opt { color: #aeb6c0; padding: 2px 4px; }
   .footer-lang__opt:hover { color: var(--accent); }

@@ -38,19 +38,80 @@ if (isset($_GET['logout'])) {
 
 $error = false;
 
+/* ───────────────── Захист від перебору пароля ─────────────────
+   Затримки замало: запити можна слати паралельно, і короткий пароль
+   перебирається за хвилини. Тому рахуємо невдалі спроби з кожної IP
+   і після MAX_FAILS блокуємо її на BLOCK_MIN хвилин.
+   Лічильник у файлі під захистом «<?php exit;» — напряму з браузера не читається. */
+const MAX_FAILS = 5;      // скільки помилок дозволено
+const BLOCK_MIN = 15;     // на скільки хвилин блокувати
+const WINDOW_MIN = 15;    // за який період рахуємо помилки
+
+$guardDir  = __DIR__ . '/data';
+if (!is_dir($guardDir)) { @mkdir($guardDir, 0775, true); }
+$guardFile = $guardDir . '/login_guard.json.php';
+$GUARD_PREFIX = "<?php exit; ?>\n";
+
+// REMOTE_ADDR, а не X-Forwarded-For: заголовок підробляється, і тоді захист обходиться
+$ipKey = hash('sha256', ($_SERVER['REMOTE_ADDR'] ?? '') . '|' . $PASS_HASH);
+
+/** Читає стан, застосовує $fn, записує назад. Під flock — бо атака саме паралельна. */
+function guard_update(string $file, string $prefix, callable $fn) {
+    $fh = @fopen($file, 'c+');
+    if (!$fh) { return $fn([]); }              // не змогли відкрити — не блокуємо вхід
+    @flock($fh, LOCK_EX);
+    $raw = stream_get_contents($fh);
+    if (strpos((string) $raw, $prefix) === 0) { $raw = substr($raw, strlen($prefix)); }
+    $state = json_decode((string) $raw, true);
+    if (!is_array($state)) { $state = []; }
+
+    $now = time();
+    foreach ($state as $k => $v) {             // прибираємо застаріле, щоб файл не ріс
+        $seen = (int) ($v['seen'] ?? 0);
+        if ($now - $seen > max(BLOCK_MIN, WINDOW_MIN) * 60) { unset($state[$k]); }
+    }
+
+    $result = $fn($state);
+    @ftruncate($fh, 0); @rewind($fh);
+    @fwrite($fh, $prefix . json_encode($state));
+    @fflush($fh); @flock($fh, LOCK_UN); @fclose($fh);
+    return $result;
+}
+
+// Скільки секунд лишилось до розблокування (0 — не заблоковано)
+$blockedFor = guard_update($guardFile, $GUARD_PREFIX, function (array &$s) use ($ipKey) {
+    $until = (int) ($s[$ipKey]['until'] ?? 0);
+    return $until > time() ? $until - time() : 0;
+});
+
 // Обробка входу
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pass'])) {
-    if (password_verify((string) $_POST['pass'], $PASS_HASH)) {
+    if ($blockedFor > 0) {
+        $error = true;                          // заблоковано — пароль навіть не перевіряємо
+    } elseif (password_verify((string) $_POST['pass'], $PASS_HASH)) {
+        guard_update($guardFile, $GUARD_PREFIX, function (array &$s) use ($ipKey) {
+            unset($s[$ipKey]);                  // успішний вхід скидає лічильник
+        });
         session_regenerate_id(true);
         $_SESSION['kabinet_ok'] = true;
         // запамʼятати на рік
         setcookie($COOKIE, $REMEMBER, time() + $YEAR, '/kabinet/', '', true, true);
         header('Location: /kabinet/app.php');
         exit;
+    } else {
+        $error = true;
+        $blockedFor = guard_update($guardFile, $GUARD_PREFIX, function (array &$s) use ($ipKey) {
+            $now = time();
+            $rec = $s[$ipKey] ?? ['n' => 0, 'first' => $now];
+            if ($now - (int) $rec['first'] > WINDOW_MIN * 60) { $rec = ['n' => 0, 'first' => $now]; }
+            $rec['n'] = (int) $rec['n'] + 1;
+            $rec['seen'] = $now;
+            $rec['until'] = ($rec['n'] >= MAX_FAILS) ? $now + BLOCK_MIN * 60 : 0;
+            $s[$ipKey] = $rec;
+            return $rec['until'] > $now ? $rec['until'] - $now : 0;
+        });
+        usleep(600000);                         // затримка лишається як перший бар'єр
     }
-    $error = true;
-    // невелика затримка проти перебору
-    usleep(600000);
 }
 
 // Автовхід за токеном «запамʼятати мене» (пароль вже вводили раніше)
@@ -113,9 +174,13 @@ header('X-Robots-Tag: noindex, nofollow');
     <h1>Lux Дзеркало · Кабінет</h1>
     <p>Робочий калькулятор і наряди. Доступ лише для персоналу — введи пароль.</p>
     <label for="pass">Пароль</label>
-    <input id="pass" name="pass" type="password" placeholder="••••••••" autofocus required />
-    <button type="submit">Увійти</button>
-    <?php if ($error): ?><div class="err">Невірний пароль. Спробуй ще раз.</div><?php endif; ?>
+    <input id="pass" name="pass" type="password" placeholder="••••••••" autofocus required <?= $blockedFor > 0 ? 'disabled' : '' ?> />
+    <button type="submit" <?= $blockedFor > 0 ? 'disabled' : '' ?>>Увійти</button>
+    <?php if ($blockedFor > 0): ?>
+      <div class="err">Забагато невдалих спроб. Спробуйте через <?= (int) ceil($blockedFor / 60) ?> хв.</div>
+    <?php elseif ($error): ?>
+      <div class="err">Невірний пароль. Спробуй ще раз.</div>
+    <?php endif; ?>
   </form>
 </body>
 </html>

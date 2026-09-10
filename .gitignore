@@ -11,5 +11,7 @@ node_modules/
 .env.production
 .DS_Store
 
-# runtime shared-store for kabinet (created on server)
-public/kabinet/data/
+# runtime shared-store for kabinet (created on server) — самі дані не комітимо,
+# але .htaccess має потрапити в деплой, щоб теку не можна було читати з браузера
+public/kabinet/data/*
+!public/kabinet/data/.htaccess
