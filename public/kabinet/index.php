@@ -42,10 +42,20 @@ $error = false;
    Затримки замало: запити можна слати паралельно, і короткий пароль
    перебирається за хвилини. Тому рахуємо невдалі спроби з кожної IP
    і після MAX_FAILS блокуємо її на BLOCK_MIN хвилин.
-   Лічильник у файлі під захистом «<?php exit;» — напряму з браузера не читається. */
-const MAX_FAILS = 5;      // скільки помилок дозволено
-const BLOCK_MIN = 15;     // на скільки хвилин блокувати
-const WINDOW_MIN = 15;    // за який період рахуємо помилки
+   Лічильник у файлі під захистом «<?php exit;» — напряму з браузера не читається.
+
+   Два рівні, бо одного замало:
+   1) по IP — зупиняє звичайний перебір з однієї адреси;
+   2) загальний — бо перебір можна вести з пулу адрес, і тоді лічильник по IP
+      не спрацьовує взагалі (перевірено на практиці). Якщо помилок з УСІХ адрес
+      більше GLOBAL_MAX за GLOBAL_WINDOW секунд, перевірка пароля призупиняється
+      для всіх до кінця вікна. Без затримок-очікувань — щоб не займати процеси
+      сервера, інакше це саме стає способом його покласти. */
+const MAX_FAILS = 5;         // скільки помилок дозволено з однієї IP
+const BLOCK_MIN = 15;        // на скільки хвилин блокувати цю IP
+const WINDOW_MIN = 15;       // за який період рахуємо помилки по IP
+const GLOBAL_MAX = 30;       // стільки помилок з усіх адрес разом…
+const GLOBAL_WINDOW = 60;    // …за стільки секунд вмикає загальну паузу
 
 $guardDir  = __DIR__ . '/data';
 if (!is_dir($guardDir)) { @mkdir($guardDir, 0775, true); }
@@ -78,10 +88,23 @@ function guard_update(string $file, string $prefix, callable $fn) {
     return $result;
 }
 
-// Скільки секунд лишилось до розблокування (0 — не заблоковано)
-$blockedFor = guard_update($guardFile, $GUARD_PREFIX, function (array &$s) use ($ipKey) {
+/** Скільки секунд лишилось до розблокування: враховує і цю IP, і загальну паузу. */
+function guard_blocked_for(array $s, string $ipKey): int {
+    $now = time();
+    $left = 0;
     $until = (int) ($s[$ipKey]['until'] ?? 0);
-    return $until > time() ? $until - time() : 0;
+    if ($until > $now) { $left = $until - $now; }
+
+    $g = $s['__global'] ?? null;
+    if ($g && (int) $g['n'] >= GLOBAL_MAX) {
+        $ends = (int) $g['start'] + GLOBAL_WINDOW;
+        if ($ends > $now) { $left = max($left, $ends - $now); }
+    }
+    return $left;
+}
+
+$blockedFor = guard_update($guardFile, $GUARD_PREFIX, function (array &$s) use ($ipKey) {
+    return guard_blocked_for($s, $ipKey);
 });
 
 // Обробка входу
@@ -102,13 +125,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pass'])) {
         $error = true;
         $blockedFor = guard_update($guardFile, $GUARD_PREFIX, function (array &$s) use ($ipKey) {
             $now = time();
+            // лічильник цієї IP
             $rec = $s[$ipKey] ?? ['n' => 0, 'first' => $now];
             if ($now - (int) $rec['first'] > WINDOW_MIN * 60) { $rec = ['n' => 0, 'first' => $now]; }
             $rec['n'] = (int) $rec['n'] + 1;
             $rec['seen'] = $now;
             $rec['until'] = ($rec['n'] >= MAX_FAILS) ? $now + BLOCK_MIN * 60 : 0;
             $s[$ipKey] = $rec;
-            return $rec['until'] > $now ? $rec['until'] - $now : 0;
+
+            // загальний лічильник — ловить перебір з пулу різних адрес
+            $g = $s['__global'] ?? ['n' => 0, 'start' => $now];
+            if ($now - (int) $g['start'] > GLOBAL_WINDOW) { $g = ['n' => 0, 'start' => $now]; }
+            $g['n'] = (int) $g['n'] + 1;
+            $g['seen'] = $now;
+            $s['__global'] = $g;
+
+            return guard_blocked_for($s, $ipKey);
         });
         usleep(600000);                         // затримка лишається як перший бар'єр
     }
