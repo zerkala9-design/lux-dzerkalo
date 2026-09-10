@@ -2192,26 +2192,14 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 <!-- AUTH -->
 <div id="auth-overlay">
   <div id="auth-card">
-    <h1>Reflectique MF</h1>
-    <p>Вкажи email, щоб увійти та працювати з калькулятором і замовленнями.</p>
+    <h1>Lux Dzerkalo</h1>
+    <p>Вкажи імʼя, щоб працювати з калькулятором і замовленнями.</p>
     <div class="auth-row">
       <label for="auth-name">Імʼя</label>
-      <input id="auth-name" class="auth-input" type="text" placeholder="Напр. Андрій" />
-    </div>
-    <div class="auth-row">
-      <label for="auth-email">Email</label>
-      <input id="auth-email" class="auth-input" type="email" placeholder="you@example.com" />
-    </div>
-    <div class="auth-row" id="auth-pass-row" style="display:none;">
-      <label for="auth-pass">Пароль</label>
-      <input id="auth-pass" class="auth-input" type="password" placeholder="••••••••" />
+      <input id="auth-name" class="auth-input" type="text" placeholder="Напр. Андрій" autocomplete="name" />
     </div>
     <div class="auth-error" id="auth-error"></div>
-    <button id="auth-submit" class="auth-btn-primary">Увійти без пароля</button>
-    <div class="auth-toggle">
-      <span id="auth-mode-text">Ще немає акаунту?</span>
-      <button id="auth-toggle-btn" type="button">Зареєструватися</button>
-    </div>
+    <button id="auth-submit" class="auth-btn-primary">Увійти</button>
   </div>
 </div>
 
@@ -3242,19 +3230,15 @@ syncState();
   /* ===== AUTH ===== */
   const authOverlay = document.getElementById("auth-overlay");
   const authName = document.getElementById("auth-name");
-  const authEmail = document.getElementById("auth-email");
-  const authPass = document.getElementById("auth-pass");
   const authError = document.getElementById("auth-error");
   const authSubmit = document.getElementById("auth-submit");
-  const authToggleBtn = document.getElementById("auth-toggle-btn");
   const topbarUser = document.getElementById("topbar-user");
-  let authMode = "login";
 
   function getCurrentUser() { try { return JSON.parse(localStorage.getItem("reflectique_current_user")); } catch { return null; } }
   function setCurrentUser(u) {
     localStorage.setItem("reflectique_current_user", JSON.stringify(u));
     if(topbarUser) topbarUser.textContent = u.name || u.email;
-    { const _ai=document.getElementById("account-info"); if(_ai) _ai.textContent = `Імʼя: ${u.name}\nEmail: ${u.email}`; }
+    { const _ai=document.getElementById("account-info"); if(_ai) _ai.textContent = `Імʼя: ${u.name}`; }
 
     const avatarUrl = u.avatar || "";
     { const _av=document.getElementById("avatar"); if(_av) _av.style.backgroundImage = avatarUrl ? `url(${avatarUrl})` : "linear-gradient(135deg, #f97316, #facc15)"; }
@@ -3266,38 +3250,29 @@ syncState();
     document.getElementById("avatar").style.backgroundImage = "linear-gradient(135deg, #f97316, #facc15)";
   }
 
-  authToggleBtn.addEventListener("click", () => {
-    authMode = authMode==="login"?"register":"login";
-    document.getElementById("auth-mode-text").textContent = authMode==="login"?"Ще немає акаунту?":"Вже є акаунт?";
-    authToggleBtn.textContent = authMode==="login"?"Зареєструватися":"Увійти";
-    authSubmit.textContent = authMode==="login"?"Увійти":"Зареєструватися";
-    authError.textContent="";
-  });
-  
-  authSubmit.addEventListener("click", () => {
-    const name=authName.value.trim(), email=authEmail.value.trim(), pass="";
-    if(!email) { authError.textContent="Вкажи email"; return; }
+  function doAuthSubmit() {
+    const name = authName.value.trim();
+    if(!name) { authError.textContent="Вкажи імʼя"; return; }
+    // Email прибрано — ідентифікатором користувача тепер є імʼя. Кладемо його і в поле
+    // email, щоб решта коду (збереження, замовлення, чат), що читає user.email, працювала.
+    const id = name.toLowerCase();
     const users = JSON.parse(localStorage.getItem("reflectique_users")||"[]");
-    if(authMode==="register") {
-      let u = users.find(u=>u.email===email);
-      if(!u) {
-        u={name:name || email.split("@")[0],email,pass,avatar:""};
-        users.push(u);
-        localStorage.setItem("reflectique_users",JSON.stringify(users));
-      }
-      setCurrentUser(u); authOverlay.style.display="none";
+    let u = users.find(u=>u.email===id);
+    if(!u) {
+      u = {name, email:id, pass:"", avatar:""};
+      users.push(u);
+      localStorage.setItem("reflectique_users",JSON.stringify(users));
     } else {
-      let u=users.find(u=>u.email===email);
-      if(!u) {
-        u={name:name || email.split("@")[0],email,pass,avatar:""};
-        users.push(u);
-        localStorage.setItem("reflectique_users",JSON.stringify(users));
-      }
-      setCurrentUser(u); authOverlay.style.display="none";
+      u.name = name; // оновити відображуване імʼя, якщо змінилось
     }
+    setCurrentUser(u);
+    authOverlay.style.display="none";
+    authError.textContent="";
     loadCalcState();
     renderSharedCalcs();
-  });
+  }
+  authSubmit.addEventListener("click", doAuthSubmit);
+  authName.addEventListener("keydown", (e)=>{ if(e.key==="Enter") doAuthSubmit(); });
   
   document.getElementById("logout-btn")?.addEventListener("click", logout);
   document.getElementById("account-logout")?.addEventListener("click", logout);
@@ -11097,7 +11072,7 @@ function exportSingleNaradPNG(order){
   function getContext(){
     // Minimal safe context now; можна розширити під наряд/калькулятор
     return {
-      app:"Reflectique MF",
+      app:"Lux Dzerkalo",
       ts: new Date().toISOString()
     };
   }
