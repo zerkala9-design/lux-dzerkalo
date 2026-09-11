@@ -4032,7 +4032,9 @@ function updateShapePreview() {
         : ""; }
 
     const qtyMult = (currentShape==="rect") ? 1 : qty;
-    const total = (priceOne * qtyMult) + delCost + instCost + liftCost + pointsProfileCost + platesCost;
+    // Округлюємо підсумок до цілих гривень (без копійок): 3299.80 → 3300.
+    // Округлюємо саме тут, щоб заголовок, деталізація й збережене замовлення збігались.
+    const total = Math.round((priceOne * qtyMult) + delCost + instCost + liftCost + pointsProfileCost + platesCost);
 
     document.getElementById("total_price").textContent = formatUAH(total);
     document.getElementById("result_area").textContent = area.toFixed(3)+" м²";
