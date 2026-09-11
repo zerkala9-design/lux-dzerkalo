@@ -1,5 +1,5 @@
 /* Service worker кабінету Lux Dzerkalo — офлайн-режим (рахувати без інтернету). */
-const CACHE = 'lux-kabinet-v2';
+const CACHE = 'lux-kabinet-v3';
 const CORE = [
   '/kabinet/vendor/html2canvas.min.js',
   '/kabinet/vendor/JsBarcode.all.min.js',
@@ -34,12 +34,22 @@ self.addEventListener('fetch', (e) => {
       try {
         // no-store: інакше HTTP-кеш телефона може віддати стару сторінку повз мережу
         const net = await fetch(req.url, { credentials: 'same-origin', redirect: 'follow', cache: 'no-store' });
-        // Кешуємо ЛИШЕ справжній калькулятор (app.php без редіректу на форму входу)
-        if (net && net.ok && net.url && net.url.indexOf('/kabinet/app.php') >= 0) {
-          const clone = net.clone();
+
+        // Safari не показує navigation-відповідь, яку SW отримав ПІСЛЯ редіректу
+        // ("Response served by service worker has redirections"). А /kabinet/ віддає
+        // 302 на app.php при вході — тож пересобираємо чисту відповідь без цього прапорця.
+        let out = net;
+        if (net && net.redirected) {
+          const body = await net.clone().arrayBuffer();
+          out = new Response(body, { status: net.status, statusText: net.statusText, headers: net.headers });
+        }
+
+        // Кешуємо ЛИШЕ справжній калькулятор (кінцевий URL — app.php, не форма входу)
+        if (out && out.ok && net.url && net.url.indexOf('/kabinet/app.php') >= 0) {
+          const clone = out.clone();
           caches.open(CACHE).then((c) => c.put('/kabinet/app.php', clone)).catch(()=>{});
         }
-        return net;
+        return out;
       } catch (err) {
         const cached = await caches.match('/kabinet/app.php');
         return cached || new Response(
