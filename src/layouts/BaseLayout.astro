@@ -105,6 +105,7 @@ const allLd = jsonLd ? [orgLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])] :
       />
     </noscript>
     <Analytics />
+    <slot name="head" />
   </head>
   <body>
     <Header />

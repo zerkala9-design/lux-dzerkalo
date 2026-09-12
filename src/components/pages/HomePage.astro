@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProductCard from '../ProductCard.astro';
 import CallbackForm from '../CallbackForm.astro';
@@ -14,6 +14,11 @@ import heroImg from '../../assets/hero.jpg';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+
+// Hero — LCP-зображення. Генеруємо srcset один раз (getImage), щоб preload у <head>
+// і сам <img> посилались на ідентичні файли: браузер починає тягнути заставку одразу
+// з <head> (паралельно з CSS), а не після парсингу <body> → менший LCP на мобільному.
+const hero = await getImage({ src: heroImg, widths: [768, 1280, 1920], sizes: '100vw', format: 'webp' });
 
 // Короткий meta-опис головної (≤160 симв.) — багатий опис лишається у schema.
 const homeDesc = lang === 'ru'
@@ -55,9 +60,28 @@ const topicsHeading = lang === 'ru' ? 'Полезно знать' : 'Корис�
 ---
 
 <BaseLayout title={homeTitle} description={homeDesc} withReviews={true}>
+  <link
+    slot="head"
+    rel="preload"
+    as="image"
+    href={hero.src}
+    imagesrcset={hero.srcSet.attribute}
+    imagesizes="100vw"
+    fetchpriority="high"
+  />
   <section class="hero">
     <div class="hero__bg">
-      <Image src={heroImg} alt={t('site.tagline')} widths={[768, 1280, 1920]} sizes="100vw" loading="eager" fetchpriority="high" />
+      <img
+        src={hero.src}
+        srcset={hero.srcSet.attribute}
+        sizes="100vw"
+        alt={t('site.tagline')}
+        width="1920"
+        height="1288"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+      />
       <div class="hero__overlay"></div>
     </div>
     <div class="container hero__inner">
