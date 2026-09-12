@@ -24,6 +24,9 @@ export default defineConfig({
   ],
   build: {
     format: 'directory',
+    // Інлайнимо CSS у HTML: прибирає окремі блокуючі рендер запити стилів
+    // (менше мережевих round-trip на повільному 4G) → швидший FCP/LCP.
+    inlineStylesheets: 'always',
   },
   image: {
     // Дозволяємо оптимізацію локальних зображень (WebP/AVIF, responsive)
