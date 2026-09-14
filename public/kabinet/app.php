@@ -4795,6 +4795,9 @@ document.querySelectorAll(".calc-input").forEach(i => {
     // --- Responsive wall preview (stretches to container) ---
     const pad = 40;
     const baseW = 1000;
+    // Коли є LED — додаємо місце над і під дзеркалом, щоб намалювати сяйво на стіну
+    const ledOn = (mountType === "profile" && ledType !== "none");
+    const glowPad = ledOn ? 40 : 0;
 
     if(W <= 0 || H <= 0) {
       svg.setAttribute("viewBox", "0 0 100 60");
@@ -4804,13 +4807,13 @@ document.querySelectorAll(".calc-input").forEach(i => {
 
     const wallPxW = baseW - pad*2;
     const wallPxH = Math.max(160, Math.min(520, wallPxW * (H / W)));
-    const viewH = wallPxH + pad*2;
+    const viewH = wallPxH + pad*2 + glowPad*2;
 
     svg.setAttribute("viewBox", `0 0 ${baseW} ${viewH}`);
     svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
     svg.style.height = "auto";
 
-    const wallX = pad, wallY = pad;
+    const wallX = pad, wallY = pad + glowPad;
     const scaleX = wallPxW / W;
     const scaleY = wallPxH / H;
 
@@ -4889,12 +4892,12 @@ document.querySelectorAll(".calc-input").forEach(i => {
       pb.setAttribute("stroke-width", 0.8);
       svg.appendChild(pb);
 
-      // LED-підсвітка по верхньому профілю. Звичайна — тепле біле світло;
-      // RGB — різнокольорове (веселковий градієнт). М'яке світіння на дзеркало
-      // робимо кількома смугами зі спаданням прозорості (надійніше за blur у скріншотах).
+      // LED-підсвітка. Світло падає НА СТІНУ — вгору над дзеркалом і вниз під ним
+      // (зверху й знизу), а не на саме дзеркало. Звичайна — тепле біле; RGB —
+      // різнокольорове (веселковий градієнт). М'яке сяйво робимо кількома смугами
+      // зі спаданням прозорості (надійніше за blur у скріншотах).
       if(ledType !== "none"){
         const NS = "http://www.w3.org/2000/svg";
-        const stripY = wallY + 10;
         const gid = "ledgrad_wall";
         const defs = document.createElementNS(NS,"defs");
         const grad = document.createElementNS(NS,"linearGradient");
@@ -4909,8 +4912,8 @@ document.querySelectorAll(".calc-input").forEach(i => {
           });
         } else {
           grad.setAttribute("x1","0"); grad.setAttribute("y1","0");
-          grad.setAttribute("x2","0"); grad.setAttribute("y2","1");
-          [["0%","#fff7e2"],["100%","#ffce78"]].forEach(([o,c])=>{
+          grad.setAttribute("x2","1"); grad.setAttribute("y2","0");
+          [["0%","#fff7e2"],["100%","#ffd68a"]].forEach(([o,c])=>{
             const s=document.createElementNS(NS,"stop");
             s.setAttribute("offset",o); s.setAttribute("stop-color",c); grad.appendChild(s);
           });
@@ -4918,18 +4921,26 @@ document.querySelectorAll(".calc-input").forEach(i => {
         defs.appendChild(grad); svg.appendChild(defs);
 
         const glowFill = ledType === "rgb" ? ("url(#"+gid+")") : "rgb(255,206,132)";
-        [{h:48,o:0.10},{h:28,o:0.18},{h:13,o:0.32}].forEach(bd=>{
-          const g=document.createElementNS(NS,"rect");
-          g.setAttribute("x", wallX); g.setAttribute("y", stripY);
-          g.setAttribute("width", wallPxW); g.setAttribute("height", bd.h);
-          g.setAttribute("fill", glowFill); g.setAttribute("opacity", bd.o);
-          svg.appendChild(g);
-        });
-        const strip=document.createElementNS(NS,"rect");
-        strip.setAttribute("x", wallX); strip.setAttribute("y", stripY);
-        strip.setAttribute("width", wallPxW); strip.setAttribute("height", 5);
-        strip.setAttribute("fill", "url(#"+gid+")");
-        svg.appendChild(strip);
+        // сяйво на стіну від краю дзеркала: dir=-1 вгору (над дзеркалом), dir=+1 вниз (під ним)
+        function wallGlow(edgeY, dir){
+          [{off:3,h:11,o:0.34},{off:14,h:12,o:0.20},{off:26,h:13,o:0.10}].forEach(bd=>{
+            const y = dir<0 ? (edgeY - bd.off - bd.h) : (edgeY + bd.off);
+            const g=document.createElementNS(NS,"rect");
+            g.setAttribute("x", wallX); g.setAttribute("y", y);
+            g.setAttribute("width", wallPxW); g.setAttribute("height", bd.h);
+            g.setAttribute("fill", glowFill); g.setAttribute("opacity", bd.o);
+            svg.appendChild(g);
+          });
+          // яскрава смужка самого діода на краю
+          const strip=document.createElementNS(NS,"rect");
+          strip.setAttribute("x", wallX);
+          strip.setAttribute("y", dir<0 ? (edgeY-3) : (edgeY-2));
+          strip.setAttribute("width", wallPxW); strip.setAttribute("height", 4);
+          strip.setAttribute("fill", "url(#"+gid+")");
+          svg.appendChild(strip);
+        }
+        wallGlow(wallY, -1);                 // зверху — світить на стіну над дзеркалом
+        wallGlow(wallY + wallPxH, +1);       // знизу — світить на стіну/підлогу під дзеркалом
       }
     }
 
