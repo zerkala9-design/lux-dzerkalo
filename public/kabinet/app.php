@@ -2808,12 +2808,15 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 	              <label><input type="radio" name="wall_mount" value="points_profile_bottom">Точкові зверху + профіль знизу</label>
 	            </div>
 
-            <!-- LED — лише для профілю (верх+низ); рахується по верхньому профілю, грн/п.м. -->
+            <!-- LED — лише для профілю (верх+низ). Рахується по верху+низу (ширина × 2), грн/п.м. -->
             <div id="wall-led-block" style="display:none;margin-bottom:12px;">
-              <div class="card-sub" style="margin-bottom:4px;">LED-підсвітка (по верхньому профілю)</div>
-              <div class="radio-row">
-                <label><input type="radio" name="wall_led" value="none" checked>Без підсвітки</label>
-                <label><input type="radio" name="wall_led" value="normal">Звичайна — 500 грн/п.м.</label>
+              <div class="card-sub" style="margin-bottom:4px;">LED-підсвітка (зверху та знизу)</div>
+              <div class="checkbox-row" style="margin-bottom:6px;">
+                <input type="checkbox" id="wall_led_on">
+                <label for="wall_led_on">Додати LED-підсвітку</label>
+              </div>
+              <div id="wall-led-type" class="radio-row" style="display:none;">
+                <label><input type="radio" name="wall_led" value="normal" checked>Звичайна — 500 грн/п.м.</label>
                 <label><input type="radio" name="wall_led" value="rgb">RGB — 700 грн/п.м.</label>
               </div>
             </div>
@@ -4723,14 +4726,15 @@ document.querySelectorAll(".calc-input").forEach(i => {
     const sheetPrCost = perimSheet * prP;
     const sheetFilmCost = areaSheet * filmP;
 
-    // LED-підсвітка: лише коли кріплення — профіль (верх+низ). Рахуємо тільки верхній
-    // погонний метр (ширина стіни). Звичайна — 500 грн/п.м., RGB — 700 грн/п.м.
+    // LED-підсвітка: лише коли кріплення — профіль (верх+низ). Рахуємо верх + низ,
+    // тобто ширина × 2 п.м. (напр. дзеркало 3×2 м → 6 п.м.). Звичайна — 500, RGB — 700 грн/п.м.
     const LED_PRICE = { normal: 500, rgb: 700 };
     let ledType = "none";
-    if(mountType === "profile"){
-      ledType = document.querySelector('input[name="wall_led"]:checked')?.value || "none";
+    if(mountType === "profile" && document.getElementById("wall_led_on")?.checked){
+      ledType = document.querySelector('input[name="wall_led"]:checked')?.value || "normal";
     }
-    const ledCost = (ledType !== "none") ? (W/1000) * (LED_PRICE[ledType] || 0) : 0;
+    const ledMeters = (W/1000) * 2;   // верх + низ
+    const ledCost = (ledType !== "none") ? ledMeters * (LED_PRICE[ledType] || 0) : 0;
     const ledLabel = ledType === "normal" ? "LED звичайна" : ledType === "rgb" ? "LED RGB" : "";
 
     // Знижка діє лише на ціну дзеркала (скла), як і в основному калькуляторі.
@@ -4769,7 +4773,7 @@ document.querySelectorAll(".calc-input").forEach(i => {
     detailsArr.push(`Обробка: ${(sheetPrCost * cols).toFixed(0)} грн`);
     if(filmP) detailsArr.push(`Плівка: ${(sheetFilmCost * cols).toFixed(0)} грн`);
     detailsArr.push(`Кріплення: ${mountCost.toFixed(0)} грн`);
-    if(ledCost) detailsArr.push(`${ledLabel} (${(W/1000).toFixed(2)} п.м.): ${ledCost.toFixed(0)} грн`);
+    if(ledCost) detailsArr.push(`${ledLabel} (верх+низ, ${ledMeters.toFixed(2)} п.м.): ${ledCost.toFixed(0)} грн`);
     if(wallDiscVal) detailsArr.push(`Знижка ${wallDiscP}%: -${wallDiscVal.toFixed(0)} грн`);
     if(hasInst) detailsArr.push(`Монтаж: ${(extra - (hasDel ? (priceState.delivery_type==="percent" ? totalBase*(priceState.price_delivery/100) : priceState.price_delivery) : 0)).toFixed(0)} грн`);
     if(hasDel) detailsArr.push(`Доставка: ${(priceState.delivery_type==="percent" ? totalBase*(priceState.price_delivery/100) : priceState.price_delivery).toFixed(0)} грн`);
@@ -4783,7 +4787,7 @@ document.querySelectorAll(".calc-input").forEach(i => {
     lastWallKpItems.push({ name:`Дзеркало ${sheetH}×${Math.round(sheetW)} мм`, unit:"шт", qty: cols, price: Number((sheetGlassCost + sheetPrCost).toFixed(2)) });
     if(filmP) lastWallKpItems.push({name:"Плівка безпеки", unit:"компл", qty:1, price:Number((sheetFilmCost*cols).toFixed(2))});
     if(mountCost) lastWallKpItems.push({name:mountDesc, unit:"компл", qty:1, price:Number(mountCost.toFixed(2))});
-    if(ledCost) lastWallKpItems.push({name:`${ledLabel} (верхній профіль)`, unit:"п.м.", qty:Number((W/1000).toFixed(2)), price:LED_PRICE[ledType]});
+    if(ledCost) lastWallKpItems.push({name:`${ledLabel} (верх+низ)`, unit:"п.м.", qty:Number(ledMeters.toFixed(2)), price:LED_PRICE[ledType]});
     if(wallDiscVal) lastWallKpItems.push({name:`Знижка ${wallDiscP}%`, unit:"", qty:1, price:Number((-wallDiscVal).toFixed(2))});
     if(instCostVal) lastWallKpItems.push({name:"Монтаж", unit:"компл", qty:1, price:Number(instCostVal.toFixed(2))});
     if(delCostVal) lastWallKpItems.push({name:"Доставка", unit:"компл", qty:1, price:Number(delCostVal.toFixed(2))});
@@ -4983,17 +4987,20 @@ document.querySelectorAll(".calc-input").forEach(i => {
     // mounts visuals removed (minimal sheet design)
   }
 
-  // Блок LED показуємо лише для профілю (верх+низ)
+  // Блок LED показуємо лише для профілю (верх+низ); вибір типу — лише коли LED увімкнено
   function updateWallLedVisibility(){
     const m = document.querySelector('input[name="wall_mount"]:checked')?.value;
     const block = document.getElementById("wall-led-block");
     if(block) block.style.display = (m === "profile") ? "" : "none";
+    const typeBox = document.getElementById("wall-led-type");
+    if(typeBox) typeBox.style.display = document.getElementById("wall_led_on")?.checked ? "" : "none";
   }
   document.getElementById("btn-split-wall").addEventListener("click", calcWall);
   ["wall_width","wall_height","max_sheet_w","wall_has_film","wall_floor_num","wall_discount"].forEach(id=>document.getElementById(id)?.addEventListener("change", calcWall));
   document.getElementById("wall_floor_num")?.addEventListener("input", calcWall);
   document.getElementById("wall_discount")?.addEventListener("input", calcWall);
   document.querySelectorAll('input[name="wall_mount"]').forEach(r=>r.addEventListener("change", ()=>{ updateWallLedVisibility(); calcWall(); }));
+  document.getElementById("wall_led_on")?.addEventListener("change", ()=>{ updateWallLedVisibility(); calcWall(); });
   document.querySelectorAll('input[name="wall_led"]').forEach(r=>r.addEventListener("change", calcWall));
   updateWallLedVisibility();
 
@@ -5002,7 +5009,9 @@ document.querySelectorAll(".calc-input").forEach(i => {
   function saveWallSession(){
     try{
       const mount = document.querySelector('input[name="wall_mount"]:checked')?.value || "";
-      const led = document.querySelector('input[name="wall_led"]:checked')?.value || "none";
+      const led = document.getElementById("wall_led_on")?.checked
+        ? (document.querySelector('input[name="wall_led"]:checked')?.value || "normal")
+        : "none";
       localStorage.setItem(WALL_SESSION_KEY, JSON.stringify({
         w: document.getElementById("wall_width")?.value,
         h: document.getElementById("wall_height")?.value,
@@ -5024,7 +5033,12 @@ document.querySelectorAll(".calc-input").forEach(i => {
       if(s.maxw!=null && document.getElementById("max_sheet_w")) document.getElementById("max_sheet_w").value = s.maxw;
       const f = document.getElementById("wall_has_film"); if(f) f.checked = !!s.film;
       if(s.mount){ const r = document.querySelector('input[name="wall_mount"][value="'+s.mount+'"]'); if(r) r.checked = true; }
-      if(s.led){ const lr = document.querySelector('input[name="wall_led"][value="'+s.led+'"]'); if(lr) lr.checked = true; }
+      if(s.led && s.led!=="none"){
+        const on = document.getElementById("wall_led_on"); if(on) on.checked = true;
+        const lr = document.querySelector('input[name="wall_led"][value="'+s.led+'"]'); if(lr) lr.checked = true;
+      } else {
+        const on = document.getElementById("wall_led_on"); if(on) on.checked = false;
+      }
       { const dd = document.getElementById("wall_discount"); if(dd && s.disc!=null) dd.value = s.disc; }
       { const fl = document.getElementById("wall_floor_num"); if(fl && s.floor!=null) fl.value = s.floor; }
       updateWallLedVisibility();
@@ -5034,6 +5048,7 @@ document.querySelectorAll(".calc-input").forEach(i => {
   ["wall_width","wall_height","max_sheet_w","wall_has_film","wall_floor_num","wall_discount"].forEach(id=>document.getElementById(id)?.addEventListener("change", saveWallSession));
   document.getElementById("wall_discount")?.addEventListener("input", saveWallSession);
   document.querySelectorAll('input[name="wall_mount"]').forEach(r=>r.addEventListener("change", saveWallSession));
+  document.getElementById("wall_led_on")?.addEventListener("change", saveWallSession);
   document.querySelectorAll('input[name="wall_led"]').forEach(r=>r.addEventListener("change", saveWallSession));
   document.getElementById("btn-split-wall")?.addEventListener("click", saveWallSession);
   // відновити попередню сесію на старті
