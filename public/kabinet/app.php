@@ -4889,18 +4889,47 @@ document.querySelectorAll(".calc-input").forEach(i => {
       pb.setAttribute("stroke-width", 0.8);
       svg.appendChild(pb);
 
-      // LED-підсвітка по верхньому профілю (світна смуга під верхнім профілем)
+      // LED-підсвітка по верхньому профілю. Звичайна — тепле біле світло;
+      // RGB — різнокольорове (веселковий градієнт). М'яке світіння на дзеркало
+      // робимо кількома смугами зі спаданням прозорості (надійніше за blur у скріншотах).
       if(ledType !== "none"){
-        const ledColor = ledType === "rgb" ? "rgb(168,85,247)" : "rgb(255,214,120)";
-        const glow = document.createElementNS("http://www.w3.org/2000/svg","rect");
-        glow.setAttribute("x", wallX);
-        glow.setAttribute("y", wallY + 10);
-        glow.setAttribute("width", wallPxW);
-        glow.setAttribute("height", 6);
-        glow.setAttribute("fill", ledColor);
-        glow.setAttribute("opacity", "0.95");
-        glow.setAttribute("style", "filter:drop-shadow(0 0 6px "+ledColor+")");
-        svg.appendChild(glow);
+        const NS = "http://www.w3.org/2000/svg";
+        const stripY = wallY + 10;
+        const gid = "ledgrad_wall";
+        const defs = document.createElementNS(NS,"defs");
+        const grad = document.createElementNS(NS,"linearGradient");
+        grad.setAttribute("id", gid);
+        if(ledType === "rgb"){
+          grad.setAttribute("x1","0"); grad.setAttribute("y1","0");
+          grad.setAttribute("x2","1"); grad.setAttribute("y2","0");
+          ["#ff2d2d","#ff9a00","#ffe600","#39ff6a","#00d4ff","#b45cff","#ff2d9e"].forEach((c,i,arr)=>{
+            const s=document.createElementNS(NS,"stop");
+            s.setAttribute("offset",(i/(arr.length-1)*100)+"%");
+            s.setAttribute("stop-color",c); grad.appendChild(s);
+          });
+        } else {
+          grad.setAttribute("x1","0"); grad.setAttribute("y1","0");
+          grad.setAttribute("x2","0"); grad.setAttribute("y2","1");
+          [["0%","#fff7e2"],["100%","#ffce78"]].forEach(([o,c])=>{
+            const s=document.createElementNS(NS,"stop");
+            s.setAttribute("offset",o); s.setAttribute("stop-color",c); grad.appendChild(s);
+          });
+        }
+        defs.appendChild(grad); svg.appendChild(defs);
+
+        const glowFill = ledType === "rgb" ? ("url(#"+gid+")") : "rgb(255,206,132)";
+        [{h:48,o:0.10},{h:28,o:0.18},{h:13,o:0.32}].forEach(bd=>{
+          const g=document.createElementNS(NS,"rect");
+          g.setAttribute("x", wallX); g.setAttribute("y", stripY);
+          g.setAttribute("width", wallPxW); g.setAttribute("height", bd.h);
+          g.setAttribute("fill", glowFill); g.setAttribute("opacity", bd.o);
+          svg.appendChild(g);
+        });
+        const strip=document.createElementNS(NS,"rect");
+        strip.setAttribute("x", wallX); strip.setAttribute("y", stripY);
+        strip.setAttribute("width", wallPxW); strip.setAttribute("height", 5);
+        strip.setAttribute("fill", "url(#"+gid+")");
+        svg.appendChild(strip);
       }
     }
 
