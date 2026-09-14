@@ -4169,7 +4169,7 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     if(holesCost) dDetailed.push(`Отвори: ${holesCost.toFixed(2)} грн`);
     if(currentShape!=="rect" && hasFilm) dDetailed.push(`Плівка безпеки: ${area.toFixed(3)}м² × ${priceState.price_film_m2.toFixed(0)} = ${filmCost.toFixed(2)} грн`);
     if(hasProfile) dDetailed.push(`Алюмінієвий профіль: ${profileCost.toFixed(2)} грн`);
-    if(mountsCost) dDetailed.push(`Точкові кріплення (${mountsQty} точок = ${mountKits.toFixed(2)} комплекту): ${mountsCost.toFixed(2)} грн`);
+    if(mountsCost) dDetailed.push(`Точкові кріплення: ${mountsCost.toFixed(2)} грн`);
     if(hasLed) dDetailed.push(`LED: ${perim.toFixed(3)}м × ${priceState.price_led_per_m.toFixed(0)} = ${ledCost.toFixed(2)} грн`);
     if(complexCost) dDetailed.push(`Складність: ${complexCost.toFixed(2)} грн`);
     if(sensorCost) dDetailed.push(`Сенсор: ${sensorCost.toFixed(2)} грн`);
@@ -4223,7 +4223,7 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
     if(holesCost) dSimple.push(`Отвори: ${holesCost.toFixed(0)} грн`);
     if(hasFilm) dSimple.push(`Плівка безпеки: ${filmCost.toFixed(0)} грн`);
     if(hasProfile) dSimple.push(`Алюмінієвий профіль: ${profileCost.toFixed(0)} грн`);
-    if(mountsCost) dSimple.push(`Точкові кріплення (${mountsQty} точок): ${mountsCost.toFixed(0)} грн`);
+    if(mountsCost) dSimple.push(`Точкові кріплення: ${mountsCost.toFixed(0)} грн`);
     if(hasLed) dSimple.push(`LED: ${ledCost.toFixed(0)} грн`);
     if(complexCost) dSimple.push(`Складність: ${complexCost.toFixed(0)} грн`);
     if(sensorCost) dSimple.push(`Сенсор: ${sensorCost.toFixed(0)} грн`);
@@ -4259,7 +4259,7 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
       if(holesCost) lastKpItems.push({name:"Отвори", unit:"компл", qty:1, price:Number(holesCost.toFixed(2))});
       if(hasFilm) lastKpItems.push({name:"Плівка безпеки", unit:"компл", qty:1, price:Number(filmCost.toFixed(2))});
       if(hasProfile) lastKpItems.push({name:"Алюмінієвий профіль", unit:"компл", qty:1, price:Number(profileCost.toFixed(2))});
-      if(mountsCost) lastKpItems.push({name:`Точкові кріплення (${mountsQty} точок)`, unit:"компл", qty:1, price:Number(mountsCost.toFixed(2))});
+      if(mountsCost) lastKpItems.push({name:`Точкові кріплення`, unit:"компл", qty:1, price:Number(mountsCost.toFixed(2))});
       if(hasLed) lastKpItems.push({name:"LED", unit:"компл", qty:1, price:Number(ledCost.toFixed(2))});
       if(complexCost) lastKpItems.push({name:"Складність", unit:"компл", qty:1, price:Number(complexCost.toFixed(2))});
       if(sensorCost) lastKpItems.push({name:"Сенсор", unit:"компл", qty:1, price:Number(sensorCost.toFixed(2))});
@@ -4360,7 +4360,7 @@ dDetailed.push(`<span style="color:#9ca3af;">Площа/периметр (сум
 	          platesBreakdownLines.forEach(function(l){ d.push(l); });
 	          if(hasFilm) d.push(`Плівка безпеки: ${filmCost.toFixed(2)} грн`);
 	          if(hasProfile) d.push(`Алюмінієвий профіль: ${profileCost.toFixed(2)} грн`);
-	          if(mountsCost) d.push(`Точкові кріплення (${mountsQty} точок): ${mountsCost.toFixed(2)} грн`);
+	          if(mountsCost) d.push(`Точкові кріплення: ${mountsCost.toFixed(2)} грн`);
 	          if(hasLed) d.push(`LED: ${ledCost.toFixed(2)} грн`);
 	          if(complexCost) d.push(`Складність: ${complexCost.toFixed(2)} грн`);
 	          if(sensorCost) d.push(`Сенсор: ${sensorCost.toFixed(2)} грн`);
@@ -4709,14 +4709,15 @@ document.querySelectorAll(".calc-input").forEach(i => {
 	      const pointCount = cols * 4;
 	      const pointKits = pointCount / 4;
 	      mountCost = pointKits * priceState.price_mount_point_pc;
-	      mountDesc = `Точкові кріплення (${pointCount} точок = ${pointKits.toFixed(2)} комплекту)`;
+	      mountDesc = `Точкове кріплення`;
 	    } else if (mountType === "points_profile_bottom") {
 	      const topPointCount = cols * 2;
 	      const topPointKits = topPointCount / 4;
 	      const topPointsCost = topPointKits * priceState.price_mount_point_pc;
 	      const bottomProfileCost = (W/1000) * priceState.price_profile_m;
 	      mountCost = topPointsCost + bottomProfileCost;
-	      mountDesc = `Точкові зверху (${topPointCount} точок = ${topPointKits.toFixed(2)} комплекту, ${topPointsCost.toFixed(0)} грн) + профіль знизу (${bottomProfileCost.toFixed(0)} грн)`;
+	      // Для клієнта — без кількості точок і розбивки цін
+	      mountDesc = `Точкове кріплення + профіль знизу`;
 	    }
 
     const perimSheet = 2*(sheetW+sheetH)/1000;
