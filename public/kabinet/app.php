@@ -2806,16 +2806,14 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
 	              <label><input type="radio" name="wall_mount" value="profile">Алюмінієвий профіль (верх+низ)</label>
 	              <label><input type="radio" name="wall_mount" value="points">Точкові кріплення</label>
 	              <label><input type="radio" name="wall_mount" value="points_profile_bottom">Точкові зверху + профіль знизу</label>
+	              <label><input type="radio" name="wall_mount" value="led">LED-підсвітка</label>
 	            </div>
 
-            <!-- LED — лише для профілю (верх+низ). Рахується по верху+низу (ширина × 2), грн/п.м. -->
+            <!-- Тип LED — показуємо, коли обрано кріплення «LED-підсвітка». Профіль (верх+низ)
+                 для тримання + LED, рахунок по верху+низу (ширина × 2), грн/п.м. -->
             <div id="wall-led-block" style="display:none;margin-bottom:12px;">
-              <div class="card-sub" style="margin-bottom:4px;">LED-підсвітка (зверху та знизу)</div>
-              <div class="checkbox-row" style="margin-bottom:6px;">
-                <input type="checkbox" id="wall_led_on">
-                <label for="wall_led_on">Додати LED-підсвітку</label>
-              </div>
-              <div id="wall-led-type" class="radio-row" style="display:none;">
+              <div class="card-sub" style="margin-bottom:4px;">Тип LED-підсвітки</div>
+              <div class="radio-row">
                 <label><input type="radio" name="wall_led" value="normal" checked>Звичайна — 500 грн/п.м.</label>
                 <label><input type="radio" name="wall_led" value="rgb">RGB — 700 грн/п.м.</label>
               </div>
@@ -4704,9 +4702,9 @@ document.querySelectorAll(".calc-input").forEach(i => {
     let mountCost = 0;
     let mountDesc = "Клей";
 
-	    if(mountType === "profile") {
+	    if(mountType === "profile" || mountType === "led") {
 	      mountCost = (W/1000 * 2) * priceState.price_profile_m;
-	      mountDesc = "Алюмінієвий профіль (верх/низ)";
+	      mountDesc = (mountType === "led") ? "Профіль (верх/низ) + LED" : "Алюмінієвий профіль (верх/низ)";
 	    } else if (mountType === "points") {
 	      const pointCount = cols * 4;
 	      const pointKits = pointCount / 4;
@@ -4730,7 +4728,7 @@ document.querySelectorAll(".calc-input").forEach(i => {
     // тобто ширина × 2 п.м. (напр. дзеркало 3×2 м → 6 п.м.). Звичайна — 500, RGB — 700 грн/п.м.
     const LED_PRICE = { normal: 500, rgb: 700 };
     let ledType = "none";
-    if(mountType === "profile" && document.getElementById("wall_led_on")?.checked){
+    if(mountType === "led"){
       ledType = document.querySelector('input[name="wall_led"]:checked')?.value || "normal";
     }
     const ledMeters = (W/1000) * 2;   // верх + низ
@@ -4800,7 +4798,7 @@ document.querySelectorAll(".calc-input").forEach(i => {
     const pad = 40;
     const baseW = 1000;
     // Коли є LED — додаємо місце над і під дзеркалом, щоб намалювати сяйво на стіну
-    const ledOn = (mountType === "profile" && ledType !== "none");
+    const ledOn = (ledType !== "none");
     const glowPad = ledOn ? 40 : 0;
 
     if(W <= 0 || H <= 0) {
@@ -4873,7 +4871,7 @@ document.querySelectorAll(".calc-input").forEach(i => {
 
 
     // --- Profiles & point mounts visuals (added) ---
-    if(mountType === "profile"){
+    if(mountType === "profile" || mountType === "led"){
       // top profile
       const pt = document.createElementNS("http://www.w3.org/2000/svg","rect");
       pt.setAttribute("x", wallX);
@@ -4987,20 +4985,17 @@ document.querySelectorAll(".calc-input").forEach(i => {
     // mounts visuals removed (minimal sheet design)
   }
 
-  // Блок LED показуємо лише для профілю (верх+низ); вибір типу — лише коли LED увімкнено
+  // Вибір типу LED показуємо, коли обрано кріплення «LED-підсвітка»
   function updateWallLedVisibility(){
     const m = document.querySelector('input[name="wall_mount"]:checked')?.value;
     const block = document.getElementById("wall-led-block");
-    if(block) block.style.display = (m === "profile") ? "" : "none";
-    const typeBox = document.getElementById("wall-led-type");
-    if(typeBox) typeBox.style.display = document.getElementById("wall_led_on")?.checked ? "" : "none";
+    if(block) block.style.display = (m === "led") ? "" : "none";
   }
   document.getElementById("btn-split-wall").addEventListener("click", calcWall);
   ["wall_width","wall_height","max_sheet_w","wall_has_film","wall_floor_num","wall_discount"].forEach(id=>document.getElementById(id)?.addEventListener("change", calcWall));
   document.getElementById("wall_floor_num")?.addEventListener("input", calcWall);
   document.getElementById("wall_discount")?.addEventListener("input", calcWall);
   document.querySelectorAll('input[name="wall_mount"]').forEach(r=>r.addEventListener("change", ()=>{ updateWallLedVisibility(); calcWall(); }));
-  document.getElementById("wall_led_on")?.addEventListener("change", ()=>{ updateWallLedVisibility(); calcWall(); });
   document.querySelectorAll('input[name="wall_led"]').forEach(r=>r.addEventListener("change", calcWall));
   updateWallLedVisibility();
 
@@ -5009,9 +5004,7 @@ document.querySelectorAll(".calc-input").forEach(i => {
   function saveWallSession(){
     try{
       const mount = document.querySelector('input[name="wall_mount"]:checked')?.value || "";
-      const led = document.getElementById("wall_led_on")?.checked
-        ? (document.querySelector('input[name="wall_led"]:checked')?.value || "normal")
-        : "none";
+      const led = document.querySelector('input[name="wall_led"]:checked')?.value || "normal";
       localStorage.setItem(WALL_SESSION_KEY, JSON.stringify({
         w: document.getElementById("wall_width")?.value,
         h: document.getElementById("wall_height")?.value,
@@ -5033,12 +5026,7 @@ document.querySelectorAll(".calc-input").forEach(i => {
       if(s.maxw!=null && document.getElementById("max_sheet_w")) document.getElementById("max_sheet_w").value = s.maxw;
       const f = document.getElementById("wall_has_film"); if(f) f.checked = !!s.film;
       if(s.mount){ const r = document.querySelector('input[name="wall_mount"][value="'+s.mount+'"]'); if(r) r.checked = true; }
-      if(s.led && s.led!=="none"){
-        const on = document.getElementById("wall_led_on"); if(on) on.checked = true;
-        const lr = document.querySelector('input[name="wall_led"][value="'+s.led+'"]'); if(lr) lr.checked = true;
-      } else {
-        const on = document.getElementById("wall_led_on"); if(on) on.checked = false;
-      }
+      if(s.led && s.led!=="none"){ const lr = document.querySelector('input[name="wall_led"][value="'+s.led+'"]'); if(lr) lr.checked = true; }
       { const dd = document.getElementById("wall_discount"); if(dd && s.disc!=null) dd.value = s.disc; }
       { const fl = document.getElementById("wall_floor_num"); if(fl && s.floor!=null) fl.value = s.floor; }
       updateWallLedVisibility();
@@ -5048,7 +5036,6 @@ document.querySelectorAll(".calc-input").forEach(i => {
   ["wall_width","wall_height","max_sheet_w","wall_has_film","wall_floor_num","wall_discount"].forEach(id=>document.getElementById(id)?.addEventListener("change", saveWallSession));
   document.getElementById("wall_discount")?.addEventListener("input", saveWallSession);
   document.querySelectorAll('input[name="wall_mount"]').forEach(r=>r.addEventListener("change", saveWallSession));
-  document.getElementById("wall_led_on")?.addEventListener("change", saveWallSession);
   document.querySelectorAll('input[name="wall_led"]').forEach(r=>r.addEventListener("change", saveWallSession));
   document.getElementById("btn-split-wall")?.addEventListener("click", saveWallSession);
   // відновити попередню сесію на старті
