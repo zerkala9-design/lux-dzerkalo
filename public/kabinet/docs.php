@@ -117,6 +117,13 @@ header("X-Robots-Tag: noindex, nofollow");
   .arch-acts{display:flex;gap:6px;flex-wrap:wrap}
   .arch-del{color:var(--danger)}
   .arch-empty{color:var(--muted);font-size:14px;padding:6px 0}
+  /* папки архіву за типом документа */
+  .arch-folder{border:1px solid #dde5f0;border-radius:12px;margin-bottom:10px;background:#fff;overflow:hidden}
+  .arch-folder>summary{cursor:pointer;list-style:none;padding:12px 14px;font-weight:700;font-size:14px;
+                       display:flex;align-items:center;gap:8px;background:#eef3fb}
+  .arch-folder>summary::-webkit-details-marker{display:none}
+  .arch-folder>summary .arch-count{margin-left:auto}
+  .arch-folder .arch-body{padding:0 14px}
 
   /* preview / document */
   .docwrap{margin:28px auto 0;max-width:794px}          /* A4 ширина @96dpi */
@@ -943,29 +950,45 @@ function loadEntry(id){
 }
 function deleteEntry(id){ setArchive(getArchive().filter(x=>x.id!==id)); renderArchive(); }
 
+function archRow(d){
+  const badge=d.type==='invoice'?'<span class="arch-badge inv">РАХУНОК</span>'
+             :d.type==='waybill'?'<span class="arch-badge way">ВИДАТКОВА</span>'
+             :'<span class="arch-badge offer">ПРОПОЗИЦІЯ</span>';
+  const dd=d.date?d.date.split('-').reverse().join('.'):'';
+  const buyer=(d.recipient||'').split('\n')[0]||'—';
+  return `<div class="arch-row" data-id="${d.id}">
+    <div class="arch-info">
+      <div class="arch-title">${badge}№${escT(d.no||'')}<span class="arch-date">${dd}</span></div>
+      <div class="arch-sub">${escT(buyer)} · ${f2(d.total||0)} грн</div>
+    </div>
+    <div class="arch-acts">
+      <button class="btn btn-ghost sm" data-act="open">Відкрити</button>
+      <button class="btn btn-ghost sm" data-act="pdf">⬇ PDF</button>
+      <button class="btn btn-ghost sm" data-act="print">🖨 Друк</button>
+      <button class="btn btn-ghost sm arch-del" data-act="del" title="Видалити">✕</button>
+    </div>
+  </div>`;
+}
 function renderArchive(){
   const a=getArchive(), box=$('archiveList');
   $('archCount').textContent=a.length?`(${a.length})`:'';
   if(!a.length){box.innerHTML='<div class="arch-empty">Архів порожній. Заповніть документ і натисніть «🗄 Зберегти в архів».</div>';return;}
-  box.innerHTML=a.map(d=>{
-    const badge=d.type==='invoice'?'<span class="arch-badge inv">РАХУНОК</span>'
-               :d.type==='waybill'?'<span class="arch-badge way">ВИДАТКОВА</span>'
-               :'<span class="arch-badge offer">ПРОПОЗИЦІЯ</span>';
-    const dd=d.date?d.date.split('-').reverse().join('.'):'';
-    const buyer=(d.recipient||'').split('\n')[0]||'—';
-    return `<div class="arch-row" data-id="${d.id}">
-      <div class="arch-info">
-        <div class="arch-title">${badge}№${escT(d.no||'')}<span class="arch-date">${dd}</span></div>
-        <div class="arch-sub">${escT(buyer)} · ${f2(d.total||0)} грн</div>
-      </div>
-      <div class="arch-acts">
-        <button class="btn btn-ghost sm" data-act="open">Відкрити</button>
-        <button class="btn btn-ghost sm" data-act="pdf">⬇ PDF</button>
-        <button class="btn btn-ghost sm" data-act="print">🖨 Друк</button>
-        <button class="btn btn-ghost sm arch-del" data-act="del" title="Видалити">✕</button>
-      </div>
-    </div>`;
-  }).join('');
+  // Розкладаємо по папках за типом документа
+  const folders=[
+    {type:'invoice', name:'📁 Рахунки'},
+    {type:'waybill', name:'📁 Видаткові'},
+    {type:'offer',   name:'📁 Комерційні'},
+  ];
+  let html='';
+  folders.forEach(f=>{
+    const items=a.filter(d=>d.type===f.type);
+    if(!items.length) return;
+    html+=`<details class="arch-folder" open>
+      <summary>${f.name}<span class="arch-count">(${items.length})</span></summary>
+      <div class="arch-body">${items.map(archRow).join('')}</div>
+    </details>`;
+  });
+  box.innerHTML=html;
 }
 
 $('archiveList').addEventListener('click',async e=>{

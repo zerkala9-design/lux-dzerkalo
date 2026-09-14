@@ -808,6 +808,7 @@ function printDoc(){render();const p=document.title,t=fileName();document.title=
 $('print').onclick=printDoc;
 async function downloadPDF(){
   render();
+  try{ saveToArchive(); }catch(e){} // завантажують PDF — вважаємо оформленою, зберігаємо в архів
   const btn=$('download'),lbl=btn.textContent,paper=document.querySelector('.paper');
   if(!window.html2canvas||!window.jspdf){alert('Не завантажились бібліотеки PDF (html2canvas.min.js, jspdf.umd.min.js мають лежати поруч).');return;}
   btn.disabled=true;btn.textContent='Формую PDF…';
@@ -842,7 +843,21 @@ function collectDoc(){
     items:[...$('items').rows].map(tr=>({name:tr.querySelector('.i-name').value,qty:tr.querySelector('.i-qty').value,unit:tr.querySelector('.i-unit').value,price:tr.querySelector('.i-price').value}))};
   DOC_KEYS.forEach(k=>o[k]=$(k).value); return o;
 }
-$('archiveBtn').onclick=()=>{const a=getArchive();a.unshift(collectDoc());setArchive(a);renderArchive();flash($('archiveBtn'),'✓ Додано в архів');};
+// Зберігає поточну пропозицію в архів. Якщо це вже архівний запис (відкритий або
+// щойно збережений) — оновлює його на місці, а не плодить копію при повторному PDF.
+let currentEditId=null;
+function saveToArchive(){
+  const a=getArchive();
+  const doc=collectDoc();
+  if(currentEditId) doc.id=currentEditId;
+  const idx=a.findIndex(x=>x.id===doc.id);
+  if(idx<0) a.unshift(doc); else a[idx]=doc;
+  setArchive(a);
+  currentEditId=doc.id;
+  renderArchive();
+  return doc;
+}
+$('archiveBtn').onclick=()=>{ saveToArchive(); flash($('archiveBtn'),'✓ Додано в архів'); };
 /* Створити рахунок із цієї пропозиції: передаємо покупця й позиції у генератор рахунків. */
 $('toInvoice').onclick=()=>{
   const MONTAGE_DELIVERY_RE = /^(монтаж|доставка)/i;
@@ -899,6 +914,7 @@ $('toInvoice').onclick=()=>{
 };
 function loadEntry(id){
   const d=getArchive().find(x=>x.id===id);if(!d)return;
+  currentEditId=d.id; // редагуємо саме цей запис — PDF/збереження оновлять його, не дублюватимуть
   DOC_KEYS.forEach(k=>$(k).value=d[k]||'');
   logoData=d.logo||'';if(logoData){$('logoPrev').src=logoData;$('logoPrev').classList.add('on');}else{$('logoPrev').classList.remove('on');}
   $('items').innerHTML='';(d.items&&d.items.length?d.items:[{}]).forEach(it=>$('items').appendChild(makeRow(it)));
@@ -947,6 +963,7 @@ const DEF={
 function applyDefaults(){Object.keys(DEF).forEach(k=>{if(!$(k).value)$(k).value=DEF[k];});}
 $('clear').onclick=()=>{
   if(!confirm('Очистити позиції та покупця?'))return;
+  currentEditId=null; // нова пропозиція — наступне збереження створить окремий запис
   $('buyer').value='';$('no').value='';
   $('items').innerHTML='';$('items').appendChild(makeRow({name:'Товар / послуга'}));
   render();
